@@ -66,16 +66,12 @@ void Control::_unregister() {
 	owner = nullptr;
 }
 
-Array<Control*> Control::get_children_recursive(bool include_me, ChildFilter f) const {
+Array<Control*> Control::get_children(ChildFilter f) {
 	Array<Control*> r;
-	if (include_me)
-		r.add(const_cast<Control*>(this));
-	for (auto c: get_children(f))
-		r.append(c->get_children_recursive(true, f));
+	const auto cc = _get_children(f);
+	r.simple_assign(&cc);
 	return r;
 }
-
-
 
 
 void Control::request_redraw() {

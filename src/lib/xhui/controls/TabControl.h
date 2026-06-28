@@ -20,7 +20,7 @@ public:
 	vec2 get_greed_factor() const override;
 	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
-	Array<Control*> get_children(ChildFilter f) const override;
+	Array<const Node*> _get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
 	void set_option(const string& key, const string& value) override;
 

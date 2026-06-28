@@ -17,8 +17,8 @@ CheckBox::CheckBox(const string &_id, const string &t) :
 	label.padding.y1 = label.padding.y2 = Theme::_default.button_margin_y;
 }
 
-Array<Control*> CheckBox::get_children(ChildFilter f) const {
-	return {static_cast<Control*>(const_cast<Label*>(&label))};
+Array<const layout::Node*> CheckBox::_get_children(ChildFilter f) const {
+	return {&label};
 }
 
 void CheckBox::check(bool _checked) {

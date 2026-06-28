@@ -182,8 +182,6 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Control.get_color", &xhui::Control::get_color, &ctrl);
 		e->link_virtual("Control.get_selection", &xhui::Control::get_selection, &ctrl);
 		e->link_virtual("Control.enable", &xhui::Control::enable, &ctrl);
-		e->link_virtual("Control.set_option", &xhui::Control::set_option, &ctrl);
-		e->link_virtual("Control.get_children", &xhui::Control::get_children, &ctrl);
 		e->link_virtual("Control.set_float", &xhui::Control::set_float, &ctrl);
 		e->link_virtual("Control.set_float", &xhui::Control::set_float, &ctrl);
 
@@ -203,7 +201,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Control.on_key_char", &xhui::Control::on_key_char, &ctrl);
 
 		e->link_virtual("Control.set_option", &xhui::Control::set_option, &ctrl);
-		e->link_virtual("Control.get_children", &xhui::Control::get_children, &ctrl);
+		e->link_virtual("Control.get_children", &layout::Node::_get_children, &ctrl);
 
 		e->link_virtual("Control._draw", &xhui::Control::_draw, &ctrl);
 		e->link_virtual("Control.get_greed_factor", &xhui::Control::get_greed_factor, &ctrl);
@@ -314,7 +312,7 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Panel.negotiate_area", &xhui::Panel::negotiate_content_area, &panel);
 		e->link_virtual("Panel.get_content_min_size", &xhui::Panel::get_content_min_size, &panel);
 		e->link_virtual("Panel.get_greed_factor", &xhui::Panel::get_greed_factor, &panel);
-		e->link_virtual("Panel.get_children", &xhui::Panel::get_children, &panel);
+		e->link_virtual("Panel.get_children", &xhui::Panel::_get_children, &panel);
 		e->link_virtual("Panel.add_child", &xhui::Panel::add_child, &panel);
 		e->link_virtual("Panel.set_option", &xhui::Panel::set_option, &panel);
 	}

@@ -67,8 +67,8 @@ void Button::negotiate_content_area(const rect& available) {
 	label.negotiate_outer_area(available);
 }
 
-Array<Control*> Button::get_children(ChildFilter f) const {
-	return {static_cast<Control*>(const_cast<Label*>(&label))};
+Array<const layout::Node*> Button::_get_children(ChildFilter f) const {
+	return {&label};
 }
 
 

@@ -85,7 +85,7 @@ void HeaderBar::_draw(Painter *p) {
 	grid_right->_draw(p);
 }
 
-Array<Control*> HeaderBar::get_children(ChildFilter) const {
+Array<const layout::Node*> HeaderBar::_get_children(ChildFilter) const {
 	return {grid_left, grid_right, button_close};
 }
 

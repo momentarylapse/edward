@@ -22,7 +22,7 @@ public:
 
 	Label header;
 	shared<Control> child;
-	Array<Control*> get_children(ChildFilter f) const override;
+	Array<const Node*> _get_children(ChildFilter f) const override;
 	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
 };

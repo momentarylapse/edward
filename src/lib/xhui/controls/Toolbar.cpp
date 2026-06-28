@@ -104,7 +104,7 @@ void Toolbar::from_resource(Resource *res) {
 			continue;
 		}
 
-		Control* item = get_children(ChildFilter::All).back();
+		auto item = get_children(ChildFilter::All).back();
 		for (const auto& o: cmd.options)
 			item->set_option(o.key, o.value);
 	}

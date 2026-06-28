@@ -45,11 +45,11 @@ void Group::remove_child(Control* c) {
 		child = nullptr;
 }
 
-Array<Control*> Group::get_children(ChildFilter f) const {
+Array<const layout::Node*> Group::_get_children(ChildFilter f) const {
 	if (child)
 		if (f == ChildFilter::All or child->visible)
-			return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
-	return {static_cast<Control*>(const_cast<Label*>(&header))};
+			return {&header, child.get()};
+	return {&header};
 }
 
 void Group::negotiate_content_area(const rect& available) {

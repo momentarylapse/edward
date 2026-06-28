@@ -21,7 +21,7 @@ public:
 	int get_int() override;
 	Array<int> get_selection() override;
 	void set_option(const string& key, const string& value) override;
-	Array<Control*> get_children(ChildFilter f) const override;
+	Array<const Node*> _get_children(ChildFilter f) const override;
 
 	void _update_selection(const Array<int>& sel);
 
@@ -70,13 +70,12 @@ public:
 	} selection_mode;
 
 	Array<int> selected;
-	//float view_y = 0;
 	bool show_headers = true;
 	float selection_radius;
 
 	bool show_selection = true;
 	bool sunken_background = true;
-	float cell_padding;
+	vec2 cell_padding;
 
 	int hover_row = -1;
 

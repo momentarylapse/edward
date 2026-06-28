@@ -311,7 +311,7 @@ void Panel::set_option(const string& key, const string& value) {
 
 
 
-Array<Control*> Panel::get_children(ChildFilter f) const {
+Array<const layout::Node*> Panel::_get_children(ChildFilter f) const {
 	if (top_control and (top_control->visible or f == ChildFilter::All))
 		return {top_control.get()};
 	return {};

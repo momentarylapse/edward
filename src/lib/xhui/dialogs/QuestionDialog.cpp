@@ -11,7 +11,7 @@
 
 namespace xhui {
 
-QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string& question, bool allow_cancel) : Dialog(title, 450, 120, parent) {
+QuestionDialog::QuestionDialog(Panel* parent, const string& title, const string& question, bool allow_cancel) : Dialog(title, 450, 140, parent) {
 	from_source(R"foodelim(
 Dialog question-dialog ''
 	Grid ? ''

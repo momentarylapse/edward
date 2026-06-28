@@ -82,6 +82,15 @@ rect Node::outer_area() const {
 	return {area.p00() - margin.p00(), area.p11() + margin.p11()};
 }
 
+Array<Node*> Node::get_children_recursive(bool include_me, ChildFilter f) const {
+	Array<Node*> r;
+	if (include_me)
+		r.add(const_cast<Node*>(this));
+	for (auto c: _get_children(f))
+		r.append(c->get_children_recursive(true, f));
+	return r;
+}
+
 void Node::set_option(const string& key, const string& value) {
 	if (key == "expandx") {
 		size_mode_x = SizeMode::Expand;

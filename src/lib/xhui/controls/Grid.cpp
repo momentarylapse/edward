@@ -52,11 +52,11 @@ void Grid::negotiate_content_area(const rect &available) {
 	grid.negotiate_content_area(available);
 }
 
-Array<Control*> Grid::get_children(ChildFilter f) const {
-	Array<Control*> r;
+Array<const layout::Node*> Grid::_get_children(ChildFilter f) const {
+	Array<const Node*> r;
 	for (auto& c: grid.children)
 		if (f == ChildFilter::All or c.node->visible)
-			r.add(static_cast<Control*>(c.node.get()));
+			r.add(c.node.get());
 	return r;
 }
 

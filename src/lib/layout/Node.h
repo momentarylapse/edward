@@ -33,8 +33,8 @@ public:
 //	virtual void add_child(shared<Node> c, int x, int y) {}
 //	virtual void remove_child(Node* c) {}
 
-//	virtual Array<Control*> get_children(ChildFilter f) const { return {}; }
-//	Array<Control*> get_children_recursive(bool include_me, ChildFilter f) const;
+	virtual Array<const Node*> _get_children(ChildFilter f) const { return {}; }
+	Array<Node*> get_children_recursive(bool include_me, ChildFilter f) const;
 
 	virtual void on_left_button_down(const vec2& m) {}
 	virtual void on_left_button_up(const vec2& m) {}

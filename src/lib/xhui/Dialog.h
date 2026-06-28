@@ -31,7 +31,7 @@ public:
 	~Dialog() override;
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect& available) override;
-	Array<Control*> get_children(ChildFilter f) const override;
+	Array<const Node*> _get_children(ChildFilter f) const override;
 	void _draw(Painter* p) override;
 
 	void on_key_down(int key) override;

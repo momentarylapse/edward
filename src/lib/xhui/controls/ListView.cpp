@@ -20,7 +20,7 @@ ListView::ListView(const string &_id, const string &t) :
 	column_offsets.resize(headers.num);
 	for (int i=0; i<headers.num; i++) {
 		column_factories.add({[this] (const string& id) {
-			return create_control("Label", format("!padding=%.1f", cell_padding), id);
+			return create_control("Label", format("!paddingx=%.1f,paddingy=%.1f", cell_padding.x, cell_padding.y), id);
 		}, [] (Control* c, const string& t) {
 			c->set_string(t);
 		}});
@@ -28,7 +28,7 @@ ListView::ListView(const string &_id, const string &t) :
 	cell_grid = new Grid(_id + ":grid");
 	cell_grid->padding = {0,0,0,0};//{7,7,4,4};
 	cell_grid->grid.spacing = 4;
-	cell_padding = 4;
+	cell_padding = {4, 4};
 	viewport.add_child(cell_grid, 0, 0);
 	viewport.size_mode_y = SizeMode::Fill;
 	viewport.ignore_hover = true;
@@ -286,11 +286,11 @@ void ListView::set_option(const string& key, const string& value) {
 		if (value == "compact") {
 			padding = {0,0,0,0};
 			selection_radius = 0;
-			cell_padding = 4;
+			cell_padding = {4, 4};
 		} else if (value == "larger") {
 			padding = {5, 5, 5, 5};
 			selection_radius = Theme::_default.button_radius;
-			cell_padding = 8;
+			cell_padding = {6, 9};
 		}
 	} else if (key == "spacing") {
 		cell_grid->grid.spacing = value._float();
@@ -307,8 +307,8 @@ void ListView::set_option(const string& key, const string& value) {
 	request_redraw();
 }
 
-Array<Control*> ListView::get_children(ChildFilter f) const {
-	return {(Control*)&viewport};
+Array<const layout::Node*> ListView::_get_children(ChildFilter f) const {
+	return {&viewport};
 }
 
 

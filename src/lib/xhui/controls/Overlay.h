@@ -20,7 +20,7 @@ public:
 	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect &available) override;
-	Array<Control*> get_children(ChildFilter) const override { return weak(children); }
+	Array<const Node*> _get_children(ChildFilter) const override { return weak_as<const Node>(children); }
 };
 
 }

@@ -93,8 +93,8 @@ Dialog::Dialog(const string& id, Panel* parent) : Dialog("", 400, 300, parent) {
 
 Dialog::~Dialog() = default;
 
-Array<Control*> Dialog::get_children(ChildFilter f) const {
-	Array<Control*> r;
+Array<const layout::Node*> Dialog::_get_children(ChildFilter f) const {
+	Array<const Node*> r;
 	r.add(outside.get());
 	if (header)
 		r.add(header.get());

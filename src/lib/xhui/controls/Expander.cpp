@@ -85,10 +85,10 @@ void Expander::remove_child(Control* c) {
 		child = nullptr;
 }
 
-Array<Control*> Expander::get_children(ChildFilter f) const {
+Array<const layout::Node*> Expander::_get_children(ChildFilter f) const {
 	if (child and (state == State::Expanded or f == ChildFilter::All))
-		return {static_cast<Control*>(const_cast<Label*>(&header)), child.get()};
-	return {static_cast<Control*>(const_cast<Label*>(&header))};
+		return {&header, child.get()};
+	return {&header};
 }
 
 void Expander::negotiate_content_area(const rect& available) {

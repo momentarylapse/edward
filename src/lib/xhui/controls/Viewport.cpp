@@ -102,7 +102,7 @@ void Viewport::negotiate_content_area(const rect &available) {
 	}
 }
 
-Array<Control*> Viewport::get_children(ChildFilter) const {
+Array<const layout::Node*> Viewport::_get_children(ChildFilter) const {
 	if (child)
 		return {child.get()};
 	return {};

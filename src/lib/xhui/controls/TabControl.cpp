@@ -90,8 +90,8 @@ vec2 TabControl::get_greed_factor() const {
 	return f;
 }
 
-Array<Control*> TabControl::get_children(ChildFilter f) const {
-	Array<Control*> children;
+Array<const layout::Node*> TabControl::_get_children(ChildFilter f) const {
+	Array<const Node*> children;
 	if (f == ChildFilter::All or show_header)
 		children.add(header.get());
 	for (const auto& [i, p]: enumerate(pages))

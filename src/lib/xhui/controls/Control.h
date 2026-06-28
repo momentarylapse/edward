@@ -10,11 +10,7 @@ class Window;
 class Dialog;
 class Panel;
 
-// using ChildFilter = layout::ChildFilter;
-enum class ChildFilter {
-	All,
-	OnlyActive
-};
+using ChildFilter = layout::ChildFilter;
 
 enum class ControlType {
 	SomeControl,
@@ -34,6 +30,8 @@ public:
 	~Control() override;
 
 	using SizeMode = layout::SizeMode;
+
+	Array<Control*> get_children(ChildFilter f);
 
 	void _register(Panel* owner);
 	void _unregister();
@@ -60,9 +58,7 @@ public:
 	virtual color get_color() { return Black; }
 	virtual Array<int> get_selection() { return {}; }
 	virtual void enable(bool enabled);
-	virtual void set_option(const string& key, const string& value);
-	virtual Array<Control*> get_children(ChildFilter f) const { return {}; }
-	Array<Control*> get_children_recursive(bool include_me, ChildFilter f) const;
+	void set_option(const string& key, const string& value) override;
 
 	void on_mouse_move(const vec2& m, const vec2& d) override;
 	virtual void on_key_down(int key) {}
