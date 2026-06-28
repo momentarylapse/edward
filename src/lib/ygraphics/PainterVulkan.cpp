@@ -15,8 +15,6 @@ using namespace vulkan;
 
 namespace ygfx {
 
-DescriptorSet* get_descriptor_set(Context* context, Texture* texture);
-
 struct Parameters {
 	mat4 matrix;
 	color col;
@@ -83,33 +81,41 @@ void Painter::draw_str(const vec2 &p, const string &str) {
 }
 
 
-void fill_rect(Painter* p, const rect& r, const color& _color, float radius, float softness) {
+void fill_rect(Painter* p, const rect& r, const color& _color, float radius, float softness, vulkan::DescriptorSet* dset, bool force_blending = false) {
 	Parameters params;
 	params.matrix = p->mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
 	params.col = _color;
-	params.size = {r.width(), r.height()};
-	params.radius = radius;
+	params.size = r.size() * p->ui_scale;
+	params.radius = radius * p->ui_scale;
 	params.softness = softness;
 
+	if (force_blending)
+		params.col.a *= 0.99f;
+
 	auto cb = p->cb;
-	if (radius > 0 or softness > 0 or _color.a < 1)
+	if (force_blending or radius > 0 or softness > 0 or _color.a < 1)
 		cb->bind_pipeline(p->aux->pipeline_alpha);
 	else
 		cb->bind_pipeline(p->aux->pipeline);
 	cb->push_constant(0, sizeof(params), &params);
-	cb->bind_descriptor_set(0, p->aux->dset);
+	cb->bind_descriptor_set(0, dset);
 	cb->draw(p->aux->vb);
 }
 
-void Painter::draw_rect(const rect &r) {
+void Painter::draw_rect(const rect& r) {
 	if (fill) {
-		fill_rect(this, r, _color, corner_radius, softness);
+		fill_rect(this, r, _color, corner_radius, softness, aux->dset);
 	} else {
 		draw_line({r.x1, r.y1}, {r.x2, r.y1});
 		draw_line({r.x1, r.y2}, {r.x2, r.y2});
 		draw_line({r.x1, r.y1}, {r.x1, r.y2});
 		draw_line({r.x2, r.y1}, {r.x2, r.y2});
 	}
+}
+
+void Painter::draw_rect_texture(const rect& r, Texture* tex) {
+	auto dset = aux->get_descriptor_set(tex);
+	fill_rect(this, r, _color, corner_radius, softness, dset, true);
 }
 
 

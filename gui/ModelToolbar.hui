@@ -6,11 +6,11 @@ Toolbar model-toolbar ""
 	Item /undo "Undo" image=undo
 	Item /redo "Redo" image=redo
 	Separator
-	Item view_push "Push" image=view-push "tooltip=Viewstage Push"
-	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
+	Item view_push "Push" image=view-push tooltip="Viewstage Push"
+	Item view_pop "Pop" image=view-pop tooltip="Viewstage Pop"
 	Separator
-	Item mesh-visible0 "Vis" checkable image=model-surface "tooltip=Visible mesh"
-	Item mesh-physical "Phys" checkable "tooltip=Physical mesh"
+	Item mesh-visible0 "Vis" checkable image=model-surface tooltip="Visible mesh"
+	Item mesh-physical "Phys" checkable tooltip="Physical mesh"
 	Separator
 	Item mode-mesh-geometry "Edit mesh geometry" checkable image=model-surface
 	Item mode-mesh-sculpt "Sculpting mode" checkable image=model-deform

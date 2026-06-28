@@ -1,5 +1,5 @@
 Dialog model-material-panel "Material" width=350 height=371
 	Grid ? "" vertical padding=7
 		Label header "Materials" big bold center expandx
-		ListView materials "Materials" nobar select-single expandy sunkenbackground=no showselection=no spacing=8 "tooltip=Materials\n - Actions via right click"
-		Button add "+" "tooltip=Add new material or load from file"
+		ListView materials "Materials" nobar select-single expandy sunkenbackground=no showselection=no spacing=8 tooltip="Materials\n - Actions via right click"
+		Button add "+" tooltip="Add new material or load from file"

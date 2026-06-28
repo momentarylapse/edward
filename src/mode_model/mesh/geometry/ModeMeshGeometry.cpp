@@ -68,11 +68,11 @@ public:
 		from_source(R"foodelim(
 Dialog mesh-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button mouse-action '' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
-		Button add-shape '+' 'tooltip=Add shape' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button align-to-grid 'A' 'tooltip=Align selected vertices to grid' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button bevel-edges 'B' 'tooltip=Bevel selected edges/vertices' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button extrude-polygons 'E' 'tooltip=Extrude selected polygons' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button mouse-action '' tooltip='Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-shape '+' tooltip='Add shape' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button align-to-grid 'A' tooltip='Align selected vertices to grid' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button bevel-edges 'B' tooltip='Bevel selected edges/vertices' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button extrude-polygons 'E' tooltip='Extrude selected polygons' height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this] {

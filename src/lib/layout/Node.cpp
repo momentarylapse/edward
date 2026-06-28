@@ -55,19 +55,19 @@ vec2 Node::get_effective_min_size() const {
 void Node::negotiate_content_area(const rect &available) {
 }
 
-void Node::negotiate_outer_area(const rect& available) {
-	area = {available.p00() + margin.p00(), available.p11() - margin.p11()};
+void Node::negotiate_outer_area(const rect& _available) {
+	const rect available = {_available.p00() + margin.p00(), _available.p11() - margin.p11()};
+	area = available;
 
 	if (size_mode_x != SizeMode::Expand or size_mode_y != SizeMode::Expand) {
 		const auto min_size = get_effective_min_size() - margin.p00() - margin.p11();
-		//if (size_mode_x == SizeMode::Expand)
 		if (size_mode_x == SizeMode::Shrink) {
-			area.x1 = available.center().x - min_size.x / 2;
-			area.x2 = available.center().x + min_size.x / 2;
+			area.x1 = available.x1 + align.x * (available.width() - min_size.x);
+			area.x2 = area.x1 + min_size.x;
 		}
 		if (size_mode_y == SizeMode::Shrink) {
-			area.y1 = available.center().y - min_size.y / 2;
-			area.y2 = available.center().y + min_size.y / 2;
+			area.y1 = available.y1 + align.y * (available.height() - min_size.y);
+			area.y2 = area.y1 + min_size.y;
 		}
 	}
 
@@ -92,7 +92,10 @@ Array<Node*> Node::get_children_recursive(bool include_me, ChildFilter f) const 
 }
 
 void Node::set_option(const string& key, const string& value) {
-	if (key == "expandx") {
+	if (key == "expand") {
+		size_mode_x = SizeMode::Expand;
+		size_mode_y = SizeMode::Expand;
+	} else if (key == "expandx") {
 		size_mode_x = SizeMode::Expand;
 		if (value._bool())
 			size_mode_x = SizeMode::Fill;
@@ -104,6 +107,12 @@ void Node::set_option(const string& key, const string& value) {
 		size_mode_x = SizeMode::Fill;
 	} else if (key == "noexpandy" or key == "filly") {
 		size_mode_y = SizeMode::Fill;
+	} else if (key == "fill") {
+		size_mode_x = SizeMode::Fill;
+		size_mode_y = SizeMode::Fill;
+	} else if (key == "shrink") {
+		size_mode_x = SizeMode::Shrink;
+		size_mode_y = SizeMode::Shrink;
 	} else if (key == "shrinkx") {
 		size_mode_x = SizeMode::Shrink;
 	} else if (key == "shrinky") {
@@ -120,6 +129,28 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "greedfactory") {
 		greed_factor.y = value._float();
 		size_mode_y = SizeMode::Expand;
+	} else if (key == "top") {
+		align.y = 0;
+		size_mode_y = SizeMode::Shrink;
+	} else if (key == "centery" or key == "centerv") {
+		align.y = 0.5f;
+		size_mode_y = SizeMode::Shrink;
+	} else if (key == "bottom") {
+		align.y = 1;
+		size_mode_y = SizeMode::Shrink;
+	} else if (key == "left") {
+		align.x = 0;
+		size_mode_x = SizeMode::Shrink;
+	} else if (key == "centerx" or key == "centerh") {
+		align.x = 0.5f;
+		size_mode_x = SizeMode::Shrink;
+	} else if (key == "right") {
+		align.x = 1;
+		size_mode_x = SizeMode::Shrink;
+	} else if (key == "center") {
+		align = {0.5f, 0.5f};
+		size_mode_x = SizeMode::Shrink;
+		size_mode_y = SizeMode::Shrink;
 	} else if (key == "padding") {
 		float f = value._float();
 		padding = {f, f, f, f};
@@ -140,10 +171,18 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "margin") {
 		float f = value._float();
 		margin = rect(f, f, f, f);
-	} else if (key == "hmargin" or key == "marginh" or key == "hmarginx") {
+	} else if (key == "hmargin" or key == "marginh" or key == "marginx") {
 		margin.x1 = margin.x2 = value._float();
-	} else if (key == "vmargin" or key == "marginv" or key == "hmarginy") {
+	} else if (key == "vmargin" or key == "marginv" or key == "marginy") {
 		margin.y1 = margin.y2 = value._float();
+	} else if (key == "margintop") {
+		margin.y1 = value._float();
+	} else if (key == "marginbottom") {
+		margin.y2 = value._float();
+	} else if (key == "marginleft") {
+		margin.x1 = value._float();
+	} else if (key == "marginright") {
+		margin.x2 = value._float();
 	} else if (key == "hidden") {
 		visible = false;
 	} else if (key == "visible") {

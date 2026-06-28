@@ -3,15 +3,15 @@ Dialog world_dialog "World properties" width=320
 		TabControl world_dialog_tab_control "Background\\Fog\\Physics\\Systems"
 			Grid ? "" vertical
 				Group grp_bg_color "Color"
-					ColorButton bgc "" alpha linear "tooltip=Sky color"
+					ColorButton bgc "" alpha linear tooltip="Sky color"
 				Group grp_skybox "Skybox models"
-					ListView skybox "#\\Model" "tooltip=Models drawn over the sky color\n- double click to select" reorderable style=rich-list
+					ListView skybox "#\\Model" tooltip="Models drawn over the sky color\n- double click to select" reorderable style=rich-list
 			Grid ? ""
 				Label t-fog-enabled "Enabled" right disabled
 				CheckBox fog-enabled "" expandx
 				---|
 				Label t-fog-distance "Distance" right disabled
-				SpinButton fog-distance "" range=0:1000000000:0.1 "tooltip=fog intensity = exp( - distance / viewing-distance )"
+				SpinButton fog-distance "" range=0:1000000000:0.1 tooltip="fog intensity = exp( - distance / viewing-distance )"
 				---|
 				Label t-fog-color "Color" right disabled
 				ColorButton fog-color "" linear
@@ -22,7 +22,7 @@ Dialog world_dialog "World properties" width=320
 						CheckBox physics_enabled "" expandx
 						---|
 						Label t-physics-mode "Mode" right disabled
-						ComboBox physics-mode "Simple\\Full (using Bullet)" expandx "tooltip=* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
+						ComboBox physics-mode "Simple\\Full (using Bullet)" expandx tooltip="* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
 				Group grp_gravitation "Gravity"
 					Grid ? ""
 						Label /x "X" right disabled
@@ -37,7 +37,7 @@ Dialog world_dialog "World properties" width=320
 						SpinButton gravitation_z "" range=::0.1
 						Label /luss "/s²"
 			Grid ? "" vertical
-				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle "tooltip=Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc."
+				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle tooltip="Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc."
 				Grid ? ""
-					Button add-system "" image=open "tooltip=Add system"
-					Button create-system "" image=new "tooltip=Create new system"
+					Button add-system "" image=open tooltip="Add system"
+					Button create-system "" image=new tooltip="Create new system"

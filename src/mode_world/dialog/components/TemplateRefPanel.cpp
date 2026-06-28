@@ -18,8 +18,8 @@ Dialog template-ref-panel ''
 	Grid main-grid ''
 		Grid ? ''
 			Label ? 'Template' right disabled
-			Button template '' 'tooltip=Select template' ellipsis expandx
-			Button edit 'E' paddingx=5  'tooltip=Edit template' noexpandx primary
+			Button template '' tooltip='Select template' ellipsis expandx
+			Button edit 'E' paddingx=5  tooltip='Edit template' noexpandx primary
 )foodelim");
 
 	auto e = data->entity(index);

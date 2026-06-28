@@ -25,19 +25,19 @@ Dialog world-object-list-dialog "" width=400 height=300
 			Group g-camera "Camera"
 				Grid ? ""
 					Label t-cam-fov "Field of view" right disabled
-					SpinButton cam-fov "" range=0:180:0.1 "tooltip=vertical viewing angle" expandx
+					SpinButton cam-fov "" range=0:180:0.1 tooltip="vertical viewing angle" expandx
 					---|
 					Label t-cam-min-depth "Min depth" right disabled
-					SpinButton cam-min-depth "" range=0:100000000:0.1 "tooltip=near clipping plane"
+					SpinButton cam-min-depth "" range=0:100000000:0.1 tooltip="near clipping plane"
 					---|
 					Label t-cam-max-depth "Max depth" right disabled
-					SpinButton cam-max-depth "" range=0:100000000:0.1 "tooltip=far clipping plane"
+					SpinButton cam-max-depth "" range=0:100000000:0.1 tooltip="far clipping plane"
 					---|
 					Label t-cam-exposure "Exposure" right disabled
-					SpinButton cam-exposure "" range=0:10:0.01 "tooltip=brightness scale"
+					SpinButton cam-exposure "" range=0:10:0.01 tooltip="brightness scale"
 					---|
 					Label t-cam-bloom-factor "Bloom factor" right disabled
-					SpinButton cam-bloom-factor "" range=0:10:0.01 "tooltip=bloom intensity"
+					SpinButton cam-bloom-factor "" range=0:10:0.01 tooltip="bloom intensity"
 			Group g-object "Object"
 				Grid ? ""
 					Label t-ob-name "Name" right disabled
@@ -68,10 +68,10 @@ Dialog world-object-list-dialog "" width=400 height=300
 						SpinButton light-radius "" range=0::0.1
 						---|
 						Label t-light-theta "Theta" right disabled
-						SpinButton light-theta "" range=0:180:0.1 "tooltip=cone opening angle"
+						SpinButton light-theta "" range=0:180:0.1 tooltip="cone opening angle"
 						---|
 						Label t-light-harshness "Harshness" right disabled
-						SpinButton light-harshness "" range=0:1:0.01 "tooltip=mixing diffuse and ambient parts"
+						SpinButton light-harshness "" range=0:1:0.01 tooltip="mixing diffuse and ambient parts"
 			Group g-link "Link" expandx
 				Grid ? "" expandx
 					Label t-link-type "Type" right disabled

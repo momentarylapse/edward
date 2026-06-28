@@ -18,8 +18,8 @@ Dialog model-panel ''
 	Grid main-grid ''
 		Grid ? ''
 			Label ? 'Model' right disabled
-			Button model '' 'tooltip=Select model' ellipsis expandx
-			Button edit 'E' paddingx=5  'tooltip=Edit model' noexpandx primary
+			Button model '' tooltip='Select model' ellipsis expandx
+			Button edit 'E' paddingx=5  tooltip='Edit model' noexpandx primary
 )foodelim");
 	material_selector = new MaterialSelector(data->session, data);
 

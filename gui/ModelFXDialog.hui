@@ -23,7 +23,7 @@ Dialog fx_dialog "Add a new effect..." width=470 height=205
 				Text fxt_soundfile "sound file"
 				Grid ? ""
 					Edit filename "" disabled expandx
-					Button search "" image=hui:open "tooltip=has to be mono!"
+					Button search "" image=hui:open tooltip="has to be mono!"
 				---|
 				Text fxt_soundrange "max. range"
 				Grid ? ""
@@ -45,7 +45,7 @@ Dialog fx_dialog "Add a new effect..." width=470 height=205
 				---|
 				Text fxt_force_intensity "density"
 				Grid ? ""
-					Edit intensity "" expandx "tooltip=attracting acceleration, Linear: maximum value, 1/r²: Value at r=100 lu"
+					Edit intensity "" expandx tooltip="attracting acceleration, Linear: maximum value, 1/r²: Value at r=100 lu"
 					Text /luss "/s²"
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel

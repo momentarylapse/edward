@@ -11,7 +11,7 @@ Menu
 # Resource
 Dialog
 ad_dialog
-width=680,height=590,allow-root
+width=680,height=590,allowroot
 0
 0
 1
@@ -1714,7 +1714,7 @@ disabled,expandx
 0
 Button
 find_rootdir
-image=,hui:open
+image=hui:open
 2
 0
 0
@@ -1768,7 +1768,7 @@ expandx
 0
 Button
 find_default_world
-image=,hui:open
+image=hui:open
 2
 0
 0
@@ -1786,7 +1786,7 @@ default_second_world
 0
 Button
 find_default_second_world
-image=,hui:open
+image=hui:open
 2
 1
 0
@@ -1804,7 +1804,7 @@ default_script
 0
 Button
 find_default_script
-image=,hui:open
+image=hui:open
 2
 2
 0
@@ -1822,7 +1822,7 @@ default_material
 0
 Button
 find_default_material
-image=,hui:open
+image=hui:open
 2
 3
 0
@@ -1840,7 +1840,7 @@ default_font
 0
 Button
 find_default_font
-image=,hui:open
+image=hui:open
 2
 4
 0
@@ -2276,7 +2276,7 @@ image=hui:about
 # Resource
 Dialog
 material-panel
-width=365,height=715,allow-root
+width=365,height=715,allowroot
 0
 0
 1
@@ -2342,7 +2342,7 @@ vertical
 2
 ListView
 passes
-nobar,select-single,sunkenbackground=no,showselection=no,spacing=8,expandy
+nobar,selectsingle,sunkenbackground=no,showselection=no,spacing=8,expandy
 0
 0
 0
@@ -2565,7 +2565,7 @@ grp-textures
 1
 ListView
 textures
-height=150,nobar,format=it,select-single,style=compact
+height=150,nobar,format=it,selectsingle,style=compact
 0
 0
 0
@@ -3489,7 +3489,7 @@ nobar
 # Resource
 Dialog
 deformation_cylinder_dialog
-width=400,height=250,allow-root
+width=400,height=250,allowroot
 0
 0
 1
@@ -3538,7 +3538,7 @@ image=hui:ok
 # Resource
 Dialog
 deformation_function_dialog
-width=400,height=250,allow-root
+width=400,height=250,allowroot
 0
 0
 1
@@ -3690,7 +3690,7 @@ vertical
 2
 TabControl
 fx_tab_control
-xxx-nobar
+xxxnobar
 0
 0
 4
@@ -5248,7 +5248,7 @@ big,bold,center,expandx
 0
 ListView
 materials
-nobar,select-single,expandy,sunkenbackground=no,showselection=no,spacing=8
+nobar,selectsingle,expandy,sunkenbackground=no,showselection=no,spacing=8
 1
 0
 0
@@ -5328,7 +5328,7 @@ Grid
 2
 ListView
 material_list
-nobar,format=it,select-single
+nobar,format=it,selectsingle
 0
 0
 0
@@ -6046,7 +6046,7 @@ noexpandx
 # Resource
 Dialog
 new_cube_dialog
-allow-root,width=200,noexpandx
+allowroot,width=200,noexpandx
 0
 0
 1
@@ -6137,7 +6137,7 @@ noexpandx
 # Resource
 Dialog
 new_cylinder_dialog
-allow-root,width=200,noexpandx
+allowroot,width=200,noexpandx
 0
 0
 1
@@ -6228,7 +6228,7 @@ noexpandx
 # Resource
 Dialog
 new_plane_dialog
-width=100,height=50,allow-root
+width=100,height=50,allowroot
 0
 0
 1
@@ -6386,7 +6386,7 @@ noexpandx
 # Resource
 Dialog
 new_teapot_dialog
-width=100,height=50,allow-root
+width=100,height=50,allowroot
 0
 0
 1
@@ -6417,7 +6417,7 @@ range=1:,expandx
 # Resource
 Dialog
 new_torus_dialog
-width=200,height=50,allow-root
+width=200,height=50,allowroot
 0
 0
 1
@@ -9087,7 +9087,7 @@ range=1:4096,expandx
 0
 Grid
 ?
-button-bar
+buttonbar
 1
 0
 2
@@ -10801,7 +10801,7 @@ icons
 # Resource
 Dialog
 world_camera_dialog
-width=719,height=160,allow-root
+width=719,height=160,allowroot
 0
 0
 1
@@ -11935,7 +11935,7 @@ image=hui:about
 # Resource
 Dialog
 world_new_object_dialog
-width=390,height=75,allow-parent
+width=390,height=75,allowparent
 0
 0
 1

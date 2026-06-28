@@ -6,8 +6,8 @@ Toolbar world-toolbar ""
 	Item /undo "Undo" image=undo
 	Item /redo "Redo" image=redo
 	Separator
-	Item view_push "Push" image=view-push "tooltip=Viewstage Push"
-	Item view_pop "Pop" image=view-pop "tooltip=Viewstage Pop"
+	Item view_push "Push" image=view-push tooltip="Viewstage Push"
+	Item view_pop "Pop" image=view-pop tooltip="Viewstage Pop"
 	Separator
 	Item mode_world "Objects and terrains" checkable image=model-surface
 	Item mode_world_terrain "Height map" checkable image=terrain disabled

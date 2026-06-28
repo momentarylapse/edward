@@ -19,9 +19,9 @@ Dialog material-render-pass-dialog "Render pass" width=400 height=400 headerbar 
 				CheckBox alpha_z_buffer "Z-buffer enabled"
 		Group t-culling "Sides visible"
 			Grid ? "" expandx
-				RadioButton cull:back "Front" "tooltip=Only front side of triangles visible" expandx
-				RadioButton cull:front "Back" "tooltip=Only back side of triangles visible" expandx
-				RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible" expandx
+				RadioButton cull:back "Front" tooltip="Only front side of triangles visible" expandx
+				RadioButton cull:front "Back" tooltip="Only back side of triangles visible" expandx
+				RadioButton cull:none "Both" tooltip="Front and back side of triangles visible" expandx
 		Grid ? "" buttonbar
 			Button /cancel "Cancel" image=hui:cancel
 			---|

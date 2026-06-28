@@ -32,9 +32,9 @@ Dialog entity-panel '' padding=0
 		ListView components 'c' nobar sunkenbackground=no showselection=no selectsingle spacing=8
 		---|
 		Grid ? ""
-			Button create-new-component '' 'tooltip=Create a new component class to add to this entity' noexpandx image=new
-			Button add-component '' 'tooltip=Select a component class to add to this entity' noexpandx image=open
-			Button save-template '' 'tooltip=Save current components as template' noexpandx image=save
+			Button create-new-component '' tooltip='Create a new component class to add to this entity' noexpandx image=new
+			Button add-component '' tooltip='Select a component class to add to this entity' noexpandx image=open
+			Button save-template '' tooltip='Save current components as template' noexpandx image=save
 )foodelim");
 
 	auto component_list = (xhui::ListView*)get_control("components");

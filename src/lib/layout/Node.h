@@ -60,6 +60,7 @@ public:
 
 	float min_width_user, min_height_user;
 	SizeMode size_mode_x, size_mode_y;
+	vec2 align = vec2(0.5f, 0.5f); // (0,0)=top-left (1,1)=bottom-right
 	vec2 greed_factor = vec2(1, 1); // if expanding...
 	bool visible = true;
 	rect padding; // space "inside", around children/content

@@ -47,6 +47,7 @@ VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
 }
 
 TextCache& DrawingHelperData::get_text_cache(const string& text, font::Face* face, float font_size, float ui_scale) {
+	font_size *= ui_scale;
 	for (auto& tc: text_caches)
 		if (tc.text == text and tc.face == face and tc.font_size == font_size) {
 			tc.age = 0;
@@ -71,13 +72,15 @@ TextCache& DrawingHelperData::get_text_cache(const string& text, font::Face* fac
 	tc->face = face;
 	tc->age = 0;
 	Image im;
+	face->set_size(font_size);
 	face->render_text(text, font::Align::LEFT, im);
-	tc->texture->write(im);
-	tc->texture->set_options("minfilter=nearest,wrap=clamp");
-	// fractional coordinates (especially with ui_scale)... not sure what to do m(-_-)m
-	tc->texture->set_options("minfilter=nearest,magfilter=nearest,wrap=clamp");
+	if (im.width * im.height > 0) {
+		tc->texture->write(im);
+		tc->texture->set_options("minfilter=nearest,wrap=clamp");
+		// fractional coordinates (especially with ui_scale)... not sure what to do m(-_-)m
+		tc->texture->set_options("minfilter=nearest,magfilter=nearest,wrap=clamp");
+	}
 
-	face->set_size(font_size * ui_scale);
 	tc->dimensions = face->get_text_dimensions(text);
 
 #if HAS_LIB_VULKAN
@@ -106,6 +109,7 @@ void DrawingHelperData::iterate_text_caches() {
 
 
 font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale) {
+	font_size *= ui_scale;
 	// already in cache?
 	for (auto& tc: text_dimensions_caches)
 		if (tc.text == text and tc.face == face and tc.font_size == font_size) {
@@ -126,7 +130,7 @@ font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face*
 	tc->font_size = font_size;
 	tc->face = face;
 	tc->age = 0;
-	face->set_size(font_size * ui_scale);
+	face->set_size(font_size);
 	tc->dimensions = face->get_text_dimensions(text);
 	return tc->dimensions;
 }

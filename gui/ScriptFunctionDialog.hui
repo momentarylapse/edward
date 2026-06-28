@@ -10,7 +10,7 @@ Dialog world_scriptfunc_dialog "Script function" width=335 height=145
 			ComboBox location "CalcMove 1\\CalcMove 2\\Render 1\\Render 2\\Render 3\\GetInput 1\\GetInput 2"
 			---|
 			Text t_delay "Pseudo delay:"
-			Edit level "0" "tooltip=influences order"
+			Edit level "0" tooltip="influences order"
 		---|
 		Grid ? "" buttonbar
 			Button /delete "Delete" image=hui:delete

@@ -21,8 +21,8 @@ public:
 		from_source(R"foodelim(
 Dialog mesh-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button normal_this_hard 'F' 'tooltip=Make selected polygons flat' height=50 width=50 padding=7 noexpandx ignorefocus
-		Button normal_this_smooth 'S' 'tooltip=Make selected polygons smooth / rounded' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button normal_this_hard 'F' tooltip='Make selected polygons flat' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button normal_this_smooth 'S' tooltip='Make selected polygons smooth / rounded' height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 	}
 };

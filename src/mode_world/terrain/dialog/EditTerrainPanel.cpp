@@ -29,11 +29,11 @@ Dialog edit-terrain-panel ''
 		Grid ? '' class=card
 			Group ? 'Texture mapping'
 				Grid ? ''
-					SpinButton tex0-scale '' 'tooltip=Texture scale layer #0' range=-999:999:0.01 expandx
-					SpinButton tex0-rotation '' 'tooltip=Texture rotation layer #0' range=-999:999:0.1 expandx
+					SpinButton tex0-scale '' tooltip='Texture scale layer #0' range=-999:999:0.01 expandx
+					SpinButton tex0-rotation '' tooltip='Texture rotation layer #0' range=-999:999:0.1 expandx
 					---|
-					SpinButton tex1-scale '' 'tooltip=Texture scale layer #1' range=-999:999:0.01
-					SpinButton tex1-rotation '' 'tooltip=Texture rotation layer #1' range=-999:999:0.1
+					SpinButton tex1-scale '' tooltip='Texture scale layer #1' range=-999:999:0.01
+					SpinButton tex1-rotation '' tooltip='Texture rotation layer #1' range=-999:999:0.1
 		---|
 		Grid ? '' class=card
 			Group ? 'Operations'
@@ -42,8 +42,8 @@ Dialog edit-terrain-panel ''
 					---|
 					Button load-heightmap 'Load heightmap...'
 					---|
-					Button save '' image=hui:save 'tooltip=Save'
-					Button save-as '' image=hui:save-as 'tooltip=Save as'
+					Button save '' image=hui:save tooltip='Save'
+					Button save-as '' image=hui:save-as tooltip='Save as'
 )foodelim");
 
 	event("resize", [this] {

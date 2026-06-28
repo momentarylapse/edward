@@ -114,7 +114,7 @@ void main() {
 		out_color.a *= 1 - clamp((length(pp) - params.radius) / params.softness, 0, 1);
 	} else {
 		vec2 pp = (abs(in_uv - 0.5) * params.size - (0.5*params.size-params.radius));
-		pp = clamp(pp, 0, 1000);
+		pp = clamp(pp, 0, 10000);
 		out_color.a *= 1 - clamp((length(pp) - params.radius), 0, 1);
 	}
 }

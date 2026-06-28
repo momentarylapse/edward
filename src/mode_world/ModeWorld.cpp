@@ -145,7 +145,7 @@ public:
 		from_source(R"foodelim(
 Dialog world-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
-		Button mouse-action 'T' 'tooltip=Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button mouse-action 'T' tooltip='Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this] {

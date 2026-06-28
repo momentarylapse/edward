@@ -21,10 +21,10 @@ Dialog terrain_dialog "Terrain properties" width=500 height=450 resizable header
 				ListView textures "Level\\Size X\\Size Z\\\\File" format=tTTit expandy
 				---|
 				Grid ? ""
-					Button add_texture_level "" image=hui:new "tooltip=Add new (empty) texture level"
-					Button delete_texture_level "" image=hui:delete "tooltip=Delete selected texture level"
-					Button clear_texture_level "" image=hui:clear "tooltip=Clear selected texture level - remove texture but keep empty level"
-					Button texture_map_complete "" image=hui:zoom-fit "tooltip=1:1 mapping - texture spans the whole terrain once"
+					Button add_texture_level "" image=hui:new tooltip="Add new (empty) texture level"
+					Button delete_texture_level "" image=hui:delete tooltip="Delete selected texture level"
+					Button clear_texture_level "" image=hui:clear tooltip="Clear selected texture level - remove texture but keep empty level"
+					Button texture_map_complete "" image=hui:zoom-fit tooltip="1:1 mapping - texture spans the whole terrain once"
 			Grid ? ""
 				CheckBox default_material "use default material"
 				---|

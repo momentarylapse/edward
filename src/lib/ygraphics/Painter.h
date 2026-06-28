@@ -60,6 +60,9 @@ public:
 		return _area;
 	}
 
+	void set_font_face(font::Face* f);
+	void draw_rect_texture(const rect& r, Texture* tex);
+
 	rect _area;
 	rect native_area;
 	rect native_area_window;

@@ -32,6 +32,8 @@ struct Resource {
 	void show(int indent = 0) const;
 	string to_string(int indent = 0) const;
 	string _options_str() const;
+
+	static Resource parse(const string& buffer, bool auto_title=true, bool literal=false);
 };
 
 Resource parse_resource(const string& buffer, bool literal = false);

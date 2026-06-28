@@ -23,8 +23,8 @@ string Option::value_or(const string& default_value) const {
 Option Option::parse(const string& s) {
 	int p = s.find("=");
 	if (p > 0)
-		return {s.head(p), s.sub(p + 1)};
-	return {s, ""};
+		return {s.head(p).replace("-", ""), s.sub(p + 1)};
+	return {s.replace("-", ""), ""};
 }
 
 string Resource::_options_str() const {
@@ -121,14 +121,50 @@ int res_get_indent(const string& line) {
 	return indent;
 }
 
-bool res_load_line(const string &l, Resource &c, bool literally) {
+// a='b' -> 'a=b' :P
+string make_string_values_parsable(const string& s) {
+	string r = s;
+	int pos = r.num;
+	while (true) {
+		int p1 = r.rfind("='", pos);
+		int p2 = r.rfind("=\"", pos);
+		if (p1 < 0 and p2 < 0)
+			break;
+		if (p1 > p2) {
+			if (r[p1+2] == '\'') {
+				// allow a=''
+				pos = p1-1;
+				continue;
+			}
+			int p0 = r.rfind(" ", p1);
+			if (p0 < 0)
+				break;
+			r = r.head(p0) + " '" + r.sub_ref(p0+1, p1) + "=" + r.sub_ref(p1+2);
+		} else {
+			if (r[p2+2] == '\"') {
+				// allow a=""
+				pos = p2-1;
+				continue;
+			}
+			int p0 = r.rfind(" ", p2);
+			if (p0 < 0)
+				break;
+			r = r.head(p0) + " \"" + r.sub_ref(p0+1, p2) + "=" + r.sub_ref(p2+2);
+		}
+	}
+	return r;
+}
+
+bool res_load_line(const string &l, Resource &c, bool literally, bool auto_title) {
 	// parse line
-	auto tokens = l.parse_tokens();
+	auto tokens = make_string_values_parsable(l).parse_tokens();
 	if (tokens.num == 0)
 		return false;
 
 	c.x = 0;
 	c.y = 0;
+
+	int n_expected = auto_title ? 3 : 2;
 
 	// id
 	string id;
@@ -146,24 +182,22 @@ bool res_load_line(const string &l, Resource &c, bool literally) {
 		c.type = tokens[0];
 		return true;
 	}
-	if (tokens.num < 3)
+	if (tokens.num < n_expected)
 		return false;
 
 	// interpret tokens
 	c.type = tokens[0];
-	/*if (cur_indent == 0)
-		c.type = "Dialog";*/
 	c.id = id;
-	c.title = tokens[2];
-	int n_used = 3;
-	for (int i=n_used; i<tokens.num; i++)
+	if (auto_title)
+		c.title = tokens[2];
+	for (int i=n_expected; i<tokens.num; i++)
 		c.options.add(Option::parse(tokens[i]));
 	return true;
 }
 
-bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literally) {
+bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literally, bool auto_title) {
 	int cur_indent = res_get_indent(lines[cur_line]);
-	bool r = res_load_line(lines[cur_line], c, literally);
+	bool r = res_load_line(lines[cur_line], c, literally, auto_title);
 	cur_line ++;
 
 	if (c.type == "Grid") {
@@ -187,7 +221,7 @@ bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literal
 			}
 
 			Resource child;
-			if (res_load_rec(lines, cur_line, child, literally)) {
+			if (res_load_rec(lines, cur_line, child, literally, auto_title)) {
 				child.x = x;
 				child.y = y;
 				c.children.add(child);
@@ -206,7 +240,7 @@ bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literal
 		if (indent <= cur_indent)
 			break;
 		Resource child;
-		if (res_load_rec(lines, cur_line, child, literally)) {
+		if (res_load_rec(lines, cur_line, child, literally, auto_title)) {
 			child.x = n;
 			c.children.add(child);
 		}
@@ -215,7 +249,7 @@ bool res_load_rec(Array<string> &lines, int &cur_line, Resource &c, bool literal
 	return r;
 }
 
-Resource parse_resource(const string &buffer, bool literally) {
+Resource Resource::parse(const string &buffer, bool auto_title, bool literally) {
 	Resource r;
 	auto lines = buffer.explode("\n");
 	for (int i=lines.num-1; i>=0; i--)
@@ -223,8 +257,12 @@ Resource parse_resource(const string &buffer, bool literally) {
 			lines.erase(i);
 	int cur_line = 0;
 
-	res_load_rec(lines, cur_line, r, literally);
+	res_load_rec(lines, cur_line, r, literally, auto_title);
 	return r;
+}
+
+Resource parse_resource(const string &buffer, bool literally) {
+	return Resource::parse(buffer, true, literally);
 }
 
 }

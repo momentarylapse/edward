@@ -148,21 +148,21 @@ Dialog camera-panel ''
 	Grid ? ''
 		Grid ? ''
 			Label ? 'Min distance' right disabled
-			SpinButton z-min '' 'tooltip=Minimum rendering distance' range=0::0.001 expandx
+			SpinButton z-min '' tooltip='Minimum rendering distance' range=0::0.001 expandx
 			---|
 			Label ? 'Max distance' right disabled
-			SpinButton z-max '' 'tooltip=Maximum rendering distance' range=0::0.001
+			SpinButton z-max '' tooltip='Maximum rendering distance' range=0::0.001
 			---|
 			Label ? 'Field of view' right disabled
-			SpinButton fov '' 'tooltip=Vertical opening angle' range=0:180:0.1
+			SpinButton fov '' tooltip='Vertical opening angle' range=0:180:0.1
 			Label ? '°'
 			---|
 			Label ? 'Focal length' right disabled
-			SpinButton focal-length '' 'tooltip=Equivalent focal length of a lens on a 35mm "full frame" photo camera' range=1::0.1
+			SpinButton focal-length '' tooltip='Equivalent focal length of a lens on a 35mm "full frame" photo camera' range=1::0.1
 			Label ? 'mm'
 			---|
 			Label ? 'Exposure' right disabled
-			SpinButton exposure '' 'tooltip=Brightness scaling factor' range=0:100:0.001
+			SpinButton exposure '' tooltip='Brightness scaling factor' range=0:100:0.001
 		---|
 		Group g-preview 'Preview'
 			DrawingArea preview '' height=220

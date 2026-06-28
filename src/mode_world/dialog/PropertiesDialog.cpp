@@ -39,8 +39,8 @@ Dialog system 'System'
 				---|
 				Grid ? ''
 					Label ? '' expandx
-					Button edit 'Edit code' 'tooltip=Edit script file that defines this system class' primary noexpandx
-					Button delete 'Delete' 'tooltip=Remove system' danger noexpandx
+					Button edit 'Edit code' tooltip='Edit script file that defines this system class' primary noexpandx
+					Button delete 'Delete' tooltip='Remove system' danger noexpandx
 )foodelim");
 		event("delete", [this] {
 			if (index >= 0) {

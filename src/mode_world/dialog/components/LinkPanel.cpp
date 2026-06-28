@@ -13,13 +13,13 @@ LinkPanel::LinkPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_dat
 Dialog link-panel ''
 	Grid ? ''
 		Label ? 'Type' right disabled
-		ComboBox type 'None\\Socket\\Hinge\\Universal\\Spring\\Slider' 'tooltip=Type of physical link/joint' expandx
+		ComboBox type 'None\\Socket\\Hinge\\Universal\\Spring\\Slider' tooltip='Type of physical link/joint' expandx
 		---|
 		Label ? 'Entity 1' right disabled
-		SpinButton a '' 'tooltip=Index of first attached entity (needs a RigidBody component)' range=0::
+		SpinButton a '' tooltip='Index of first attached entity (needs a RigidBody component)' range=0::
 		---|
 		Label ? 'Entity 2' right disabled
-		SpinButton b '' 'tooltip=Index of second attached entity (needs a RigidBody component)' range=0::
+		SpinButton b '' tooltip='Index of second attached entity (needs a RigidBody component)' range=0::
 )foodelim");
 
 	event("type", [this] { on_edit(); });

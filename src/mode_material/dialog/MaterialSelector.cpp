@@ -15,8 +15,8 @@ Dialog material-selector ''
 	Grid ? ''
 		Grid ? ''
 			Image preview '' width=48 height=48 noexpandx
-			Button material '' 'tooltip=Select a material' expandx shrinky
-			ToggleButton edit-internal 'E' paddingx=5 'tooltip=Edit material' primary noexpandx shrinky
+			Button material '' tooltip='Select a material' expandx shrinky
+			ToggleButton edit-internal 'E' paddingx=5 tooltip='Edit material' primary noexpandx shrinky
 		---|
 		Expander expander ''
 			Grid editor-grid ''
@@ -24,8 +24,8 @@ Dialog material-selector ''
 				---|
 				Grid ? ''
 					Label ? '' expandx
-					Button save 'Save' 'tooltip=Save material'
-					Button edit 'Edit' primary 'tooltip=Fully edit material'
+					Button save 'Save' tooltip='Save material'
+					Button edit 'Edit' primary tooltip='Fully edit material'
 )foodelim");
 	data = _data;
 	session = s;

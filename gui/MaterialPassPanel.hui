@@ -15,9 +15,9 @@ Dialog material-pass-panel "Pass"
 					---|
 					Label l-cull "Visible" disabled right
 					Grid ? "" spacing=0
-						RadioButton cull:back "Front" "tooltip=Only front side of triangles visible"
-						RadioButton cull:front "Back" "tooltip=Only back side of triangles visible"
-						RadioButton cull:none "Both" "tooltip=Front and back side of triangles visible"
+						RadioButton cull:back "Front" tooltip="Only front side of triangles visible"
+						RadioButton cull:front "Back" tooltip="Only back side of triangles visible"
+						RadioButton cull:none "Both" tooltip="Front and back side of triangles visible"
 					---|
 					Label l-z-buffer "Z buffer" disabled right
 					Grid ? ""
