@@ -9,32 +9,33 @@
 #include <cmath>
 
 
+
 namespace ygfx {
 
 Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& area, float _ui_scale, font::Face* _face) {
 	aux = _aux;
-	if (aux)
-		context = aux->context;
 	this->_area = area;
 	this->native_area = native_area;
 	this->native_area_window = native_area;
 	width = (int)area.width();
 	height = (int)area.height();
 	_clip = _area;
-	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / area.width(), 2.0f / area.height(), 1);
-
 	ui_scale = _ui_scale;
 	face = _face;
+	mat_pixel_to_rel = mat4::translation({-1,-1, 0}) *  mat4::scale(2/area.width(), 2/area.height(), 1);
+#ifdef USING_OPENGL
+	// direct to window? -> flip etc
+	mat_pixel_to_rel = mat4::translation(vec3(-1,1,0)) * mat4::scale(2/area.width(), -2/area.height(), 2);
+#endif
 
 	if (aux) {
+		context = aux->context;
 		Painter::set_color(White);
 		Painter::set_font("", min(16.0f, 100.0f / ui_scale), false, false);
-	}
-
 #ifdef USING_VULKAN
-	if (aux)
 		cb = aux->cb;
 #endif
+	}
 }
 
 void Painter::set_color(const color &c) {
@@ -68,6 +69,10 @@ void Painter::set_shader(Shader* s) {
 	user_shader = s;
 }
 
+void Painter::set_shader_data(const Any& data) {
+	user_shader_data = data;
+}
+
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 	if (font != "")
 		font_name = font;
@@ -98,9 +103,20 @@ void Painter::set_roundness(float radius) {
 }
 
 void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
-	//float w = (w0 + w1) / 2;
-	draw_line({p.x + r * cosf(w0), p.y - r * sinf(w0)}, {p.x + r * cosf(w1), p.y - r * sinf(w1)});
-	//draw_line({p.x + r * cos(w), p.y - r * sin(w)}, {p.x + r * cos(w1), p.y - r * sin(w1)});
+	if (w0 > w1)
+		std::swap(w0, w1);
+	if (r * ui_scale > 4) {
+		int n = clamp((int)(r * ui_scale / 3), 2, 30);
+		Array<vec2> points;
+		points.resize(n + 1);
+		for (int i=0; i<=n; i++) {
+			float w = w0 + (w1 - w0) * (float)i / (float)n;
+			points[i] = {p.x + r * cosf(w), p.y - r * sinf(w)};
+		}
+		draw_lines(points);
+	} else {
+		draw_line({p.x + r * cosf(w0), p.y - r * sinf(w0)}, {p.x + r * cosf(w1), p.y - r * sinf(w1)});
+	}
 }
 
 void Painter::draw_circle(const vec2& p, float radius) {

@@ -12,18 +12,12 @@
 
 namespace xhui {
 
-Painter::Painter(Context* c, Window* window, const rect& native_area, const rect& area) : ygfx::Painter(c ? c->aux : nullptr, native_area, area, 1.0f, default_font_regular) {
+Painter::Painter(Context* c, Window* window, const rect& native_area, const rect& area) :
+	ygfx::Painter(c ? c->aux : nullptr, native_area, area, window ? window->ui_scale : 1.0f, default_font_regular)
+{
 	this->context = c;
-	this->_area = area;
-	this->native_area = native_area;
-	this->native_area_window = native_area;
-	width = (int)area.width();
-	height = (int)area.height();
-	_clip = _area;
-	mat_pixel_to_rel = mat4::translation({- 1,- 1, 0}) *  mat4::scale(2.0f / (float)width, 2.0f / (float)height, 1);
 
 	if (window) {
-		ui_scale = window->ui_scale;
 		context = window->context;
 		face = default_font_regular;
 

@@ -89,11 +89,10 @@ void fill_rect(Painter* p, const rect& r, const color& _color, float radius, flo
 	params.radius = radius * p->ui_scale;
 	params.softness = softness;
 
-	if (force_blending)
-		params.col.a *= 0.99f;
-
 	auto cb = p->cb;
-	if (force_blending or radius > 0 or softness > 0 or _color.a < 1)
+	if (radius > 0 or softness > 0)
+		cb->bind_pipeline(p->aux->pipeline_round);
+	else if (force_blending or _color.a < 1)
 		cb->bind_pipeline(p->aux->pipeline_alpha);
 	else
 		cb->bind_pipeline(p->aux->pipeline);
@@ -111,10 +110,21 @@ void Painter::draw_rect(const rect& r) {
 			fill_rect(this, r, _color, corner_radius, softness, aux->dset);
 		}
 	} else {
-		draw_line({r.x1, r.y1}, {r.x2, r.y1});
-		draw_line({r.x1, r.y2}, {r.x2, r.y2});
-		draw_line({r.x1, r.y1}, {r.x1, r.y2});
-		draw_line({r.x2, r.y1}, {r.x2, r.y2});
+		if (corner_radius > 0) {
+			draw_line({r.x1 + corner_radius, r.y1}, {r.x2 - corner_radius, r.y1});
+			draw_line({r.x1 + corner_radius, r.y2}, {r.x2 - corner_radius, r.y2});
+			draw_line({r.x1, r.y1 + corner_radius}, {r.x1, r.y2 - corner_radius});
+			draw_line({r.x2, r.y1 + corner_radius}, {r.x2, r.y2 - corner_radius});
+			draw_arc({r.x1 + corner_radius, r.y1 + corner_radius}, corner_radius, pi/2, pi);
+			draw_arc({r.x2 - corner_radius, r.y1 + corner_radius}, corner_radius, 0, pi/2);
+			draw_arc({r.x1 + corner_radius, r.y2 - corner_radius}, corner_radius, -pi/2, -pi);
+			draw_arc({r.x2 - corner_radius, r.y2 - corner_radius}, corner_radius, 0, -pi/2);
+		} else {
+			draw_line({r.x1, r.y1}, {r.x2, r.y1});
+			draw_line({r.x1, r.y2}, {r.x2, r.y2});
+			draw_line({r.x1, r.y1}, {r.x1, r.y2});
+			draw_line({r.x2, r.y1}, {r.x2, r.y2});
+		}
 	}
 }
 

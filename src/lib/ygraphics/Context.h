@@ -28,18 +28,21 @@ struct TextCache {
 struct DrawingHelperData {
 	explicit DrawingHelperData(Context*);
 	void create_basic();
+	void _create_basic_internal();
 #ifdef USING_VULKAN
 	void rebuild(RenderPass* render_pass);
 #endif
 	Context* context;
 	VertexBuffer* vb = nullptr;
 	Shader* shader = nullptr;
+	Shader* shader_round = nullptr;
 	Shader* shader_lines = nullptr;
 #ifdef USING_VULKAN
 	vulkan::CommandBuffer* cb = nullptr;
 	vulkan::GraphicsPipeline* pipeline = nullptr;
 	vulkan::GraphicsPipeline* pipeline_z = nullptr;
 	vulkan::GraphicsPipeline* pipeline_alpha = nullptr;
+	vulkan::GraphicsPipeline* pipeline_round = nullptr;
 	vulkan::GraphicsPipeline* pipeline_lines = nullptr;
 	vulkan::DescriptorPool* pool = nullptr;
 
@@ -53,7 +56,6 @@ struct DrawingHelperData {
 #else
 	Texture* tex_text = nullptr;
 	Texture* tex_xxx = nullptr;
-	Shader* shader_round = nullptr;
 #endif
 
 	Array<VertexBuffer*> line_vbs;
@@ -61,7 +63,7 @@ struct DrawingHelperData {
 	Array<VertexBuffer*> line_vbs_with_color;
 	int num_line_vbs_with_color_used = 0;
 	VertexBuffer* get_line_vb(bool with_color = false);
-	mat4* projection_matrix = nullptr;
+	const mat4* projection_matrix = nullptr;
 
 	void reset_frame();
 
@@ -85,6 +87,7 @@ public:
 #else
 	nix::Context* ctx = nullptr;
 #endif
+	Shader* create_shader(const string& source) const;
 
 	void make_current();
 

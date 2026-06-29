@@ -34,6 +34,7 @@ public:
 	bool use_blending = false;
 	rect area;
 	mat4 mat;
+	mat4 dummy_projection;
 
 	ygfx::DrawingHelperData* aux = nullptr;
 	RenderViewData* rvd = nullptr;

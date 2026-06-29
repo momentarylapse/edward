@@ -19,6 +19,7 @@ void LineHelper::begin_draw(const RenderParams& params, RenderViewData& _rvd) {
 	rvd = &_rvd;
 	if (!aux)
 		aux = _rvd.ctx->context->_create_auxiliary_stuff();
+	dummy_projection = mat4::ID;
 #ifdef USING_VULKAN
 	if (params.render_pass != render_pass) {
 		aux->rebuild(params.render_pass);
@@ -26,14 +27,12 @@ void LineHelper::begin_draw(const RenderParams& params, RenderViewData& _rvd) {
 	}
 	aux->cb = params.command_buffer;
 #else
-	nix::set_view_matrix(mat4::ID);
 	if (params.target_is_window)
-		nix::set_projection_matrix(mat4::scale(1,-1,1));
-	else
-		nix::set_projection_matrix(mat4::ID);
+		dummy_projection = mat4::scale(1,-1,1);
 #endif
 	area = params.area;
 	mat = rvd->camera_params.projection_matrix(params.desired_aspect_ratio) * rvd->camera_params.view_matrix();
+	aux->projection_matrix = &dummy_projection;
 }
 
 void LineHelper::set_color(const color& c) {
@@ -87,7 +86,6 @@ void LineHelper::draw_lines(const Array<vec3>& points, bool contiguous) {
 
 
 void LineHelper::draw_lines_colored(const Array<vec3>& points, const Array<color>& cols, bool contiguous) {
-
 	Array<ygfx::VertexX> vertices;
 
 	if (contiguous) {
@@ -99,42 +97,6 @@ void LineHelper::draw_lines_colored(const Array<vec3>& points, const Array<color
 	}
 
 	ygfx::draw_simple(aux, vertices, mat4::ID, White, use_z, use_blending);
-#ifdef USING_VULKAN_______X
-	auto vb = xhui_ctx->aux->get_line_vb(true);
-	Array<ygfx::VertexX> vertices;
-	mat4 m = window->projection * window->view;
-	if (contiguous) {
-		for (int i=0; i<points.num-1; i++)
-			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
-	} else {
-		for (int i=0; i<points.num-1; i+=2)
-			add_vb_line(vertices, m.project(points[i]), m.project(points[i+1]), cols[i], window, _line_width);
-	}
-	vb->update(vertices);
-
-	struct Parameters {
-		mat4 matrix;
-		vec2 size;
-		float radius, softness;
-	};
-
-	Parameters params;
-	params.matrix = mat4::ID;
-	params.size = {1000,1000};//(float)width, (float)height};
-	params.radius = 0;//line_width;
-	params.softness = 0;//softness;
-
-	auto cb = xhui_ctx->current_command_buffer();
-	if (!z_test)
-		cb->bind_pipeline(pipeline_no_z_test);
-	else if (_blending)
-		cb->bind_pipeline(pipeline_alpha);
-	else
-		cb->bind_pipeline(pipeline);
-	cb->push_constant(0, sizeof(params), &params);
-	cb->bind_descriptor_set(0, dset);
-	cb->draw(vb);
-#endif
 }
 
 void LineHelper::draw_circle(const vec3& center, const vec3& axis, float r) {

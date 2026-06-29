@@ -77,7 +77,9 @@ void ComboBox::_draw(Painter* p) {
 
 	auto im = load_image("hui:triangle-down");
 	prepare_image(im);
+	//p->set_texture(im->texture.get());
 	p->draw_ximage(area_arrow, im);
+	//p->set_texture(nullptr);
 }
 
 

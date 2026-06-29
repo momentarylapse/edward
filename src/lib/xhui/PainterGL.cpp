@@ -7,19 +7,15 @@
 #include <lib/ygraphics/graphics-impl.h>
 
 
-namespace nix {
-	mat4 create_pixel_projection_matrix();
-}
-
 namespace xhui {
 
 void Painter::draw_ximage(const rect &r, const XImage *image) {
 	auto t = image->texture.get();
-	nix::set_model_matrix(mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1));
+	const auto mat = mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1);
 	nix::set_shader(aux->shader);
 	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
-	aux->shader->set_color("_color_", _color);
-	aux->shader->set_default_data();
+	aux->shader->set_matrix("matrix", mat_pixel_to_rel * mat);
+	aux->shader->set_color("color", _color);
 	nix::bind_texture(0, t);
 	nix::draw_triangles(aux->vb);
 	nix::disable_alpha();
@@ -30,7 +26,7 @@ void Painter::prepare_2d_drawing() {
 	nix::set_srgb(gamma_correction);
 
 	nix::bind_frame_buffer(context->context->ctx->default_framebuffer);
-	nix::set_projection_matrix(nix::create_pixel_projection_matrix() * mat4::translation({0,0,0.5f}) * mat4::scale(ui_scale, ui_scale, 1));
+	nix::set_projection_matrix(mat_pixel_to_rel);
 	nix::set_view_matrix(mat4::ID);
 	nix::set_cull(nix::CullMode::NONE);
 	nix::set_z(false, false);

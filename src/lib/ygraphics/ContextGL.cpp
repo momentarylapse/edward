@@ -16,18 +16,7 @@ void DrawingHelperData::reset_frame() {
 	num_line_vbs_with_color_used = 0;
 }
 
-void DrawingHelperData::create_basic() {
-
-	vb = new VertexBuffer("3f,3f,2f,4f");
-	//vb->create_quad(rect::ID, rect::ID);
-	Array<VertexX> vv = {{vec3(0,0,0), {0,0,0}, 0, 0, White},
-						 {vec3(0,1,0), {0,0,0}, 0, 1, White},
-						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
-						 {vec3(0,0,0), {0,0,0}, 0, 0, White},
-						 {vec3(1,1,0), {0,0,0}, 1, 1, White},
-						 {vec3(1,0,0), {0,0,0}, 1, 0, White}};
-	vb->update(vv);
-
+void DrawingHelperData::_create_basic_internal() {
 
 
 #if 0
@@ -52,114 +41,7 @@ void DrawingHelperData::create_basic() {
 	</VertexShader>
 #endif
 
-	shader = context->ctx->create_shader(
-			R"foodelim(
-<Layout>
-	version = 420
-</Layout>
-<VertexShader>
-
-#extension GL_ARB_separate_shader_objects : enable
-
-struct Matrix { mat4 model, view, project; };
-/*layout(binding = 0)*/ uniform Matrix matrix;
-
-layout(location = 0) in vec3 in_position;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_uv;
-layout(location = 3) in vec4 in_color;
-
-layout(location = 0) out vec3 out_normal;
-layout(location = 1) out vec2 out_uv;
-layout(location = 2) out vec4 out_pos; // camera space
-layout(location = 3) out vec4 out_color;
-
-void main() {
-	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
-	out_normal = (matrix.view * matrix.model * vec4(in_normal, 0)).xyz;
-	out_uv = in_uv;
-	out_color = in_color;
-}
-</VertexShader>
-<FragmentShader>
-#extension GL_ARB_separate_shader_objects : enable
-
-layout(location = 0) in vec3 in_normal;
-layout(location = 1) in vec2 in_uv;
-layout(location = 2) in vec4 in_pos;
-layout(location = 3) in vec4 in_color;
-layout(binding=0) uniform sampler2D tex0;
-uniform vec4 _color_;
-out vec4 out_color;
-
-void main() {
-	out_color = texture(tex0, in_uv);
-	out_color *= _color_ * in_color;
-}
-</FragmentShader>
-)foodelim");
 	shader->filename = "-my-shader-";
-
-
-	shader_round  = context->ctx->create_shader(
-			R"foodelim(
-<Layout>
-	version = 420
-</Layout>
-<VertexShader>
-
-#extension GL_ARB_separate_shader_objects : enable
-
-struct Matrix { mat4 model, view, project; };
-/*layout(binding = 0)*/ uniform Matrix matrix;
-
-layout(location = 0) in vec3 in_position;
-layout(location = 1) in vec3 in_normal;
-layout(location = 2) in vec2 in_uv;
-layout(location = 3) in vec4 in_color;
-
-layout(location = 0) out vec3 out_normal;
-layout(location = 1) out vec2 out_uv;
-layout(location = 2) out vec4 out_pos; // camera space
-layout(location = 3) out vec4 out_color;
-
-void main() {
-	gl_Position = matrix.project * matrix.view * matrix.model * vec4(in_position, 1);
-	out_normal = (matrix.view * matrix.model * vec4(in_normal, 0)).xyz;
-	out_uv = in_uv;
-	out_color = in_color;
-}
-</VertexShader>
-<FragmentShader>
-#extension GL_ARB_separate_shader_objects : enable
-
-layout(location = 0) in vec3 in_normal;
-layout(location = 1) in vec2 in_uv;
-layout(location = 2) in vec4 in_pos;
-layout(location = 3) in vec4 in_color;
-uniform sampler2D tex0;
-uniform vec4 _color_;
-uniform vec2 size;
-uniform float radius = 0;
-uniform float softness = 0;
-out vec4 out_color;
-
-void main() {
-	out_color = texture(tex0, in_uv);
-	out_color *= _color_ * in_color;
-	if (softness >= 0.5) {
-		vec2 pp = (abs(in_uv - 0.5) * size - (0.5*size-softness-radius));
-		pp = clamp(pp, 0, 1000);
-		out_color.a *= 1 - clamp((length(pp) - radius) / softness, 0, 1);
-	} else {
-		vec2 pp = (abs(in_uv - 0.5) * size - (0.5*size-radius));
-		pp = clamp(pp, 0, 1000);
-		out_color.a *= 1 - clamp((length(pp) - radius), 0, 1);
-	}
-	//out_color = vec4(length(pp)/radius, 0, 1, 1);
-}
-</FragmentShader>
-)foodelim");
 	shader_round->filename = "-my-shader-round-";
 
 	tex_xxx = new Texture();
@@ -180,6 +62,10 @@ DrawingHelperData* Context::_create_auxiliary_stuff() {
 }
 
 void Context::make_current() {
+}
+
+Shader *Context::create_shader(const string &source) const {
+	return ctx->create_shader(source);
 }
 
 }

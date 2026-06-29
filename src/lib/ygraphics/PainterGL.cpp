@@ -2,9 +2,7 @@
 
 #include "Painter.h"
 #include "Context.h"
-#include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/ygraphics/font.h>
 #include <lib/image/image.h>
 
 
@@ -15,13 +13,18 @@ void draw_simple(DrawingHelperData* aux, const Array<VertexX>& p, const mat4& ma
 	auto vb = aux->get_line_vb(true);
 	vb->update(p);
 
-	nix::set_model_matrix(mat);
-	nix::set_shader(aux->shader);
+	auto s = aux->shader;
+
+	nix::set_shader(s);
 	nix::set_z(use_z and !use_blending, use_z);
 	if (use_blending)
 		nix::set_alpha(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
-	aux->shader->set_color("_color_", col);
-	aux->shader->set_default_data();
+	nix::set_cull(CullMode::NONE);
+	s->set_color("color", col);
+	if (aux->projection_matrix)
+		s->set_matrix("matrix", *aux->projection_matrix * mat);
+	else
+		s->set_matrix("matrix", mat);
 	nix::bind_texture(0, aux->context->tex_white);
 	nix::draw_triangles(vb);
 	nix::disable_alpha();
@@ -34,44 +37,47 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	Image im;
-	face->render_text(str, font::Align::LEFT, im);
-	aux->tex_text->write(im);
-	aux->tex_text->set_options("minfilter=nearest");
-	float w = (float)im.width / ui_scale;
-	float h = (float)im.height / ui_scale;
-	nix::set_model_matrix(mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1));
+	auto& tc = aux->get_text_cache(str, face, font_size, ui_scale);
+	float w = (float)tc.texture->width / ui_scale;
+	float h = (float)tc.texture->height / ui_scale;
+	const auto mat = mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1);
 
-	nix::set_shader(aux->shader);
-	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
-	aux->shader->set_color("_color_", _color);
-	aux->shader->set_default_data();
-	nix::bind_texture(0, aux->tex_text);
+	auto s = aux->shader;
+	nix::set_shader(s);
+	nix::set_alpha_split(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, Alpha::ZERO, Alpha::ONE);
+	s->set_color("color", _color);
+	s->set_matrix("matrix", mat_pixel_to_rel * mat);
+	nix::bind_texture(0, tc.texture);
 	nix::draw_triangles(aux->vb);
 	nix::disable_alpha();
 }
 
 void Painter::draw_rect(const rect &r) {
 	if (fill) {
-		nix::set_model_matrix(mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1));
+		const auto mat = mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1);
 		auto s = aux->shader;
 		if (corner_radius > 0) {
 			s = aux->shader_round;
-			vec2 size = {r.width(), r.height()};
+			vec2 size = r.size() * ui_scale;
 			s->set_floats("size", &size.x, 2);
-			s->set_float("radius", corner_radius);
+			s->set_float("radius", corner_radius * ui_scale);
 			s->set_float("softness", softness);
 		}
+		if (user_shader)
+			s = user_shader;
 		nix::set_shader(s);
-		if (_color.a < 1 or corner_radius > 0) {
+		if (_color.a < 1 or corner_radius > 0 or user_texture) {
 			if (accumulate_alpha)
-				nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ONE, nix::Alpha::ONE);
+				nix::set_alpha_split(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, Alpha::ONE, Alpha::ONE);
 			else
-				nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
+				nix::set_alpha_split(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, Alpha::ZERO, Alpha::ONE);
 		}
-		s->set_color("_color_", _color);
-		s->set_default_data();
-		nix::bind_texture(0, context->tex_white);
+		s->set_color("color", _color);
+		s->set_matrix("matrix", mat_pixel_to_rel * mat);
+		if (user_texture)
+			nix::bind_texture(0, user_texture);
+		else
+			nix::bind_texture(0, context->tex_white);
 		nix::draw_triangles(aux->vb);
 		nix::disable_alpha();
 	} else {
