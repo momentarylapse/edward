@@ -61,7 +61,8 @@ public:
 	}
 
 	void set_font_face(font::Face* f);
-	void draw_rect_texture(const rect& r, Texture* tex);
+	void set_texture(Texture* tex);
+	void set_shader(Shader* s);
 
 	rect _area;
 	rect native_area;
@@ -80,6 +81,8 @@ public:
 	float softness = 0;
 	bool fill = true;
 	font::Face* face;
+	Shader* user_shader = nullptr;
+	Texture* user_texture = nullptr;
 
 	bool accumulate_alpha = false;
 

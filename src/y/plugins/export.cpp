@@ -621,21 +621,23 @@ void export_ui(kaba::IExporter* ext) {
 	{
 		gui::Node node;
 		ext->declare_class_size("Node", sizeof(gui::Node));
-		ext->declare_class_element("Node.x", &gui::Node::pos);
-		ext->declare_class_element("Node.y", _OFFSET(node, pos.y));
-		ext->declare_class_element("Node.pos", &gui::Node::pos);
-		ext->declare_class_element("Node.width", &gui::Node::width);
-		ext->declare_class_element("Node.height", &gui::Node::height);
-		ext->declare_class_element("Node._eff_area", &gui::Node::eff_area);
+		ext->declare_class_element("Node.id", &gui::Node::id);
+		ext->declare_class_element("Node.width", &gui::Node::min_width_user);
+		ext->declare_class_element("Node.height", &gui::Node::min_height_user);
+		ext->declare_class_element("Node.area", &gui::Node::area);
 		ext->declare_class_element("Node.margin", &gui::Node::margin);
+		ext->declare_class_element("Node.padding", &gui::Node::padding);
 		ext->declare_class_element("Node.align", &gui::Node::align);
+		ext->declare_class_element("Node.size_mode_x", &gui::Node::size_mode_x);
+		ext->declare_class_element("Node.size_mode_y", &gui::Node::size_mode_y);
+	//	ext->declare_class_element("Node.non_square", &gui::Node::non_square);
 		ext->declare_class_element("Node.dz", &gui::Node::dz);
 		ext->declare_class_element("Node.color", &gui::Node::col);
 		ext->declare_class_element("Node.visible", &gui::Node::visible);
+		ext->declare_class_element("Node.allow_hover", &gui::Node::allow_hover);
 		ext->declare_class_element("Node.children", &gui::Node::children);
 		ext->declare_class_element("Node.parent", &gui::Node::parent);
 		ext->link_class_func("Node.__init__:Node", &kaba::generic_init<gui::Node>);
-		ext->link_class_func("Node.__init__:Node:math.Rect", &kaba::generic_init_ext<gui::Node, const rect&>);
 		ext->link_virtual("Node.__delete__", &kaba::generic_virtual<gui::Node>::__delete__, &node);
 		ext->link_class_func("Node.__del_override__", &DeletionQueue::add);
 		ext->link_class_func("Node.add", &gui::Node::add);
@@ -644,6 +646,10 @@ void export_ui(kaba::IExporter* ext) {
 		ext->link_class_func("Node.remove_all_children", &gui::Node::remove_all_children);
 		ext->link_class_func("Node.set_area", &gui::Node::set_area);
 		ext->link_class_func("Node._get", &gui::Node::get);
+		ext->link_virtual("Node.set_option", &gui::Node::set_option, &node);
+		ext->link_virtual("Node.get_content_min_size", &gui::Node::get_content_min_size, &node);
+		ext->link_virtual("Node.get_greed_factor", &gui::Node::get_greed_factor, &node);
+		ext->link_virtual("Node.negotiate_content_area", &gui::Node::negotiate_content_area, &node);
 		ext->link_virtual("Node.on_iterate", &gui::Node::on_iterate, &node);
 		ext->link_virtual("Node.on_enter", &gui::Node::on_enter, &node);
 		ext->link_virtual("Node.on_leave", &gui::Node::on_leave, &node);
@@ -665,8 +671,9 @@ void export_ui(kaba::IExporter* ext) {
 		ext->declare_class_element("Picture.blur", &gui::Picture::bg_blur);
 		ext->declare_class_element("Picture.angle", &gui::Picture::angle);
 		ext->link_class_func("Picture.__init__:Picture", &kaba::generic_init<gui::Picture>);
-		ext->link_class_func("Picture.__init__:Picture:math.Rect:shared![Texture]:math.Rect", &kaba::generic_init_ext<gui::Picture, const rect&, shared<Texture>, const rect&>);
+		ext->link_class_func("Picture.__init__:Picture:math.Rect:shared[Texture]:math.Rect", &kaba::generic_init_ext<gui::Picture, const rect&, shared<Texture>, const rect&>);
 		ext->link_virtual("Picture.__delete__", &kaba::generic_virtual<gui::Picture>::__delete__, &picture);
+		ext->link_virtual("Picture.set_option", &kaba::generic_virtual<gui::Picture>::set_option, &picture);
 	}
 
 	{
@@ -677,7 +684,8 @@ void export_ui(kaba::IExporter* ext) {
 		ext->link_class_func("Text.__init__:Text", &kaba::generic_init<gui::Text>);
 		ext->link_class_func("Text.__init__:Text:string:f32:math.vec2", &kaba::generic_init_ext<gui::Text, const string&, float, const vec2&>);
 		ext->link_virtual("Text.__delete__", &kaba::generic_virtual<gui::Text>::__delete__, &text);
-		ext->link_class_func("Text.set_text", &gui::Text::set_text);
+		ext->link_virtual("Text.set_option", &gui::Text::set_option, &text);
+		ext->link_virtual("Text.get_content_min_size", &gui::Text::get_content_min_size, &text);
 	}
 
 	{
@@ -687,8 +695,21 @@ void export_ui(kaba::IExporter* ext) {
 		ext->link_virtual("Canvas.__delete__", &kaba::generic_virtual<gui::Canvas>::__delete__, &canvas);
 	}
 
-	ext->link_class_func("HBox.__init__", &kaba::generic_init<gui::HBox>);
-	ext->link_class_func("VBox.__init__", &kaba::generic_init<gui::VBox>);
+	{
+		gui::HBox box;
+		ext->link_class_func("HBox.__init__", &kaba::generic_init<gui::HBox>);
+		ext->link_virtual("HBox.set_option", &gui::HBox::set_option, &box);
+		ext->link_virtual("HBox.get_content_min_size", &gui::HBox::get_content_min_size, &box);
+		ext->link_virtual("HBox.negotiate_content_area", &gui::HBox::negotiate_content_area, &box);
+	}
+
+	{
+		gui::VBox box;
+		ext->link_class_func("VBox.__init__", &kaba::generic_init<gui::VBox>);
+		ext->link_virtual("VBox.set_option", &gui::VBox::set_option, &box);
+		ext->link_virtual("VBox.get_content_min_size", &gui::VBox::get_content_min_size, &box);
+		ext->link_virtual("VBox.negotiate_content_area", &gui::VBox::negotiate_content_area, &box);
+	}
 
 #ifdef HAS_INPUT
 	ext->link_func("key_state", &input::get_key);

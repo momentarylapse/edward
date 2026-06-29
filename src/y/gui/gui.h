@@ -13,6 +13,10 @@
 
 struct vec2;
 
+namespace ygfx {
+	struct DrawingHelperData;
+}
+
 namespace gui {
 
 class Node;
@@ -21,27 +25,22 @@ class Node;
 void init(int ch_iter);
 void reset();
 //void render(vulkan::CommandBuffer *cb, const rect &viewport);
-void update();
-void handle_input(const vec2 &m, std::function<bool(Node *n)> f);
+void update(float aspect_ratio);
+void handle_input(const vec2 &m, std::function<void(Node *n)> f);
 void handle_mouse_move(const vec2 &m_prev, const vec2 &m);
 void iterate(float dt);
 
 extern shared<Node> toplevel;
 extern Array<Node*> all_nodes;
-extern Array<Node*> sorted_nodes;
 void update_tree();
 
 void delete_node(Node *n);
 
-struct Resource {
-	string type;
-	string id;
-	Array<string> options;
-	Array<Resource> children;
-};
-
-Resource parse_resource(const string& s);
 Node* create_node(const string& type);
+
+extern ygfx::DrawingHelperData* aux;
+extern float ui_scale;
+
 }
 
 

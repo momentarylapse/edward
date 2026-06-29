@@ -5,13 +5,8 @@
 #include "Canvas.h"
 
 namespace gui {
-	Canvas::Canvas() : Canvas(rect::ID) {}
-
-	Canvas::Canvas(const rect &r) :
-		Node(r)
-	{
+	Canvas::Canvas() {
 		type = Type::CANVAS;
-		visible = true;
 	}
 
 	Canvas::~Canvas() = default;

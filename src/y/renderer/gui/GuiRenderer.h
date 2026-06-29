@@ -9,8 +9,13 @@
 
 #include <lib/yrenderer/Renderer.h>
 
+namespace gui {
+	class Node;
+}
+
 namespace ygfx {
 	struct DrawingHelperData;
+	class Painter;
 }
 
 class GuiRenderer : public yrenderer::Renderer {
@@ -20,20 +25,8 @@ public:
 
 	void prepare(const yrenderer::RenderParams &params) override;
 	void draw(const yrenderer::RenderParams& params) override;
-
-	shared<ygfx::Shader> shader;
-#ifdef USING_VULKAN
-	ygfx::GraphicsPipeline* pipeline = nullptr;
-	Array<ygfx::DescriptorSet*> dset;
-	Array<ygfx::UniformBuffer*> ubo;
-#endif
-	owned<ygfx::VertexBuffer> vb;
+	void draw_node(ygfx::Painter& p, gui::Node* n, const color& group_col);
 
 	owned<ygfx::DrawingHelperData> aux;
-
-#ifdef USING_VULKAN
-	void prepare_gui(ygfx::FrameBuffer *source, const yrenderer::RenderParams& params);
-	void draw_gui(ygfx::CommandBuffer *cb, const yrenderer::RenderParams& params);
-#endif
 };
 

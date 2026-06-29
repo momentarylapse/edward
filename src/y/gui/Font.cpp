@@ -5,6 +5,32 @@
  *      Author: michi
  */
 
+
+#include "Font.h"
+#include "../Config.h"
+#include <lib/ygraphics/Context.h>
+
+#include "EngineData.h"
+#include "lib/os/app.h"
+#include "lib/os/msg.h"
+
+
+namespace gui {
+	font::Face *default_font = nullptr;
+
+	void init_fonts() {
+		font::init();
+		default_font = font::load_face(config.default_font, false, false);
+		if (!default_font)
+			default_font = font::load_face("FreeSans", false, false);
+		if (!default_font)
+			throw Exception("no font found...");
+
+	}
+}
+
+#if 0
+
 #include "Font.h"
 #include "gui.h"
 #include "../Config.h"
@@ -279,7 +305,7 @@ float ft_get_text_width(FT_Face face, const string &text) {
 	return wmax;
 }
 
-void ft_render_text(Font *font, FT_Face face, const string &text, gui::Node::Align align, Image &im) {
+void ft_render_text(Font *font, FT_Face face, const string &text, int align, Image &im) {
 
 	auto lines = text.explode("\n");
 
@@ -302,7 +328,7 @@ void ft_render_text(Font *font, FT_Face face, const string &text, gui::Node::Ali
 		auto utf32 = l.utf8_to_utf32();
 
 		int x = 0;
-		if (align & Node::Align::RIGHT)
+		if (align == 1) // right
 			x = wmax - line_width[line_no];
 
 		for (int u: utf32) {
@@ -323,7 +349,7 @@ void ft_render_text(Font *font, FT_Face face, const string &text, gui::Node::Ali
 #endif
 #endif
 
-void Font::render_text(const string &str, Node::Align align, Image &im) {
+void Font::render_text(const string &str, int align, Image &im) {
 #ifdef USE_CAIRO
 	string font_name = "CAC Champagne";
 	cairo_render_text(font_name, FONT_SIZE, str, align, im);
@@ -353,4 +379,4 @@ float Font::get_height_rel(const string &str) {
 
 }
 
-
+#endif

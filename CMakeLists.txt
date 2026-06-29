@@ -605,8 +605,7 @@ add_executable(edward
 	src/y/net/NetworkManager.cpp
 	src/y/plugins/export.cpp
 	src/y/plugins/PluginManager.cpp
-	src/y/renderer/gui/GuiRendererGL.cpp
-	src/y/renderer/gui/GuiRendererVulkan.cpp
+	src/y/renderer/gui/GuiRenderer.cpp
 	src/y/renderer/helper/Raytracing.cpp
 	src/y/renderer/helper/RendererFactory.cpp
 	src/y/renderer/world/emitter/WorldInstancedEmitter.cpp

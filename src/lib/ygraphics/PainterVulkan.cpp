@@ -104,18 +104,18 @@ void fill_rect(Painter* p, const rect& r, const color& _color, float radius, flo
 
 void Painter::draw_rect(const rect& r) {
 	if (fill) {
-		fill_rect(this, r, _color, corner_radius, softness, aux->dset);
+		if (user_texture) {
+			auto dset = aux->get_descriptor_set(user_texture);
+			fill_rect(this, r, _color, corner_radius, softness, dset, true);
+		} else {
+			fill_rect(this, r, _color, corner_radius, softness, aux->dset);
+		}
 	} else {
 		draw_line({r.x1, r.y1}, {r.x2, r.y1});
 		draw_line({r.x1, r.y2}, {r.x2, r.y2});
 		draw_line({r.x1, r.y1}, {r.x1, r.y2});
 		draw_line({r.x2, r.y1}, {r.x2, r.y2});
 	}
-}
-
-void Painter::draw_rect_texture(const rect& r, Texture* tex) {
-	auto dset = aux->get_descriptor_set(tex);
-	fill_rect(this, r, _color, corner_radius, softness, dset, true);
 }
 
 

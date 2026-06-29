@@ -9,64 +9,53 @@
 #include "Font.h"
 #include <lib/math/vec2.h>
 #include <lib/image/image.h>
+#include <lib/layout/Node.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include <EngineData.h>
+
+#include "helper/ResourceManager.h"
+#include "lib/os/msg.h"
 
 
 namespace gui {
 
+	extern ygfx::DrawingHelperData* aux;
+	extern float ui_scale;
 
-//Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
-Text::Text() : Text(":::fake:::", 0.05f, {0,0}) {}
+
+Text::Text() : Text("", 0.05f, {0,0}) {}
 
 Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
 	type = Type::TEXT;
 	//margin = rect(x, h/6, y, h/10);
-	font = Font::_default;
+	margin.x1 = p.x;
+	margin.y1 = p.y;
+	min_width_user = -1;
+	min_height_user = -1;
+	//font = Font::_default;
+	size_mode_x = layout::SizeMode::Shrink;
+	size_mode_y = layout::SizeMode::Shrink;
 	font_size = h;
-//	texture = nullptr; // needed, so we don't mess with tex_white...
-	if (t != ":::fake:::")
-		set_text(t);
+	font = default_font;
+	text = t;
+	allow_hover = true;
 }
 
 Text::~Text() = default;
 
-void Text::rebuild() {
-	if (!font)
-		return;
-	Image im;
-	font->render_text(text, align, im);
-	if (im.width == 0 or im.height == 0)
-		im.create(1,1, color(0,0,0,0));
-
-	if (texture == nullptr)
-		texture = new ygfx::Texture();
-
-	texture->write(im);
-	//texture->set_options("magfilter=nearest,wrap=clamp");
-	texture->set_options("magfilter=linear,wrap=clamp");
-
-	height = font_size * font->get_height_rel(text);
-	width = height * (float)im.width / (float)im.height;
-	if (align & Align::NONSQUARE)
-		 width /= engine.physical_aspect_ratio;
+vec2 Text::get_content_min_size() const {
+	auto& tc = aux->get_text_cache(text, font, font_size, ui_scale);
+	return tc.dimensions.inner_box({0,0}).size() / ui_scale;
 }
 
-void Text::set_text(const string &t) {
-	if (t != text or !texture) {
-		text = t;
-		rebuild();
-	}
-}
-
-void Text::_set_option(const string &k, const string &v) {
+void Text::set_option(const string &k, const string &v) {
 	if (k == "size") {
 		font_size = v._float();
-		rebuild();
 	} else if (k == "text") {
-		set_text(v);
+		text = v;
 	} else {
-		Picture::_set_option(k, v);
+		Picture::set_option(k, v);
 	}
 }
 

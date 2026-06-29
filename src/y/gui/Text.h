@@ -9,9 +9,11 @@
 
 #include "Picture.h"
 
-namespace gui {
+namespace font {
+	struct Face;
+}
 
-class Font;
+namespace gui {
 
 class Text : public Picture {
 public:
@@ -19,14 +21,12 @@ public:
 	Text(const string &t, float h, const vec2 &p);
 	~Text() override;
 
-	void rebuild();
-	void set_text(const string &t);
-
-	void _set_option(const string &k, const string &v);
+	vec2 get_content_min_size() const override;
+	void set_option(const string &k, const string &v) override;
 
 	string text;
 	float font_size;
-	Font *font;
+	font::Face* font;
 };
 
 }

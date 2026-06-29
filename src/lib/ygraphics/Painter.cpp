@@ -60,6 +60,14 @@ void Painter::set_font_face(font::Face *f) {
 	face = f;
 }
 
+void Painter::set_texture(Texture* tex) {
+	user_texture = tex;
+}
+
+void Painter::set_shader(Shader* s) {
+	user_shader = s;
+}
+
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 	if (font != "")
 		font_name = font;
