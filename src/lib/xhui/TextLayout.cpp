@@ -93,7 +93,7 @@ TextFormat apply_tag(const TextFormat& parent, const TagInfo& tag, float font_si
 
 TextLayout TextLayout::from_format_string(::Painter* p, const string& s, float font_size, int align) {
 	if (font_size < 0)
-		font_size = xhui::Theme::_default.font_size;
+		font_size = Theme::_default.font_size;
 	vec2 pos = vec2(0, 0);
 	TextLayout l;
 	float max_line_width = 0;
@@ -101,7 +101,7 @@ TextLayout TextLayout::from_format_string(::Painter* p, const string& s, float f
 	float max_line_ascender = 0;
 	int line_first_chunk = 0;
 	auto add_chunk = [&] (const string& text, const TextFormat& fmt) {
-		auto face = xhui::pick_font(xhui::Theme::_default.font_name, fmt.bold, false);
+		auto face = global_font_manager->pick(Theme::_default.font_name, fmt.bold, false);
 		face->set_size(fmt.font_size * p->ui_scale);
 		const auto dims = face->get_text_dimensions(text);
 

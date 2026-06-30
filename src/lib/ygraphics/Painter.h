@@ -14,19 +14,15 @@ namespace vulkan {
 }
 #endif
 
-namespace font {
-	struct Face;
-}
-
-
 namespace ygfx {
 
 struct DrawingHelperData;
 class Context;
+struct Face;
 
 class Painter : public ::Painter {
 public:
-	explicit Painter(DrawingHelperData* aux, const rect& native_area, const rect& area, float ui_scale, font::Face* _face);
+	explicit Painter(DrawingHelperData* aux, const rect& native_area, const rect& area, float ui_scale, Face* _face);
 	//virtual ~Painter();
 
 	void set_color(const color &c) override;
@@ -61,7 +57,7 @@ public:
 		return _area;
 	}
 
-	void set_font_face(font::Face* f);
+	void set_font_face(Face* f);
 	void set_texture(Texture* tex);
 	void set_shader(Shader* s);
 	void set_shader_data(const Any& data);
@@ -82,7 +78,7 @@ public:
 	float corner_radius = 0;
 	float softness = 0;
 	bool fill = true;
-	font::Face* face;
+	Face* face;
 	Shader* user_shader = nullptr;
 	Texture* user_texture = nullptr;
 	Any user_shader_data;

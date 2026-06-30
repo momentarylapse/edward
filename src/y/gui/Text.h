@@ -9,7 +9,7 @@
 
 #include "Picture.h"
 
-namespace font {
+namespace ygfx {
 	struct Face;
 }
 
@@ -26,7 +26,7 @@ public:
 
 	string text;
 	float font_size;
-	font::Face* font;
+	ygfx::Face* font;
 };
 
 }

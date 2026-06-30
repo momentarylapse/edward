@@ -49,10 +49,11 @@ void DrawingHelperData::_create_basic_internal() {
 
 }
 
-Context::Context(nix::Context* _ctx) {
+Context::Context(nix::Context* _ctx, FontManager* fm) {
 	ctx = _ctx;
 	color_space_shaders = ColorSpace::Linear;
 	color_space_input = ColorSpace::SRGB;
+	font_manager = fm;
 }
 
 DrawingHelperData* Context::_create_auxiliary_stuff() {

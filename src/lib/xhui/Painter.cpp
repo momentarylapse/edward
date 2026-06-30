@@ -13,13 +13,13 @@
 namespace xhui {
 
 Painter::Painter(Context* c, Window* window, const rect& native_area, const rect& area) :
-	ygfx::Painter(c ? c->aux : nullptr, native_area, area, window ? window->ui_scale : 1.0f, default_font_regular)
+	ygfx::Painter(c ? c->aux : nullptr, native_area, area, window ? window->ui_scale : 1.0f, c->font_manager->default_font_regular)
 {
 	this->context = c;
 
 	if (window) {
 		context = window->context;
-		face = default_font_regular;
+		face = c->font_manager->default_font_regular;
 
 		Painter::set_color(Theme::_default.text);
 		Painter::set_font(Theme::_default.font_name /*"CAC Champagne"*/, Theme::_default.font_size, false, false);
@@ -30,8 +30,8 @@ Painter::Painter(Context* c, Window* window, const rect& native_area, const rect
 	}
 }
 
-font::Face* pick_font(const string &font, bool bold, bool italic) {
-	font::Face* face;
+/*ygfx::Face* pick_font(const string &font, bool bold, bool italic) {
+	ygfx::Face* face;
 	if (bold)
 		face = default_font_bold;
 	else
@@ -43,14 +43,15 @@ font::Face* pick_font(const string &font, bool bold, bool italic) {
 			face = default_font_mono_regular;
 	}
 	return face;
-}
+}*/
 
 void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 	if (font != "")
 		font_name = font;
 	if (font_size > 0)
 		font_size = size;
-	face = pick_font(font_name, bold, italic);
+	face = context->font_manager->pick(font_name, bold, italic);
+	//face = pick_font(font_name, bold, italic);
 	face->set_size(font_size * ui_scale);
 }
 
@@ -62,7 +63,7 @@ void Painter::set_font_size(float size) {
 
 Array<TextCache> text_caches;
 
-TextCache& get_text_cache(Context* context, const string& text, font::Face* face, float font_size, float ui_scale) {
+TextCache& get_text_cache(Context* context, const string& text, ygfx::Face* face, float font_size, float ui_scale) {
 	for (auto& tc: text_caches)
 		if (tc.text == text and tc.face == face and tc.font_size == font_size) {
 			tc.age = 0;
@@ -87,7 +88,7 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 	tc->face = face;
 	tc->age = 0;
 	Image im;
-	face->render_text(text, font::Align::LEFT, im);
+	face->render_text(text, ygfx::Align::LEFT, im);
 	tc->texture->write(im);
 	tc->texture->set_options("minfilter=nearest,wrap=clamp");
 	// fractional coordinates (especially with ui_scale)... not sure what to do m(-_-)m
@@ -107,10 +108,10 @@ TextCache& get_text_cache(Context* context, const string& text, font::Face* face
 
 struct TextDimensionsCache {
 	string text;
-	font::Face* face;
+	ygfx::Face* face;
 	float font_size;
 	int age;
-	font::TextDimensions dimensions;
+	ygfx::TextDimensions dimensions;
 };
 
 Array<TextDimensionsCache> text_dimensions_caches;
@@ -123,7 +124,7 @@ void iterate_text_caches() {
 }
 
 
-font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale) {
+ygfx::TextDimensions& get_cached_text_dimensions(const string& text, ygfx::Face* face, float font_size, float ui_scale) {
 	// already in cache?
 	for (auto& tc: text_dimensions_caches)
 		if (tc.text == text and tc.face == face and tc.font_size == font_size) {

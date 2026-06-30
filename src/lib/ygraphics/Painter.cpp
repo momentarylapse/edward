@@ -12,7 +12,7 @@
 
 namespace ygfx {
 
-Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& area, float _ui_scale, font::Face* _face) {
+Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& area, float _ui_scale, Face* _face) {
 	aux = _aux;
 	this->_area = area;
 	this->native_area = native_area;
@@ -57,7 +57,7 @@ void Painter::set_color(const color &c) {
 	return face;
 }*/
 
-void Painter::set_font_face(font::Face *f) {
+void Painter::set_font_face(Face *f) {
 	face = f;
 }
 

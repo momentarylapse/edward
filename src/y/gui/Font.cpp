@@ -11,18 +11,20 @@
 #include <lib/ygraphics/Context.h>
 
 #include "EngineData.h"
+#include "Text.h"
 #include "lib/os/app.h"
 #include "lib/os/msg.h"
 
 
 namespace gui {
-	font::Face *default_font = nullptr;
+	ygfx::Face *default_font = nullptr;
+	ygfx::FontManager* font_manager = nullptr;
 
 	void init_fonts() {
-		font::init();
-		default_font = font::load_face(config.default_font, false, false);
+		font_manager = new ygfx::FontManager();
+		default_font = font_manager->load(config.default_font, false, false);
 		if (!default_font)
-			default_font = font::load_face("FreeSans", false, false);
+			default_font = font_manager->load("FreeSans", false, false);
 		if (!default_font)
 			throw Exception("no font found...");
 

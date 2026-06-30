@@ -2,14 +2,16 @@
 
 #include <lib/base/base.h>
 
+class Path;
 class Image;
 struct rect;
 struct vec2;
 
 
-typedef struct FT_FaceRec_*  FT_Face;
+typedef struct FT_FaceRec_* FT_Face;
+typedef struct FT_LibraryRec_* FT_Library;
 
-namespace font {
+namespace ygfx {
 
 
 enum class Align {
@@ -17,8 +19,6 @@ enum class Align {
 	CENTER_H = 2,
 	LEFT = 4
 };
-
-void init();
 
 struct TextDimensions {
 	float bounding_width;
@@ -43,16 +43,30 @@ struct Face {
 
 	void set_size(float size);
 	float units_to_pixel(float units) const;
-	float get_text_width(const string &text) const;
-	TextDimensions get_text_dimensions(const string &text) const;
-	void render_text(const string &text, Align align, Image &im);
+	float get_text_width(const string& text) const;
+	TextDimensions get_text_dimensions(const string& text) const;
+	void render_text(const string& text, Align align, Image& im);
 };
 
-Face* load_face(const string& name, bool bold, bool italic);
+class FontManager {
+public:
+	FontManager();
 
-/*void set_font(const string &font_name, float font_size);
-float get_text_width(const string &text);
-TextDimensions get_text_dimensions(const string &text);
-void render_text(const string &text, xhui::Align align, Image &im);*/
+	void try_load_defaults(const Array<string>& font_names, const Array<string>& font_names_mono);
+
+	// might return null:
+	Face* load(const string& name, bool bold, bool italic);
+	Face* load_first(const Array<string>& name, bool bold, bool italic);
+
+	Array<Path> directories;
+	Face* default_font_regular = nullptr;
+	Face* default_font_bold = nullptr;
+	Face* default_font_mono_regular = nullptr;
+	Face* default_font_mono_bold = nullptr;
+	Face* pick(const string &font, bool bold, bool italic) const;
+
+	FT_Library ft2;
+	Array<Face*> faces;
+};
 
 }

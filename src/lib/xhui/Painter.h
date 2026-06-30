@@ -16,7 +16,7 @@ namespace vulkan {
 }
 #endif
 
-namespace font {
+namespace ygfx {
 	struct Face;
 }
 
@@ -42,20 +42,21 @@ public:
 };
 
 
+	// TODO -> ygfx
 struct TextCache {
 	string text;
-	font::Face* face;
+	ygfx::Face* face;
 	float font_size;
 	int age;
 	ygfx::Texture* texture;
 #if HAS_LIB_VULKAN
 	vulkan::DescriptorSet* __dset;
 #endif
-	font::TextDimensions dimensions;
+	ygfx::TextDimensions dimensions;
 };
 
-TextCache& get_text_cache(Context* context, const string& text, font::Face* face, float font_size, float ui_scale);
+TextCache& get_text_cache(Context* context, const string& text, ygfx::Face* face, float font_size, float ui_scale);
 void iterate_text_caches();
-font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale);
+ygfx::TextDimensions& get_cached_text_dimensions(const string& text, ygfx::Face* face, float font_size, float ui_scale);
 
 }

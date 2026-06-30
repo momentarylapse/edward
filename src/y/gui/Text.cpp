@@ -20,8 +20,8 @@
 
 namespace gui {
 
-	extern ygfx::DrawingHelperData* aux;
-	extern float ui_scale;
+extern ygfx::DrawingHelperData* aux;
+extern float ui_scale;
 
 
 Text::Text() : Text("", 0.05f, {0,0}) {}

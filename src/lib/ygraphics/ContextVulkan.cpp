@@ -1,6 +1,7 @@
 #if HAS_LIB_VULKAN
 
 #include "Context.h"
+#include "font.h"
 #include "../os/msg.h"
 #include "../image/image.h"
 #include "graphics-impl.h"
@@ -206,12 +207,13 @@ void DrawingHelperData::rebuild(RenderPass* render_pass) {
 	pipeline_lines->rebuild();
 }
 
-Context::Context(vulkan::Instance* _instance, vulkan::Device* _device) {
+Context::Context(vulkan::Instance* _instance, vulkan::Device* _device, FontManager* fm) {
 	instance = _instance;
 	device = _device;
 	color_space_shaders = ColorSpace::Linear;
 	color_space_input = ColorSpace::SRGB;
 	//num_line_vbs_used = 0;
+	font_manager = fm;
 }
 
 Context::~Context() {

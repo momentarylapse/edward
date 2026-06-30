@@ -12,17 +12,18 @@ struct mat4;
 namespace ygfx {
 
 class Context;
+class FontManager;
 
 struct TextCache {
 	string text;
-	font::Face* face;
+	Face* face;
 	float font_size;
 	int age;
 	Texture* texture;
 #if HAS_LIB_VULKAN
 	vulkan::DescriptorSet* dset;
 #endif
-	font::TextDimensions dimensions;
+	TextDimensions dimensions;
 };
 
 struct DrawingHelperData {
@@ -68,16 +69,16 @@ struct DrawingHelperData {
 	void reset_frame();
 
 	Array<TextCache> text_caches;
-	TextCache& get_text_cache(const string& text, font::Face* face, float font_size, float ui_scale);
+	TextCache& get_text_cache(const string& text, Face* face, float font_size, float ui_scale);
 	void iterate_text_caches();
 };
 
 class Context {
 public:
 #if HAS_LIB_VULKAN
-	explicit Context(vulkan::Instance* instance, vulkan::Device* device);
+	explicit Context(vulkan::Instance* instance, vulkan::Device* device, FontManager* fm);
 #else
-	explicit Context(nix::Context* ctx);
+	explicit Context(nix::Context* ctx, FontManager* fm);
 #endif
 	~Context();
 
@@ -88,6 +89,8 @@ public:
 	nix::Context* ctx = nullptr;
 #endif
 	Shader* create_shader(const string& source) const;
+
+	FontManager* font_manager = nullptr;
 
 	void make_current();
 
@@ -103,7 +106,7 @@ public:
 	void _create_default_textures();
 };
 
-font::TextDimensions& get_cached_text_dimensions(const string& text, font::Face* face, float font_size, float ui_scale);
+TextDimensions& get_cached_text_dimensions(const string& text, Face* face, float font_size, float ui_scale);
 
 }
 

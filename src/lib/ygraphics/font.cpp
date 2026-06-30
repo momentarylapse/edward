@@ -11,36 +11,13 @@
 #include FT_FREETYPE_H
 #endif
 
-namespace font {
+namespace ygfx {
+
+static constexpr float dpi = 96;
+
 
 #if HAS_LIB_FREETYPE2
-static FT_Library ft2;
-#endif
-static float dpi = 96;
-//static FT_Face face;
-//static float current_font_size = 0;
-//static string current_font_name;
-
-/*struct Face {
-	FT_Face face;
-};*/
-
-
-void init() {
-#if HAS_LIB_FREETYPE2
-	auto error = FT_Init_FreeType(&ft2);
-	if (error) {
-		throw Exception("can not initialize freetype2 library");
-	}
-#else
-	throw Exception("compiled without freetype2 library");
-#endif
-}
-
-Array<Face*> faces;
-
-#if HAS_LIB_FREETYPE2
-Face* load_face(const string& name, bool bold, bool italic) {
+Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic) {
 	Face* face = new Face;
 	face->name = name;
 	face->bold = bold;
@@ -53,7 +30,7 @@ Face* load_face(const string& name, bool bold, bool italic) {
 		flags = FT_STYLE_FLAG_BOLD;
 	}
 
-	auto try_load_font = [face, &type, flags] (const Path& filename) {
+	auto try_load_font = [ft2, face, &type, flags] (const Path& filename) {
 		if (!os::fs::exists(filename))
 			return false;
 		int error = FT_New_Face(ft2, filename.c_str(), -1, &face->face);
@@ -97,7 +74,6 @@ Face* load_face(const string& name, bool bold, bool italic) {
 	}
 
 
-	faces.add(face);
 	return face;
 }
 #endif
@@ -232,4 +208,63 @@ void Face::render_text(const string &text, Align align, Image &im) {
 #endif
 }
 
+FontManager::FontManager() {
+#if HAS_LIB_FREETYPE2
+	auto error = FT_Init_FreeType(&ft2);
+	if (error) {
+		throw Exception("can not initialize freetype2 library");
+	}
+#else
+	throw Exception("compiled without freetype2 library");
+#endif
+}
+
+void FontManager::try_load_defaults(const Array<string>& font_names, const Array<string>& font_names_mono) {
+	default_font_regular = load_first(font_names, false, false);
+	default_font_bold = load_first(font_names, true, false);
+	if (default_font_regular and !default_font_bold)
+		default_font_bold = default_font_regular;
+	if (!default_font_regular)
+		msg_error("no font found...");
+
+	default_font_mono_regular = load_first(font_names_mono, false, false);
+	default_font_mono_bold = load_first(font_names_mono, true, false);
+	if (!default_font_mono_regular)
+		default_font_mono_regular = default_font_regular;
+	if (!default_font_mono_bold)
+		default_font_mono_bold = default_font_mono_regular;
+}
+
+Face* FontManager::load(const string& name, bool bold, bool italic) {
+	for (auto f: faces)
+		if (f->name == name and f->bold == bold and f->italic == italic)
+			return f;
+
+	if (auto f = load_face(ft2, name, bold, italic)) {
+		faces.add(f);
+		return f;
+	}
+	return nullptr;
+}
+
+Face *FontManager::load_first(const Array<string>& font_names, bool bold, bool italic) {
+	for (const string& name: font_names)
+		if (auto f = load(name, bold, italic))
+			return f;
+	return nullptr;
+}
+
+
+Face* FontManager::pick(const string& font, bool bold, bool italic) const {
+	auto face = default_font_regular;
+	if (bold)
+		face = default_font_bold;
+	if (font == "monospace") {
+		if (bold and default_font_mono_bold)
+			face = default_font_mono_bold;
+		else if (default_font_mono_regular)
+			face = default_font_mono_regular;
+	}
+	return face;
+}
 }

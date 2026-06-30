@@ -50,7 +50,7 @@ Context* api_init_glfw(GLFWwindow* window) {
 		device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "multisample", "validation", "physical?", "rtx?", "compute?", "meshshader?", "tessellationshader?"});
 	}
 
-	auto ctx = new Context(new ygfx::Context(instance, device));
+	auto ctx = new Context(new ygfx::Context(instance, device, nullptr));
 	_create_context_stuff(ctx);
 
 	return ctx;

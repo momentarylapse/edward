@@ -17,6 +17,7 @@ namespace xhui {
 Context::Context(Window* w, ygfx::Context* ctx) {
 	window = w;
 	context = ctx;
+	font_manager = context->font_manager;
 }
 
 Painter* Context::prepare_draw() {
@@ -61,14 +62,13 @@ Context* Context::create(Window* window) {
 	glfwMakeContextCurrent(window->window);
 	nix::allow_separate_vertex_arrays = true;
 	nix::default_shader_bindings = false;
-	auto ctx = new Context(window, new ygfx::Context(nix::init()));
+	auto ctx = new Context(window, new ygfx::Context(nix::init(), global_font_manager));
 
 	ctx->context->color_space_shaders = color_space_shaders;
 	ctx->context->color_space_input = color_space_input;
 
 	ctx->context->_create_default_textures();
 	ctx->tex_white = ctx->context->tex_white;
-	ctx->tex_black = ctx->context->tex_black;
 
 	ctx->context->_create_auxiliary_stuff();
 

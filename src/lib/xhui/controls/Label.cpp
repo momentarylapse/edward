@@ -37,7 +37,7 @@ vec2 Label::get_content_min_size() const {
 				//auto l = TextLayout::from_format_string(title, );
 
 			} else {
-				auto face = pick_font(Theme::_default.font_name, bold, italic);
+				auto face = global_font_manager->pick(Theme::_default.font_name, bold, italic);
 				auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
 				text_w = dim.bounding_width / ui_scale;
 				text_h = dim.inner_height() / ui_scale;

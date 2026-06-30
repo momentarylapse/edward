@@ -28,10 +28,7 @@ namespace xhui {
 	string separator = "\\";
 
 
-	font::Face* default_font_regular = nullptr;
-	font::Face* default_font_bold = nullptr;
-	font::Face* default_font_mono_regular = nullptr;
-	font::Face* default_font_mono_bold = nullptr;
+	ygfx::FontManager* global_font_manager = nullptr;
 
 
 	Configuration config;
@@ -63,29 +60,12 @@ void init(const Array<string> &arg, const string& app_name) {
 
 	Theme::load_default();
 
-	font::init();
 
-	Array<string> font_names = {"Cantarell", "FreeSans", "OpenSans", "Helvetica", "NotoSans"};
+	const Array<string> font_names = {"Cantarell", "FreeSans", "OpenSans", "Helvetica", "NotoSans"};
+	const Array<string> font_names_mono = {"DejaVuSansMono", "Menlo", "NotoSansMono", "AdwaitaMono", "Courier New", "FreeMono"};
+	global_font_manager = new ygfx::FontManager();
+	global_font_manager->try_load_defaults(font_names, font_names_mono);
 
-	for (const string& name: font_names) {
-		if (!default_font_regular)
-			default_font_regular = font::load_face(name, false, false);
-		if (!default_font_bold)
-			default_font_bold = font::load_face(name, true, false);
-	}
-	if (default_font_regular and !default_font_bold)
-		default_font_bold = default_font_regular;
-	if (!default_font_regular)
-		msg_error("no font found...");
-
-	Array<string> font_names_mono = {"DejaVuSansMono", "Menlo", "NotoSansMono", "AdwaitaMono", "Courier New", "FreeMono"};
-	for (const string& name: font_names_mono) {
-		if (!default_font_mono_regular)
-			default_font_mono_regular = font::load_face(name, false, false);
-		if (!default_font_mono_bold)
-			default_font_mono_bold = font::load_face(name, true, false);
-	}
-	// TODO font library!
 
 	if (os::fs::exists(os::app::directory_dynamic | "config.txt"))
 		config.load(os::app::directory_dynamic | "config.txt");

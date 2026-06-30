@@ -13,6 +13,7 @@ Context::Context(Window* w, ygfx::Context* ctx) {
 	window = w;
 	context = ctx;
 	device = context->device;
+	font_manager = context->font_manager;
 }
 
 Painter* Context::prepare_draw() {
@@ -107,15 +108,13 @@ Context* Context::create(Window* window) {
 	auto instance = global_instance;
 	auto surface = instance->create_glfw_surface(window->window);
 	auto device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
-	auto ctx = new Context(window, new ygfx::Context(instance, device));
-	//msg_write("device found");
+	auto ctx = new Context(window, new ygfx::Context(instance, device, global_font_manager));
 
 	ctx->context->color_space_shaders = color_space_shaders;
 	ctx->context->color_space_input = color_space_input;
 
 	ctx->context->_create_default_textures();
 	ctx->tex_white = ctx->context->tex_white;
-	ctx->tex_black = ctx->context->tex_black;
 
 	ctx->context->_create_auxiliary_stuff();
 
