@@ -15,9 +15,9 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/Painter.h>
+#include <lib/ygraphics/TextCache.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/rect.h>
-
 #include "lib/os/msg.h"
 
 
@@ -37,8 +37,12 @@ void GuiRenderer::prepare(const RenderParams &params) {
 #endif
 	}
 	aux->reset_frame();
-	aux->iterate_text_caches();
-	gui::aux = aux.get();
+
+	if (!text_cache)
+		text_cache = new ygfx::TextCache(aux.get());
+	text_cache->iterate();
+	gui::text_cache = text_cache.get();
+
 	gui::ui_scale = params.area.height();
 
 	gui::update(params.desired_aspect_ratio);
@@ -55,7 +59,7 @@ void GuiRenderer::draw(const RenderParams& params) {
 #ifdef USING_OPENGL
 	nix::set_front(nix::Orientation::CCW);
 #endif
-	ygfx::Painter painter(aux.get(), params.area, rect(0,params.desired_aspect_ratio, 0, 1), gui::ui_scale, gui::default_font);
+	ygfx::Painter painter(aux.get(), gui::font_manager, text_cache.get(), params.area, rect(0,params.desired_aspect_ratio, 0, 1));
 
 	draw_node(painter, gui::toplevel.get(), White);
 

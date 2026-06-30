@@ -207,13 +207,12 @@ void DrawingHelperData::rebuild(RenderPass* render_pass) {
 	pipeline_lines->rebuild();
 }
 
-Context::Context(vulkan::Instance* _instance, vulkan::Device* _device, FontManager* fm) {
+Context::Context(vulkan::Instance* _instance, vulkan::Device* _device) {
 	instance = _instance;
 	device = _device;
 	color_space_shaders = ColorSpace::Linear;
 	color_space_input = ColorSpace::SRGB;
 	//num_line_vbs_used = 0;
-	font_manager = fm;
 }
 
 Context::~Context() {

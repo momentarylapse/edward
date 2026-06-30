@@ -12,7 +12,7 @@
 namespace gui {
 
 
-	extern ygfx::Face *default_font;
-	void init_fonts();
+extern ygfx::FontManager* font_manager;
+void init_fonts();
 
 }

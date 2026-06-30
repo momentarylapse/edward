@@ -19,10 +19,12 @@ namespace ygfx {
 struct DrawingHelperData;
 class Context;
 struct Face;
+class FontManager;
+class TextCache;
 
 class Painter : public ::Painter {
 public:
-	explicit Painter(DrawingHelperData* aux, const rect& native_area, const rect& area, float ui_scale, Face* _face);
+	explicit Painter(DrawingHelperData* aux, FontManager* fm, TextCache* tc, const rect& native_area, const rect& area);
 	//virtual ~Painter();
 
 	void set_color(const color &c) override;
@@ -87,6 +89,8 @@ public:
 
 	Context* context = nullptr;
 	DrawingHelperData* aux;
+	FontManager* font_manager = nullptr;
+	TextCache* text_cache = nullptr;
 #if HAS_LIB_VULKAN
 	vulkan::CommandBuffer* cb;
 #endif

@@ -33,30 +33,11 @@ public:
 	//virtual ~Painter();
 
 	void set_font(const string &font, float size, bool bold, bool italic) override;
-	void set_font_size(float size) override;
 	void draw_ximage(const rect& r, const XImage *image);
 
 	void prepare_2d_drawing();
 
 	Context* context = nullptr;
 };
-
-
-	// TODO -> ygfx
-struct TextCache {
-	string text;
-	ygfx::Face* face;
-	float font_size;
-	int age;
-	ygfx::Texture* texture;
-#if HAS_LIB_VULKAN
-	vulkan::DescriptorSet* __dset;
-#endif
-	ygfx::TextDimensions dimensions;
-};
-
-TextCache& get_text_cache(Context* context, const string& text, ygfx::Face* face, float font_size, float ui_scale);
-void iterate_text_caches();
-ygfx::TextDimensions& get_cached_text_dimensions(const string& text, ygfx::Face* face, float font_size, float ui_scale);
 
 }

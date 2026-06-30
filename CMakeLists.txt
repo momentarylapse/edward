@@ -412,6 +412,7 @@ add_executable(edward
 	src/lib/ygraphics/PainterGL.cpp
 	src/lib/ygraphics/PainterVulkan.cpp
 	src/lib/ygraphics/ShaderManager.cpp
+	src/lib/ygraphics/TextCache.cpp
 	src/lib/ygraphics/TextureManager.cpp
 	src/lib/yrenderer/helper/Bindable.cpp
 	src/lib/yrenderer/helper/ComputeTask.cpp

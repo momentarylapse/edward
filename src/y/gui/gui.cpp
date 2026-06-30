@@ -26,7 +26,7 @@ Array<Node*> all_nodes;
 shared<Node> toplevel;
 static int ch_gui_iter = -1;
 
-ygfx::DrawingHelperData* aux = nullptr;
+ygfx::TextCache* text_cache = nullptr;
 float ui_scale;
 
 

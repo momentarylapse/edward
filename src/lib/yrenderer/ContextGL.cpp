@@ -33,7 +33,7 @@ Context::Context(ygfx::Context* ctx) {
 Context* api_init_glfw(GLFWwindow* window) {
 	nix::allow_separate_vertex_arrays = true;
 	nix::default_shader_bindings = false;
-	auto ctx = new Context(new ygfx::Context(nix::init(), nullptr));
+	auto ctx = new Context(new ygfx::Context(nix::init()));
 
 	if (ctx->context->ctx->total_mem() > 0) {
 		msg_write(format("VRAM: %d mb  of  %d mb available", ctx->context->ctx->available_mem() / 1024, ctx->context->ctx->total_mem() / 1024));

@@ -10,6 +10,8 @@
 #include <lib/os/msg.h>
 #include <cmath>
 
+#include "TextCache.h"
+
 using namespace vulkan;
 
 
@@ -49,7 +51,7 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = aux->get_text_cache(str, face, font_size, ui_scale);
+	auto& tc = text_cache->get(str, face, font_size, ui_scale);
 	bool round_to_pixels = true;
 
 	float w = (float)tc.texture->width / ui_scale;

@@ -14,7 +14,7 @@
 struct vec2;
 
 namespace ygfx {
-	struct DrawingHelperData;
+	class TextCache;
 }
 
 namespace gui {
@@ -38,7 +38,7 @@ void delete_node(Node *n);
 
 Node* create_node(const string& type);
 
-extern ygfx::DrawingHelperData* aux;
+extern ygfx::TextCache* text_cache;
 extern float ui_scale;
 
 }

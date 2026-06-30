@@ -7,6 +7,7 @@
 namespace ygfx {
 	struct DrawingHelperData;
 	class FontManager;
+	class TextCache;
 }
 
 namespace xhui {
@@ -17,7 +18,7 @@ class Window;
 // "drawing context" - one per window!
 class Context {
 public:
-	explicit Context(Window* window, ygfx::Context* ctx);
+	explicit Context(Window* window, ygfx::Context* ctx, ygfx::FontManager* fm);
 	static Context* create(Window* window);
 
 #if HAS_LIB_VULKAN
@@ -33,6 +34,7 @@ public:
 	Window* window = nullptr;
 	ygfx::Context* context = nullptr;
 	ygfx::FontManager* font_manager = nullptr;
+	owned<ygfx::TextCache> text_cache;
 	ygfx::DrawingHelperData* aux = nullptr;
 #if HAS_LIB_VULKAN
 	vulkan::Device* device = nullptr;

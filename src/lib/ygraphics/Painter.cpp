@@ -8,20 +8,24 @@
 #include <lib/ygraphics/font.h>
 #include <cmath>
 
+#include "TextCache.h"
 
 
 namespace ygfx {
 
-Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& area, float _ui_scale, Face* _face) {
+Painter::Painter(DrawingHelperData* _aux, FontManager* fm, TextCache* tc, const rect& native_area, const rect& area) {
 	aux = _aux;
+	font_manager = fm;
+	text_cache = tc;
 	this->_area = area;
 	this->native_area = native_area;
 	this->native_area_window = native_area;
 	width = (int)area.width();
 	height = (int)area.height();
 	_clip = _area;
-	ui_scale = _ui_scale;
-	face = _face;
+	ui_scale = native_area.height() / area.height();
+	if (font_manager)
+		face = font_manager->default_font_regular;
 	mat_pixel_to_rel = mat4::translation({-1,-1, 0}) *  mat4::scale(2/area.width(), 2/area.height(), 1);
 #ifdef USING_OPENGL
 	// direct to window? -> flip etc
@@ -41,21 +45,6 @@ Painter::Painter(DrawingHelperData* _aux, const rect& native_area, const rect& a
 void Painter::set_color(const color &c) {
 	_color = context->color_input_to_shaders(c);
 }
-
-/*font::Face* pick_font(const string &font, bool bold, bool italic) {
-	font::Face* face;
-	if (bold)
-		face = default_font_bold;
-	else
-		face = default_font_regular;
-	if (font == "monospace") {
-		if (bold and default_font_mono_bold)
-			face = default_font_mono_bold;
-		else if (default_font_mono_regular)
-			face = default_font_mono_regular;
-	}
-	return face;
-}*/
 
 void Painter::set_font_face(Face *f) {
 	face = f;
@@ -78,7 +67,7 @@ void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 		font_name = font;
 	if (font_size > 0)
 		font_size = size;
-	//face = pick_font(font_name, bold, italic);
+	face = font_manager->pick(font_name, bold, italic);
 	if (face)
 		face->set_size(font_size * ui_scale);
 }
@@ -90,7 +79,7 @@ void Painter::set_font_size(float size) {
 }
 
 vec2 Painter::get_str_size(const string &str) {
-	const auto& dim = get_cached_text_dimensions(str, face, font_size, ui_scale);
+	const auto& dim = text_cache->get_dimensions(str, face, font_size, ui_scale);
 	return {dim.bounding_width / ui_scale, dim.inner_height() / ui_scale};
 }
 

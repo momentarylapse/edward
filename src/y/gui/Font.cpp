@@ -17,15 +17,12 @@
 
 
 namespace gui {
-	ygfx::Face *default_font = nullptr;
 	ygfx::FontManager* font_manager = nullptr;
 
 	void init_fonts() {
 		font_manager = new ygfx::FontManager();
-		default_font = font_manager->load(config.default_font, false, false);
-		if (!default_font)
-			default_font = font_manager->load("FreeSans", false, false);
-		if (!default_font)
+		font_manager->try_load_defaults({config.default_font, "FreeSans"}, {});
+		if (!font_manager->default_font_regular)
 			throw Exception("no font found...");
 
 	}

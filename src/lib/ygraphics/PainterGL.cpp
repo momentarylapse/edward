@@ -5,6 +5,8 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/image/image.h>
 
+#include "TextCache.h"
+
 
 namespace ygfx {
 
@@ -37,7 +39,7 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = aux->get_text_cache(str, face, font_size, ui_scale);
+	auto& tc = text_cache->get(str, face, font_size, ui_scale);
 	float w = (float)tc.texture->width / ui_scale;
 	float h = (float)tc.texture->height / ui_scale;
 	const auto mat = mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1);

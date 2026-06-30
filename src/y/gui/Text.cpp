@@ -11,16 +11,11 @@
 #include <lib/image/image.h>
 #include <lib/layout/Node.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/ygraphics/Context.h>
-#include <EngineData.h>
-
-#include "helper/ResourceManager.h"
-#include "lib/os/msg.h"
-
+#include <lib/ygraphics/TextCache.h>
 
 namespace gui {
 
-extern ygfx::DrawingHelperData* aux;
+extern ygfx::TextCache* text_cache;
 extern float ui_scale;
 
 
@@ -37,7 +32,8 @@ Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p
 	size_mode_x = layout::SizeMode::Shrink;
 	size_mode_y = layout::SizeMode::Shrink;
 	font_size = h;
-	font = default_font;
+	if (font_manager)
+		font = font_manager->default_font_regular;
 	text = t;
 	allow_hover = true;
 }
@@ -45,8 +41,8 @@ Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p
 Text::~Text() = default;
 
 vec2 Text::get_content_min_size() const {
-	auto& tc = aux->get_text_cache(text, font, font_size, ui_scale);
-	return tc.dimensions.inner_box({0,0}).size() / ui_scale;
+	auto& tc = text_cache->get_dimensions(text, font, font_size, ui_scale);
+	return tc.inner_box({0,0}).size() / ui_scale;
 }
 
 void Text::set_option(const string &k, const string &v) {

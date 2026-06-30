@@ -29,6 +29,7 @@ namespace xhui {
 
 
 	ygfx::FontManager* global_font_manager = nullptr;
+	ygfx::TextCache* global_text_cache = nullptr;
 
 
 	Configuration config;

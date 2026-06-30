@@ -9,6 +9,7 @@
 namespace ygfx {
 	struct Face;
 	class FontManager;
+	class TextCache;
 }
 
 class Image;
@@ -208,5 +209,6 @@ extern ygfx::Face* default_font_mono_regular;
 extern ygfx::Face* default_font_mono_bold;
 ygfx::Face* pick_font(const string &font, bool bold, bool italic);*/
 extern ygfx::FontManager* global_font_manager;
+extern ygfx::TextCache* global_text_cache;
 
 }

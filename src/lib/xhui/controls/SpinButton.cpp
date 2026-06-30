@@ -5,6 +5,7 @@
 #include "SpinButton.h"
 #include <lib/xhui/Painter.h>
 #include <lib/xhui/Theme.h>
+#include <lib/ygraphics/TextCache.h>
 #include <cmath>
 
 namespace xhui {
@@ -60,7 +61,7 @@ vec2 SpinButton::get_content_min_size() const {
 	if (owner)
 		if (auto win = owner->get_window())
 			ui_scale = win->ui_scale;
-	auto dims = get_cached_text_dimensions(f2s(_max, decimals), global_font_manager->default_font_regular, font_size, ui_scale);
+	auto dims = global_text_cache->get_dimensions(f2s(_max, decimals), global_font_manager->default_font_regular, font_size, ui_scale);
 	auto s = Edit::get_content_min_size();
 	float w = dims.bounding_width / ui_scale;
 	s.x = w + padding.x1 + padding.x2;

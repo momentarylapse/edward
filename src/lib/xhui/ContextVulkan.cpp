@@ -6,14 +6,16 @@
 #include "../os/msg.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
+#include <lib/ygraphics/TextCache.h>
+
 
 namespace xhui {
 
-Context::Context(Window* w, ygfx::Context* ctx) {
+Context::Context(Window* w, ygfx::Context* ctx, ygfx::FontManager* fm) {
 	window = w;
 	context = ctx;
 	device = context->device;
-	font_manager = context->font_manager;
+	font_manager = fm;
 }
 
 Painter* Context::prepare_draw() {
@@ -27,10 +29,6 @@ Painter* Context::prepare_draw() {
 	f->wait();
 	f->reset();
 
-	if (!aux) {
-		aux = context->_create_auxiliary_stuff();
-	}
-
 	auto cb = current_command_buffer();
 	aux->cb = cb;
 	cb->begin();
@@ -43,6 +41,7 @@ Painter* Context::prepare_draw() {
 	//if (!painter)
 	painter = new Painter(this, window, native_area, area);
 	painter->cb = cb;
+	painter->text_cache = text_cache.get();
 	return painter.get();
 }
 
@@ -69,7 +68,7 @@ void Context::end_draw(Painter *p) {
 	device->wait_idle();
 
 	aux->reset_frame();
-	iterate_text_caches();
+	text_cache->iterate();
 }
 
 
@@ -95,6 +94,7 @@ void Context::_create_swap_chain_and_stuff() {
 	frame_buffers = swap_chain->create_frame_buffers(render_pass, depth_buffer);
 
 	aux = context->_create_auxiliary_stuff();
+	text_cache->aux = aux;
 	aux->rebuild(render_pass);
 }
 
@@ -108,7 +108,7 @@ Context* Context::create(Window* window) {
 	auto instance = global_instance;
 	auto surface = instance->create_glfw_surface(window->window);
 	auto device = vulkan::Device::create_simple(instance, surface, {"graphics", "present", "swapchain", "anisotropy", "validation"});
-	auto ctx = new Context(window, new ygfx::Context(instance, device, global_font_manager));
+	auto ctx = new Context(window, new ygfx::Context(instance, device), global_font_manager);
 
 	ctx->context->color_space_shaders = color_space_shaders;
 	ctx->context->color_space_input = color_space_input;
@@ -116,7 +116,10 @@ Context* Context::create(Window* window) {
 	ctx->context->_create_default_textures();
 	ctx->tex_white = ctx->context->tex_white;
 
-	ctx->context->_create_auxiliary_stuff();
+	ctx->aux = ctx->context->_create_auxiliary_stuff();
+
+	ctx->text_cache = new ygfx::TextCache(ctx->aux);
+	global_text_cache = ctx->text_cache.get();
 
 
 	ctx->image_available_semaphore = new vulkan::Semaphore(device);
@@ -124,7 +127,6 @@ Context* Context::create(Window* window) {
 
 
 	ctx->framebuffer_resized = false;
-
 
 
 	ctx->_create_swap_chain_and_stuff();

@@ -2,7 +2,7 @@
 #include "../Painter.h"
 #include "../Theme.h"
 #include "../TextLayout.h"
-#include <lib/ygraphics/font.h>
+#include <lib/ygraphics/TextCache.h>
 
 namespace xhui {
 
@@ -38,7 +38,7 @@ vec2 Label::get_content_min_size() const {
 
 			} else {
 				auto face = global_font_manager->pick(Theme::_default.font_name, bold, italic);
-				auto dim = get_cached_text_dimensions(title, face, font_size, ui_scale);
+				auto dim = global_text_cache->get_dimensions(title, face, font_size, ui_scale);
 				text_w = dim.bounding_width / ui_scale;
 				text_h = dim.inner_height() / ui_scale;
 			}
@@ -77,11 +77,11 @@ void Label::_draw(Painter *p) {
 
 		p->set_font(Theme::_default.font_name, font_size, bold, italic);
 		auto title_eff = title;
-		auto dim = get_cached_text_dimensions(title, p->face, font_size, ui_scale);
+		auto dim = global_text_cache->get_dimensions(title, p->face, font_size, ui_scale);
 		if (ellipsis and dim.bounding_width / ui_scale > area.width() - padding.width()) {
 			for (int n=title.num/2-1; n>=2; n--) {
 				title_eff = title.head(n) + "..." + title.tail(n);
-				dim = get_cached_text_dimensions(title_eff, p->face, font_size, ui_scale);
+				dim = global_text_cache->get_dimensions(title_eff, p->face, font_size, ui_scale);
 				if (dim.bounding_width / ui_scale <= area.width() - padding.width())
 					break;
 			}

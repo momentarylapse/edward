@@ -9,12 +9,14 @@
 
 #include <lib/yrenderer/Renderer.h>
 
+
 namespace gui {
 	class Node;
 }
 
 namespace ygfx {
 	struct DrawingHelperData;
+	class TextCache;
 	class Painter;
 }
 
@@ -27,6 +29,7 @@ public:
 	void draw(const yrenderer::RenderParams& params) override;
 	void draw_node(ygfx::Painter& p, gui::Node* n, const color& group_col);
 
+	owned<ygfx::TextCache> text_cache;
 	owned<ygfx::DrawingHelperData> aux;
 };
 

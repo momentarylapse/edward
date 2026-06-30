@@ -17,7 +17,7 @@ static constexpr float dpi = 96;
 
 
 #if HAS_LIB_FREETYPE2
-Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic) {
+Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic, const Array<Path>& directories) {
 	Face* face = new Face;
 	face->name = name;
 	face->bold = bold;
@@ -69,6 +69,9 @@ Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic) {
 	if (!try_load_font(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", ""))))
 	if (!try_load_font(format("/usr/share/fonts/truetype/dejavu/%s.ttf", namex.replace(" ", "-"))))
 	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
+		for (const auto& dir: directories)
+			if (try_load_font(format("%s/%s.ttf", dir, name)))
+				return face;
 		delete face;
 		return nullptr;
 	}
@@ -240,7 +243,7 @@ Face* FontManager::load(const string& name, bool bold, bool italic) {
 		if (f->name == name and f->bold == bold and f->italic == italic)
 			return f;
 
-	if (auto f = load_face(ft2, name, bold, italic)) {
+	if (auto f = load_face(ft2, name, bold, italic, directories)) {
 		faces.add(f);
 		return f;
 	}

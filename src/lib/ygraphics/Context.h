@@ -14,18 +14,6 @@ namespace ygfx {
 class Context;
 class FontManager;
 
-struct TextCache {
-	string text;
-	Face* face;
-	float font_size;
-	int age;
-	Texture* texture;
-#if HAS_LIB_VULKAN
-	vulkan::DescriptorSet* dset;
-#endif
-	TextDimensions dimensions;
-};
-
 struct DrawingHelperData {
 	explicit DrawingHelperData(Context*);
 	void create_basic();
@@ -67,18 +55,14 @@ struct DrawingHelperData {
 	const mat4* projection_matrix = nullptr;
 
 	void reset_frame();
-
-	Array<TextCache> text_caches;
-	TextCache& get_text_cache(const string& text, Face* face, float font_size, float ui_scale);
-	void iterate_text_caches();
 };
 
 class Context {
 public:
 #if HAS_LIB_VULKAN
-	explicit Context(vulkan::Instance* instance, vulkan::Device* device, FontManager* fm);
+	explicit Context(vulkan::Instance* instance, vulkan::Device* device);
 #else
-	explicit Context(nix::Context* ctx, FontManager* fm);
+	explicit Context(nix::Context* ctx);
 #endif
 	~Context();
 
@@ -89,8 +73,6 @@ public:
 	nix::Context* ctx = nullptr;
 #endif
 	Shader* create_shader(const string& source) const;
-
-	FontManager* font_manager = nullptr;
 
 	void make_current();
 
@@ -105,8 +87,6 @@ public:
 	Texture* tex_black = nullptr;
 	void _create_default_textures();
 };
-
-TextDimensions& get_cached_text_dimensions(const string& text, Face* face, float font_size, float ui_scale);
 
 }
 
