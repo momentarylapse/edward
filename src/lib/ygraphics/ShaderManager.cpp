@@ -3,13 +3,13 @@
 //
 
 #include "ShaderManager.h"
+#include "graphics-impl.h"
+#include "Context.h"
 #include <lib/os/filesystem.h>
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/os/app.h>
 #include <lib/image/image.h>
-#include <lib/ygraphics/graphics-impl.h>
-#include <lib/ygraphics/Context.h>
 
 static const string DEFAULT_BINDINGS = "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]";
 static constexpr int DEFAULT_PUSH_SIZE = 96;
@@ -21,7 +21,7 @@ namespace vulkan {
 }
 #endif
 
-namespace yrenderer {
+namespace ygfx {
 
 Path guess_absolute_path(const Path &filename, const Array<Path>& dirs) {
 	if (filename.is_empty())
@@ -44,35 +44,35 @@ Path guess_absolute_path(const Path &filename, const Array<Path>& dirs) {
 }
 
 
-ShaderManager::ShaderManager(ygfx::Context* _ctx, const Array<Path>& _shader_dirs) {
+ShaderManager::ShaderManager(Context* _ctx, const Array<Path>& _shader_dirs) {
 	ctx = _ctx;
 	shader_dirs = _shader_dirs;
 	default_shader = "default.shader";
 }
 
 
-xfer<ygfx::Shader> ShaderManager::__load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size) {
+xfer<Shader> ShaderManager::__load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size) {
 #ifdef USING_VULKAN
 	//msg_write("loading shader: " + str(path));
 	vulkan::overwrite_bindings = overwrite_bindings;
 	vulkan::overwrite_push_size = overwrite_push_size;
-	return ygfx::Shader::load(path);
+	return Shader::load(path);
 #else
 	return ctx->ctx->load_shader(path);
 #endif
 }
 
-xfer<ygfx::Shader> ShaderManager::__create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size) {
+xfer<Shader> ShaderManager::__create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size) {
 #ifdef USING_VULKAN
 	vulkan::overwrite_bindings = overwrite_bindings;
 	vulkan::overwrite_push_size = overwrite_push_size;
-	return ygfx::Shader::create(source);
+	return Shader::create(source);
 #else
 	return ctx->ctx->create_shader(source);
 #endif
 }
 
-shared<ygfx::Shader> ShaderManager::load_shader(const Path& filename) {
+shared<Shader> ShaderManager::load_shader(const Path& filename) {
 	//if (!filename)
 	//	TODO default shader?
 	//	return __load_shader("");
@@ -136,7 +136,7 @@ string ShaderManager::expand_tessellation_evaluation_shader_source(const string 
 	return source + format("\n<TessellationEvaluationShader>\n#import tessellation-evaluation-%s\n</TessellationEvaluationShader>", variant);
 }
 
-shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, const string& render_path, const string& vertex_module, const string& geometry_module, const string& tessellation_module) {
+shared<Shader> ShaderManager::load_surface_shader(const Path& _filename, const string& render_path, const string& vertex_module, const string& geometry_module, const string& tessellation_module) {
 	//msg_write("load_surface_shader: " + str(_filename) + "  " + render_path + "  " + vertex_module + "  " + geometry_module);
 	//select_default_vertex_module("vertex-" + variant);
 	//return load_shader(filename);
@@ -192,7 +192,7 @@ shared<ygfx::Shader> ShaderManager::load_surface_shader(const Path& _filename, c
 	return shader;
 }
 
-ygfx::Shader* ShaderManager::create_shader(const string &source) {
+Shader* ShaderManager::create_shader(const string &source) {
 	return __create_shader(source, "", -1);
 }
 

@@ -8,14 +8,13 @@
 #include "FormatMaterial.h"
 #include "../../Session.h"
 //#include "../../data/material/ShaderGraph.h"
-#include "../../lib/nix/nix.h"
-#include "../../lib/os/config.h"
-#include "../../lib/os/file.h"
-#include "../../lib/os/formatter.h"
-#include "../../lib/os/msg.h"
+#include <lib/os/config.h>
+#include <lib/os/file.h>
+#include <lib/os/formatter.h>
+#include <lib/os/msg.h>
 #include "helper/ResourceManager.h"
-#include "lib/yrenderer/MaterialManager.h"
-#include "lib/yrenderer/TextureManager.h"
+#include <lib/yrenderer/MaterialManager.h>
+#include <lib/ygraphics/TextureManager.h>
 
 namespace yrenderer {
 	color any2color(const Any &a);

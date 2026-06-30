@@ -14,6 +14,7 @@
 #include <lib/kaba/lib/lib.h>
 #include <lib/syntaxhighlight/Theme.h>
 #include <lib/xhui/Application.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <mode_material/data/DataMaterial.h>
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>

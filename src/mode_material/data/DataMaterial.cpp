@@ -14,7 +14,7 @@
 #include "../../lib/os/file.h"
 #include "../../lib/os/msg.h"
 #include <y/helper/ResourceManager.h>
-#include <lib/yrenderer/TextureManager.h>
+#include <lib/ygraphics/TextureManager.h>
 
 #include "view/DocumentSession.h"
 

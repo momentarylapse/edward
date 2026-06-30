@@ -4,7 +4,7 @@
 
 #include "MaterialManager.h"
 #include "Context.h"
-#include "TextureManager.h"
+#include <lib/ygraphics/TextureManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/any/any.h>
 #include <lib/os/msg.h>

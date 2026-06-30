@@ -1,7 +1,7 @@
 #include "Material.h"
 #include <lib/os/msg.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include "ShaderManager.h"
+#include <lib/ygraphics/ShaderManager.h>
 
 #include "Context.h"
 

@@ -7,13 +7,15 @@
 #include "Material.h"
 #include <lib/pattern/Observable.h>
 
-namespace yrenderer {
+namespace ygfx {
+	class TextureManager;
+}
 
-class TextureManager;
+namespace yrenderer {
 
 class MaterialManager : public obs::Node<VirtualBase> {
 public:
-	explicit MaterialManager(TextureManager* texture_manager, const Array<Path>& material_dirs);
+	explicit MaterialManager(ygfx::TextureManager* texture_manager, const Array<Path>& material_dirs);
 	~MaterialManager() override;
 
 	obs::xsource<Material*> out_material_edited{this, "material-edited"};
@@ -38,7 +40,7 @@ public:
 	void _write_to_file(Material* material, const Path& filename);
 
 private:
-	TextureManager* texture_manager;
+	ygfx::TextureManager* texture_manager;
 	Material* default_material;
 	Material* trivial_material;
 	base::map<Path, Material*> materials; // "originals" owned!

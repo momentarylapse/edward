@@ -1,7 +1,7 @@
 #include "MultisampleResolver.h"
 #include "ThroughShaderRenderer.h"
 #include "../target/TextureRenderer.h"
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 
 // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing

@@ -13,14 +13,17 @@
 
 struct GLFWwindow;
 
+class Path;
 namespace xhui {
-class Painter;
+	class Painter;
+}
+namespace ygfx {
+	class ShaderManager;
+	class TextureManager;
 }
 
 namespace yrenderer {
 
-class ShaderManager;
-class TextureManager;
 class MaterialManager;
 struct Material;
 
@@ -30,9 +33,8 @@ struct Context {
 	~Context();
 
 	ygfx::Context* context;
-
-	ShaderManager* shader_manager = nullptr;
-	TextureManager* texture_manager = nullptr;
+	ygfx::ShaderManager* shader_manager = nullptr;
+	ygfx::TextureManager* texture_manager = nullptr;
 	MaterialManager* material_manager = nullptr;
 
 	ygfx::Texture* tex_white;

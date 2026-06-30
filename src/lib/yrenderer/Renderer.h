@@ -6,23 +6,22 @@
  */
 
 #pragma once
-#include "ShaderManager.h"
-
-
-struct rect;
-
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/base/pointer.h>
 #include <lib/base/optional.h>
 #include <lib/math/rect.h>
 
+struct rect;
 struct color;
+
+namespace ygfx {
+	class ShaderManager;
+}
 
 namespace yrenderer {
 
 struct Context;
 class RenderTask;
-class ShaderManager;
 class Renderer;
 
 rect dynamicly_scaled_area(ygfx::FrameBuffer *fb);
@@ -62,7 +61,7 @@ public:
 
 	int channel;
 	Context* ctx;
-	ShaderManager* shader_manager;
+	ygfx::ShaderManager* shader_manager;
 };
 
 class Renderer : public Node {

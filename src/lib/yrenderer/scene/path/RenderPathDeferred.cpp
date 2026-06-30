@@ -18,7 +18,7 @@
 #include <lib/math/vec4.h>
 #include <lib/math/vec2.h>
 #include <lib/profiler/Profiler.h>
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <cmath>

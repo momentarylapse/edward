@@ -52,9 +52,16 @@ void GuiRenderer::draw(const RenderParams& params) {
 #ifdef USING_VULKAN
 	aux->cb = params.command_buffer;
 #endif
+#ifdef USING_OPENGL
+	nix::set_front(nix::Orientation::CCW);
+#endif
 	ygfx::Painter painter(aux.get(), params.area, rect(0,params.desired_aspect_ratio, 0, 1), gui::ui_scale, gui::default_font);
 
 	draw_node(painter, gui::toplevel.get(), White);
+
+#ifdef USING_OPENGL
+	nix::set_front(nix::Orientation::CW);
+#endif
 
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);
@@ -74,10 +81,14 @@ void GuiRenderer::draw_node(ygfx::Painter& painter, gui::Node* n, const color& g
 	} else if (n->type == gui::Node::Type::PICTURE) {
 		auto p = static_cast<gui::Picture*>(n);
 		//col *= p->col;
+		painter.set_fill(true);
 		painter.set_color(p->col);
 		painter.set_roundness(p->radius);
 		painter.set_texture(p->texture.get());
-		painter.set_shader(p->shader.get());
+		if (p->shader) {
+			painter.set_shader(p->shader.get());
+			painter.set_shader_data(p->shader_data);
+		}
 		painter.draw_rect(p->area);
 		painter.set_roundness(0);
 		painter.set_shader(nullptr);

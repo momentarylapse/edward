@@ -19,7 +19,7 @@
 #include <lib/yrenderer/target/TextureRenderer.h>
 #include <lib/yrenderer/helper/CubeMapSource.h>
 #include "../helper/ResourceManager.h"
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <world/components/Camera.h>
 #include <world/components/Light.h>

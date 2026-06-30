@@ -10,7 +10,7 @@
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/target/TextureRenderer.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/math/vec2.h>
 #include <lib/math/mat4.h>

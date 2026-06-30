@@ -14,7 +14,7 @@
 #include <lib/os/msg.h>
 #include <lib/any/conversion.h>
 #include <lib/profiler/Profiler.h>
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/yrenderer/scene/CameraParams.h>
 #include "../../world/components/Camera.h"
 #include "../../world/World.h"

@@ -12,7 +12,7 @@
 #include <lib/yrenderer/helper/CubeMapSource.h>
 #include <lib/image/image.h>
 #include <lib/profiler/Profiler.h>
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 
 
 namespace yrenderer {

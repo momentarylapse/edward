@@ -20,7 +20,7 @@
 #include <lib/profiler/Profiler.h>
 #include <Config.h>
 #include <helper/ResourceManager.h>
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 
 // for debugging
 #include <lib/ygraphics/graphics-impl.h>

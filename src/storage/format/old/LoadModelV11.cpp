@@ -18,7 +18,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 
 #include "lib/yrenderer/MaterialManager.h"
-#include "lib/yrenderer/TextureManager.h"
+#include "lib/ygraphics/TextureManager.h"
 
 vec3 get_normal_by_index(int index);
 

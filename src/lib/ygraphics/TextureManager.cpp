@@ -3,18 +3,18 @@
 //
 
 #include "TextureManager.h"
+#include "graphics-impl.h"
+#include "Context.h"
 #include <lib/os/filesystem.h>
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/image/image.h>
-#include <lib/ygraphics/graphics-impl.h>
-#include <lib/ygraphics/Context.h>
 
-namespace yrenderer {
+namespace ygfx {
 
 Path guess_absolute_path(const Path &filename, const Array<Path>& dirs);
 
-TextureManager::TextureManager(ygfx::Context *_ctx, const Array<Path>& _texture_dirs) {
+TextureManager::TextureManager(Context *_ctx, const Array<Path>& _texture_dirs) {
 	ctx = _ctx;
 	texture_dirs = _texture_dirs;
 
@@ -23,7 +23,7 @@ TextureManager::TextureManager(ygfx::Context *_ctx, const Array<Path>& _texture_
 	}
 }
 
-Path TextureManager::get_filename(const ygfx::Texture* t) const {
+Path TextureManager::get_filename(const Texture* t) const {
 	for (auto&& [key, _t]: texture_map)
 		if (_t == t)
 			return key.relative_to(texture_dirs[0]); // FIXME
@@ -45,7 +45,7 @@ string split_filename_flags(Path& filename) {
 	return flags;
 }
 
-shared<ygfx::Texture> TextureManager::load_texture(const Path& filename_with_flags) {
+shared<Texture> TextureManager::load_texture(const Path& filename_with_flags) {
 	Path filename = filename_with_flags;
 	string flags = split_filename_flags(filename);
 
@@ -76,7 +76,7 @@ shared<ygfx::Texture> TextureManager::load_texture(const Path& filename_with_fla
 	if (flags.find("@linear") >= 0)
 		color_space = ColorSpace::Linear;
 
-	auto t = new ygfx::Texture();
+	auto t = new Texture();
 	t->write_with_color_space(*im, color_space);
 
 	textures.add(t);

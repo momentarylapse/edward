@@ -13,12 +13,15 @@ struct Template;
 class TemplateManager;
 class TerrainManager;
 
+namespace ygfx {
+	class ShaderManager;
+	class TextureManager;
+}
+
 namespace yrenderer {
 	struct Context;
 	struct Material;
 	class MaterialManager;
-	class ShaderManager;
-	class TextureManager;
 }
 
 class ResourceManager {
@@ -28,8 +31,8 @@ public:
 	yrenderer::Context* ctx;
 	yrenderer::MaterialManager* material_manager;
 	ModelManager* model_manager;
-	yrenderer::ShaderManager* shader_manager;
-	yrenderer::TextureManager* texture_manager;
+	ygfx::ShaderManager* shader_manager;
+	ygfx::TextureManager* texture_manager;
 	owned<TemplateManager> template_manager;
 	owned<TerrainManager> terrain_manager;
 	Path map_dir;

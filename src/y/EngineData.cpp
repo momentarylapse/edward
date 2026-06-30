@@ -7,15 +7,10 @@
 
 
 #include "EngineData.h"
-#include <lib/config.h>
 #include <lib/base/sort.h>
-#include <lib/nix/nix.h>
 #include <lib/kaba/kaba.h>
 #include <lib/yrenderer/Renderer.h>
-
 #include <helper/ResourceManager.h>
-#include <lib/yrenderer/ShaderManager.h>
-#include <lib/yrenderer/TextureManager.h>
 
 const string EngineData::CURRENT_API_VERSION = "0.21";
 

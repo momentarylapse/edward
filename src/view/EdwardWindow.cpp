@@ -19,6 +19,7 @@
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/Context.h>
 #include <lib/yrenderer/helper/LineHelper.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <y/EngineData.h>
 #include "ActionController.h"
 #include "DrawingHelper.h"

@@ -10,6 +10,7 @@
 #include <lib/yrenderer/scene/pass/ShadowRenderer.h>
 #include <lib/yrenderer/scene/pass/CubeMapRenderer.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/ShaderManager.h>
 
 namespace yrenderer {
 

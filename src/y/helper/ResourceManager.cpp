@@ -1,6 +1,6 @@
 #include "ResourceManager.h"
-#include <lib/yrenderer/ShaderManager.h>
-#include <lib/yrenderer/TextureManager.h>
+#include <lib/ygraphics/ShaderManager.h>
+#include <lib/ygraphics/TextureManager.h>
 #include <lib/os/filesystem.h>
 #include <EngineData.h>
 #include <lib/ygraphics/graphics-impl.h>
@@ -137,10 +137,10 @@ public:
 
 ResourceManager::ResourceManager(yrenderer::Context* _ctx, const Path& object_dir, const Path& terrain_dir, const Array<Path>& texture_dirs, const Array<Path>& material_dirs, const Array<Path>& shader_dirs) {
 	ctx = _ctx;
-	texture_manager = new yrenderer::TextureManager(ctx ? ctx->context : nullptr, texture_dirs);
+	texture_manager = new ygfx::TextureManager(ctx ? ctx->context : nullptr, texture_dirs);
+	shader_manager = new ygfx::ShaderManager(ctx ? ctx->context : nullptr, shader_dirs);
 	material_manager = new yrenderer::MaterialManager(texture_manager, material_dirs);
 	model_manager = new ModelManager(this, material_manager, object_dir);
-	shader_manager = new yrenderer::ShaderManager(ctx ? ctx->context : nullptr, shader_dirs);
 	shader_manager->ignore_missing_files = engine.ignore_missing_files;
 	template_manager = new TemplateManager(object_dir);
 	terrain_manager = new TerrainManager(terrain_dir);

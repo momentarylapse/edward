@@ -16,7 +16,7 @@
 #include "../gui/Canvas.h"
 #include "../helper/DeletionQueue.h"
 #include "../helper/ResourceManager.h"
-#include <lib/yrenderer/ShaderManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include <lib/yrenderer/_kaba_export.h>
 #include <lib/profiler/_kaba_export.h>
 #include "../helper/Scheduler.h"

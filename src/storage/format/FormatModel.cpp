@@ -22,7 +22,7 @@
 #include <cmath>
 
 #include <lib/yrenderer/MaterialManager.h>
-#include <lib/yrenderer/TextureManager.h>
+#include <lib/ygraphics/TextureManager.h>
 
 FormatModel::FormatModel(Session *s) : TypedFormat<DataModel>(s, FD_MODEL, "model", "Model", Flag::CANONICAL_READ_WRITE) {
 }

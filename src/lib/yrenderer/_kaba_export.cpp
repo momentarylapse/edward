@@ -1,13 +1,13 @@
 #include "../image/image.h"
 #include "../kapi/KabaExporter.h"
 #include "../os/msg.h"
-#include "../ygraphics/graphics-impl.h"
-#include "../ygraphics/Context.h"
+#include <lib/ygraphics/graphics-impl.h>
+#include <lib/ygraphics/Context.h>
 #include "Context.h"
 #include "Material.h"
 #include "MaterialManager.h"
-#include "TextureManager.h"
-#include "ShaderManager.h"
+#include <lib/ygraphics/TextureManager.h>
+#include <lib/ygraphics/ShaderManager.h>
 #include "helper/ComputeTask.h"
 #include "helper/CubeMapSource.h"
 #include "helper/LightMeter.h"

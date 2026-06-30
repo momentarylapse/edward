@@ -8,13 +8,12 @@
 \*----------------------------------------------------------------------------*/
 
 #include "Terrain.h"
-#include <lib/yrenderer/Material.h>
-#include <lib/yrenderer/TextureManager.h>
-#include <lib/yrenderer/Context.h>
 #include "World.h"
 #include <EngineData.h>
 #include <Config.h>
 #include <helper/ResourceManager.h>
+#include <lib/yrenderer/Material.h>
+#include <lib/ygraphics/TextureManager.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/vec3.h>
 #include <lib/math/plane.h>
