@@ -175,10 +175,7 @@ add_executable(edward
 	src/lib/base/strings.cpp
 	src/lib/codeeditor/_kaba_export.cpp
 	src/lib/codeeditor/CodeEditor.cpp
-	src/lib/doc/_kaba_export.cpp
 	src/lib/doc/chunked.cpp
-	src/lib/doc/pdf.cpp
-	src/lib/doc/ttf.cpp
 	src/lib/doc/xml.cpp
 	src/lib/history/Action.cpp
 	src/lib/history/ActionGroup.cpp
