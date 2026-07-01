@@ -19,14 +19,13 @@ public:
 	Picture(const rect &r, shared<ygfx::Texture> tex, const rect &source = rect::ID);
 	~Picture() override;
 
-	vec2 get_content_min_size() const override;
 	void set_option(const string &k, const string &v) override;
 
 	rect source;
 
 	float bg_blur;
 	float angle;
-	float radius;
+	float radius, softness;
 
 	shared<ygfx::Shader> shader;
 	shared<ygfx::Texture> texture;

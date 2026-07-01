@@ -305,7 +305,7 @@ static shaderc_compiler_t shaderc = nullptr;
 				m.source = p.source;
 				m.meta = meta;
 				shader_modules.add(m);
-				if (verbosity >= 1)
+				if (verbosity >= 2)
 					msg_write("new module '" + m.meta.name + "'");
 				return nullptr;
 			} else if ((int)p.type == TYPE_LAYOUT) {

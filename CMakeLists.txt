@@ -593,9 +593,9 @@ add_executable(edward
 	src/y/gui/Canvas.cpp
 	src/y/gui/Font.cpp
 	src/y/gui/gui.cpp
+	src/y/gui/Label.cpp
 	src/y/gui/Node.cpp
 	src/y/gui/Picture.cpp
-	src/y/gui/Text.cpp
 	src/y/helper/DeletionQueue.cpp
 	src/y/helper/ErrorHandler.cpp
 	src/y/helper/ResourceManager.cpp

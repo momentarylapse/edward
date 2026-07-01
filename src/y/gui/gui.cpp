@@ -8,7 +8,7 @@
 #include "gui.h"
 #include "Node.h"
 #include "Font.h"
-#include "Text.h"
+#include "Label.h"
 #include "Canvas.h"
 #include <lib/math/rect.h>
 #include <lib/kaba/kaba.h>
@@ -142,8 +142,8 @@ Node* create_node(const string& type) {
 		return new Node();
 	if (type == "Picture" or type == "Rectangle")
 		return new Picture();
-	if (type == "Text")
-		return new Text();
+	if (type == "Label")
+		return new Label();
 	if (type == "Canvas")
 		return new Canvas();
 	if (type == "HBox")
@@ -152,6 +152,7 @@ Node* create_node(const string& type) {
 		return new VBox();
 	if (type.find(".") >= 0)
 		return static_cast<Node*>(PluginManager::create_instance_auto(type));
+	msg_error("unknown ui node type: " + type);
 	return nullptr;
 }
 

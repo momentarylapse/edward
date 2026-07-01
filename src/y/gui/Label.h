@@ -1,5 +1,5 @@
 /*
- * Text.h
+ * Label.h
  *
  *  Created on: 04.01.2020
  *      Author: michi
@@ -15,11 +15,11 @@ namespace ygfx {
 
 namespace gui {
 
-class Text : public Picture {
+class Label : public Picture {
 public:
-	Text();
-	Text(const string &t, float h, const vec2 &p);
-	~Text() override;
+	Label();
+	Label(const string &t, float h, const vec2 &p);
+	~Label() override;
 
 	vec2 get_content_min_size() const override;
 	void set_option(const string &k, const string &v) override;

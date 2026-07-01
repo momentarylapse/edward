@@ -31,7 +31,7 @@ public:
 		HBOX,
 		VBOX,
 		PICTURE,
-		TEXT,
+		LABEL,
 		MODEL,
 		CANVAS
 	};
@@ -49,12 +49,14 @@ public:
 	shared_array<Node> children;
 
 	void add(shared<Node> n);
-	void add_from_source(const string& source);
+	Node* add_from_source(const string& source);
+	Node* add_from_resource(const layout::Resource& r);
 	void apply_resource(const layout::Resource& r);
 	void remove(Node &n);
 	void remove_all_children();
 	Node* get(const string &id);
 
+	void set_pos(const vec2& pos);
 	void set_area(const rect& area);
 
 	Array<const layout::Node *> _get_children(layout::ChildFilter f) const override;
@@ -76,10 +78,10 @@ public:
 class HBox : public Node {
 public:
 	HBox();
-
-	/*vec2 get_greed_factor() const override;
+	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;
-	void negotiate_content_area(const rect& available) override;*/
+	void negotiate_content_area(const rect& available) override;
+	void set_option(const string &key, const string &value) override;
 	float spacing = 0;
 };
 
@@ -90,7 +92,6 @@ public:
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect& available) override;
 	void set_option(const string &key, const string &value) override;
-	Array<float> get_min_heights() const;
 	float spacing = 0;
 };
 

@@ -21,8 +21,11 @@ Picture::Picture() {
 	bg_blur = 0;
 	angle = 0;
 	radius = 0;
+	softness = 0;
 	visible = true;
 	allow_hover = true;
+	size_mode_x = layout::SizeMode::Shrink;
+	size_mode_y = layout::SizeMode::Shrink;
 }
 
 Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s) : Picture() {
@@ -38,10 +41,6 @@ Picture::Picture(const rect &r, shared<ygfx::Texture> tex, const rect &s) : Pict
 
 Picture::~Picture() = default;
 
-vec2 Picture::get_content_min_size() const {
-	return {0, 0};
-}
-
 void Picture::set_option(const string &k, const string &v) {
 	if (k == "texture") {
 		// ...
@@ -49,6 +48,8 @@ void Picture::set_option(const string &k, const string &v) {
 		angle = v._float();
 	} else if (k == "radius") {
 		radius = v._float();
+	} else if (k == "softness") {
+		softness = v._float();
 	} else {
 		Node::set_option(k, v);
 	}

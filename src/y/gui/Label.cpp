@@ -1,11 +1,11 @@
 /*
- * Text.cpp
+ * Label.cpp
  *
  *  Created on: 04.01.2020
  *      Author: michi
  */
 
-#include "Text.h"
+#include "Label.h"
 #include "Font.h"
 #include <lib/math/vec2.h>
 #include <lib/image/image.h>
@@ -19,10 +19,10 @@ extern ygfx::TextCache* text_cache;
 extern float ui_scale;
 
 
-Text::Text() : Text("", 0.05f, {0,0}) {}
+Label::Label() : Label("", 0.02f, {0,0}) {}
 
-Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
-	type = Type::TEXT;
+Label::Label(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p.y), nullptr) {//rect::ID
+	type = Type::LABEL;
 	//margin = rect(x, h/6, y, h/10);
 	margin.x1 = p.x;
 	margin.y1 = p.y;
@@ -38,14 +38,14 @@ Text::Text(const string &t, float h, const vec2 &p) : Picture(rect(p.x,p.x,p.y,p
 	allow_hover = true;
 }
 
-Text::~Text() = default;
+Label::~Label() = default;
 
-vec2 Text::get_content_min_size() const {
+vec2 Label::get_content_min_size() const {
 	auto& tc = text_cache->get_dimensions(text, font, font_size, ui_scale);
 	return tc.inner_box({0,0}).size() / ui_scale;
 }
 
-void Text::set_option(const string &k, const string &v) {
+void Label::set_option(const string &k, const string &v) {
 	if (k == "size") {
 		font_size = v._float();
 	} else if (k == "text") {

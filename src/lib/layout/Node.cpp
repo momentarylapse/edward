@@ -31,7 +31,10 @@ Node::~Node() = default;
 
 
 vec2 Node::get_content_min_size() const {
-	return {0,0};
+	vec2 s = {0,0};
+	for (auto c: _get_children(ChildFilter::OnlyActive))
+		s = vec2::max(s, c->get_effective_min_size());
+	return s;
 }
 
 vec2 Node::get_greed_factor() const {
@@ -53,6 +56,8 @@ vec2 Node::get_effective_min_size() const {
 }
 
 void Node::negotiate_content_area(const rect &available) {
+	for (auto c: _get_children(ChildFilter::OnlyActive))
+		const_cast<Node*>(c)->negotiate_outer_area(content_area());
 }
 
 void Node::negotiate_outer_area(const rect& _available) {

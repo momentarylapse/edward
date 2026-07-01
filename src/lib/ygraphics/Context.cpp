@@ -147,11 +147,11 @@ void main() {
 	out_color = texture(tex0, in_uv);
 	out_color *= color * in_color;
 	if (softness >= 0.5) {
-		vec2 pp = (abs(in_uv - 0.5) * size - (0.5*size-softness-radius));
+		vec2 pp = ((abs(in_uv - 0.5) - 0.5) * size + radius + softness);
 		pp = clamp(pp, 0, 1000);
 		out_color.a *= 1 - clamp((length(pp) - radius) / softness, 0, 1);
 	} else {
-		vec2 pp = (abs(in_uv - 0.5) * size - (0.5*size-radius));
+		vec2 pp = ((abs(in_uv - 0.5) - 0.5) * size + radius);
 		pp = clamp(pp, 0, 1000);
 		out_color.a *= 1 - clamp((length(pp) - radius), 0, 1);
 	}

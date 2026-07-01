@@ -19,7 +19,7 @@
 #include "../gui/gui.h"
 #include "../gui/Node.h"
 #include "../gui/Picture.h"
-#include "../gui/Text.h"
+#include "../gui/Label.h"
 #include "../gui/Canvas.h"
 #include "../helper/DeletionQueue.h"
 #include "../helper/ResourceManager.h"

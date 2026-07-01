@@ -4,6 +4,9 @@
 
 #include "Grid.h"
 #include <lib/base/algo.h>
+#include <lib/base/iter.h>
+
+#include "lib/os/msg.h"
 
 namespace layout {
 
@@ -129,6 +132,157 @@ void Grid::set_option(const string& key, const string& value) {
 		spacing = value._float();
 	} else if (key == "vertical") {
 		vertical = true;
+	}
+}
+
+
+
+
+
+vec2 hbox_get_content_min_size(const Array<Node*>& children, float spacing) {
+	vec2 s = {0,0};
+	for (auto c: children) {
+		if (s.x > 0)
+			s.x += spacing;
+		if (c->visible) {
+			const auto ss = c->get_effective_min_size();
+			s.y = max(s.y, ss.y);
+			s.x += ss.x;
+		}
+	}
+	return s;
+}
+
+Array<float> hbox_get_greed_factors(const Array<Node*>& children) {
+	Array<float> x;
+	x.resize(children.num);
+	for (auto&& [i, c]: enumerate(children))
+		if (c->visible) {
+			if (c->size_mode_x == SizeMode::Fill)
+				x[i] = 1;
+			else if (c->size_mode_x == SizeMode::Expand)
+				x[i] = c->get_greed_factor().x;
+		}
+	return x;
+}
+
+vec2 hbox_get_greed_factor(const Node* self, const Array<Node*>& children) {
+	Array<float> xx = hbox_get_greed_factors(children);
+	vec2 f = {0, 0};
+	if (self->size_mode_x == SizeMode::Expand)
+		f.x = self->greed_factor.x;
+	else if (self->size_mode_x == SizeMode::ForwardChild)
+		f.x = sum(xx);
+	return f;
+}
+
+Array<float> hbox_get_min_widths(const Array<Node*>& children) {
+	Array<float> w;
+	w.resize(children.num);
+	for (auto&& [i, c]: enumerate(children))
+		if (c->visible)
+			w[i] = c->get_effective_min_size().x;
+	return w;
+}
+
+void hbox_negotiate_content_area(const Node* self, const rect& available, const Array<Node*>& children, float spacing) {
+	auto w = hbox_get_min_widths(children);
+	vec2 total_min_size = hbox_get_content_min_size(children, spacing);
+	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
+
+	auto gx = hbox_get_greed_factors(children);
+	float total_greed_x = sum(gx);
+
+	float greed_to_x = (total_greed_x > 0) ? diff_x / total_greed_x : 0;
+
+	for (int i=0; i<w.num; i++)
+		w[i] += greed_to_x * gx[i];
+
+	float x0 = available.x1;
+	for (auto&& [i, c]: enumerate(children)) {
+		if (c->visible) {
+			float x1 = x0 + w[i];
+			if (i == children.num - 1)
+				x1 = available.x2;
+			c->negotiate_outer_area(rect(x0, x1, available.y1, available.y2));
+			x0 = x1;
+		}
+		x0 += spacing;
+	}
+}
+
+
+
+
+vec2 vbox_get_content_min_size(const Array<Node*>& children, float spacing) {
+	vec2 s = {0,0};
+	for (auto c: children) {
+		if (s.y > 0)
+			s.y += spacing;
+		if (c->visible) {
+			const auto ss = c->get_effective_min_size();
+			s.x = max(s.x, ss.x);
+			s.y += ss.y;
+		}
+	}
+	return s;
+}
+
+Array<float> vbox_get_greed_factors(const Array<Node*>& children) {
+	Array<float> y;
+	y.resize(children.num);
+	for (auto&& [i, c]: enumerate(children))
+		if (c->visible) {
+			if (c->size_mode_y == SizeMode::Fill)
+				y[i] = 1;
+			else if (c->size_mode_y == SizeMode::Expand)
+				y[i] = c->get_greed_factor().y;
+		}
+	return y;
+}
+
+vec2 vbox_get_greed_factor(const Node* self, const Array<Node*>& children) {
+	Array<float> yy = vbox_get_greed_factors(children);
+	vec2 f = {0, 0};
+	if (self->size_mode_y == SizeMode::Expand)
+		f.y = self->greed_factor.y;
+	else if (self->size_mode_y == SizeMode::ForwardChild)
+		f.y = sum(yy);
+	return f;
+}
+
+Array<float> vbox_get_min_heights(const Array<Node*>& children) {
+	Array<float> h;
+	h.resize(children.num);
+	for (auto&& [i, c]: enumerate(children))
+		if (c->visible)
+			h[i] = c->get_effective_min_size().y;
+	return h;
+}
+
+void vbox_negotiate_content_area(const Node* self, const rect& available, const Array<Node*>& children, float spacing) {
+	auto h = vbox_get_min_heights(children);
+	vec2 total_min_size = vbox_get_content_min_size(children, spacing);
+	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
+
+	auto gy = vbox_get_greed_factors(children);
+	float total_greed_y = sum(gy);
+
+	float greed_to_y = (total_greed_y > 0) ? diff_y / total_greed_y : 0;
+
+	for (int i=0; i<h.num; i++)
+		h[i] += greed_to_y * gy[i];
+
+	float y0 = available.y1;
+	for (auto&& [i, c]: enumerate(children)) {
+		if (c->visible) {
+			float y1 = y0 + h[i];
+			if (i == children.num - 1)
+				y1 = available.y2;
+			c->negotiate_outer_area(rect(available.x1, available.x2, y0, y1));
+			y0 = y1;
+		}
+		y0 += spacing;
 	}
 }
 } // layout

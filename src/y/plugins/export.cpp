@@ -12,7 +12,7 @@
 #include "../gui/gui.h"
 #include "../gui/Node.h"
 #include "../gui/Picture.h"
-#include "../gui/Text.h"
+#include "../gui/Label.h"
 #include "../gui/Canvas.h"
 #include "../helper/DeletionQueue.h"
 #include "../helper/ResourceManager.h"
@@ -644,12 +644,14 @@ void export_ui(kaba::IExporter* ext) {
 		ext->link_class_func("Node.add_from_source", &gui::Node::add_from_source);
 		ext->link_class_func("Node.remove", &gui::Node::remove);
 		ext->link_class_func("Node.remove_all_children", &gui::Node::remove_all_children);
+		ext->link_class_func("Node.set_pos", &gui::Node::set_pos);
 		ext->link_class_func("Node.set_area", &gui::Node::set_area);
 		ext->link_class_func("Node._get", &gui::Node::get);
 		ext->link_virtual("Node.set_option", &gui::Node::set_option, &node);
 		ext->link_virtual("Node.get_content_min_size", &gui::Node::get_content_min_size, &node);
 		ext->link_virtual("Node.get_greed_factor", &gui::Node::get_greed_factor, &node);
 		ext->link_virtual("Node.negotiate_content_area", &gui::Node::negotiate_content_area, &node);
+		ext->link_virtual("Node.get_children", &gui::Node::_get_children, &node);
 		ext->link_virtual("Node.on_iterate", &gui::Node::on_iterate, &node);
 		ext->link_virtual("Node.on_enter", &gui::Node::on_enter, &node);
 		ext->link_virtual("Node.on_leave", &gui::Node::on_leave, &node);
@@ -677,15 +679,15 @@ void export_ui(kaba::IExporter* ext) {
 	}
 
 	{
-		gui::Text text;//(":::fake:::", 0, vec2::ZERO);
-		ext->declare_class_size("Text", sizeof(gui::Text));
-		ext->declare_class_element("Text.font_size", &gui::Text::font_size);
-		ext->declare_class_element("Text.text", &gui::Text::text);
-		ext->link_class_func("Text.__init__:Text", &kaba::generic_init<gui::Text>);
-		ext->link_class_func("Text.__init__:Text:string:f32:math.vec2", &kaba::generic_init_ext<gui::Text, const string&, float, const vec2&>);
-		ext->link_virtual("Text.__delete__", &kaba::generic_virtual<gui::Text>::__delete__, &text);
-		ext->link_virtual("Text.set_option", &gui::Text::set_option, &text);
-		ext->link_virtual("Text.get_content_min_size", &gui::Text::get_content_min_size, &text);
+		gui::Label label;
+		ext->declare_class_size("Label", sizeof(gui::Label));
+		ext->declare_class_element("Label.font_size", &gui::Label::font_size);
+		ext->declare_class_element("Label.text", &gui::Label::text);
+		ext->link_class_func("Label.__init__:Label", &kaba::generic_init<gui::Label>);
+		ext->link_class_func("Label.__init__:Label:string:f32:math.vec2", &kaba::generic_init_ext<gui::Label, const string&, float, const vec2&>);
+		ext->link_virtual("Label.__delete__", &kaba::generic_virtual<gui::Label>::__delete__, &label);
+		ext->link_virtual("Label.set_option", &gui::Label::set_option, &label);
+		ext->link_virtual("Label.get_content_min_size", &gui::Label::get_content_min_size, &label);
 	}
 
 	{

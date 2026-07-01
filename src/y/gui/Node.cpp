@@ -10,10 +10,9 @@
 #include <EngineData.h>
 #include <lib/layout/Resource.h>
 #include <lib/layout/Node.h>
+#include <lib/layout/Grid.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include "Text.h"
-#include "lib/base/iter.h"
-#include "lib/os/msg.h"
+#include <lib/os/msg.h>
 
 namespace gui {
 
@@ -55,25 +54,26 @@ void Node::remove_all_children() {
 	update_tree();
 }
 
-void Node::set_area(const rect &r) {
-	margin.x1 = r.x1;
-	margin.y1 = r.y1;
-	min_width_user = r.width();
-	min_height_user = r.height();
+void Node::set_pos(const vec2& pos) {
+	margin.x1 = pos.x;
+	margin.y1 = pos.y;
 	align = {0,0};
 	size_mode_x = SizeMode::Shrink;
 	size_mode_y = SizeMode::Shrink;
 }
 
+void Node::set_area(const rect &r) {
+	set_pos(r.p00());
+	min_width_user = r.width();
+	min_height_user = r.height();
+}
+
 Node* Node::get(const string& _id) {
 	if (id == _id)
 		return this;
-	for (auto n: weak(children)) {
-		if (n->id == _id)
-			return n;
+	for (auto n: weak(children))
 		if (auto c = n->get(_id))
 			return c;
-	}
 	return nullptr;
 }
 
@@ -90,28 +90,32 @@ void Node::apply_resource(const layout::Resource &r) {
 	for (const auto& o: r.options)
 		set_option(o.key, o.value);
 
-	for (const auto& c: r.children) {
-		if (Node* n = create_node(c.type)) {
-			//msg_write("create " + c.type + "   " + p2s(n));
-			add(n);
-			n->apply_resource(c);
-		}
-	}
+	for (const auto& c: r.children)
+		add_from_resource(c);
 }
 
+Node* Node::add_from_resource(const layout::Resource& r) {
+	if (Node* n = create_node(r.type)) {
+		//msg_write("create... " + c.type + "   " + p2s(n));
+		add(n);
+		n->apply_resource(r);
+		return n;
+	}
+	return nullptr;
+}
 
-void Node::add_from_source(const string& source) {
+Node* Node::add_from_source(const string& source) {
 	auto r = layout::Resource::parse(source, false);
 	print_resource(r, "");
 	//if (r.id != "?")
 
-	apply_resource(r);
+	return add_from_resource(r);
 }
 
 Array<const layout::Node*> Node::_get_children(layout::ChildFilter f) const {
 	Array<const layout::Node*> r;
 	for (auto c: weak(children))
-		if (c->visible)
+		if (c->visible or f == layout::ChildFilter::All)
 			r.add(c);
 	return r;
 }
@@ -153,6 +157,26 @@ HBox::HBox() {
 	size_mode_y = SizeMode::Fill;
 }
 
+vec2 HBox::get_content_min_size() const {
+	return layout::hbox_get_content_min_size(weak_nodes(children), spacing);
+}
+
+vec2 HBox::get_greed_factor() const {
+	return hbox_get_greed_factor(this, weak_nodes(children));
+}
+
+void HBox::negotiate_content_area(const rect& available) {
+	hbox_negotiate_content_area(this, available, weak_nodes(children), spacing);
+}
+
+void HBox::set_option(const string &key, const string &value) {
+	if (key == "spacing") {
+		spacing = value._float();
+	} else {
+		Node::set_option(key, value);
+	}
+}
+
 
 
 VBox::VBox() {
@@ -162,60 +186,15 @@ VBox::VBox() {
 }
 
 vec2 VBox::get_content_min_size() const {
-	vec2 s = {0,0};
-	for (auto c: weak(children)) {
-		if (s.y > 0)
-			s.y += spacing;
-		if (c->visible) {
-			const auto ss = c->get_content_min_size();
-			s.x = max(s.x, ss.x);
-			s.y += ss.y;
-		}
-	}
-	return s;
+	return layout::vbox_get_content_min_size(weak_nodes(children), spacing);
 }
 
 vec2 VBox::get_greed_factor() const {
-	return Node::get_greed_factor();
-}
-
-Array<float> VBox::get_min_heights() const {
-	Array<float> h;
-	for (auto c: weak(children)) {
-		if (c->visible) {
-			const vec2 s = c->get_effective_min_size();
-			h.add(s.y);
-		} else {
-			h.add(0);
-		}
-	}
-	return h;
+	return vbox_get_greed_factor(this, weak_nodes(children));
 }
 
 void VBox::negotiate_content_area(const rect& available) {
-	auto h = get_min_heights();
-	vec2 total_min_size = get_content_min_size();
-	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
-	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
-
-	/*vec2 total_greed = get_greed_factor();
-
-	float greed_to_y = (total_greed.y > 0) ? diff_y / total_greed.y : 0;
-
-	for (int i=0; i<h.num; i++)
-		h[i] += greed_to_y * gy[i];*/
-
-	float y0 = available.y1;
-	for (auto&& [i, c]: enumerate(weak(children))) {
-		if (c->visible) {
-			float y1 = y0 + h[i];
-			if (i == children.num - 1)
-				y1 = available.y2;
-			c->negotiate_outer_area(rect(available.x1, available.x2, y0, y1));
-			y0 = y1;
-		}
-		y0 += spacing;
-	}
+	vbox_negotiate_content_area(this, available, weak_nodes(children), spacing);
 }
 
 void VBox::set_option(const string &key, const string &value) {
