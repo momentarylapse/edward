@@ -15,7 +15,8 @@
 namespace xhui {
 
 Toolbar::Toolbar(const string& id) : Grid(id) {
-	//size_mode_y = SizeMode::Shrink;
+	size_mode_x = SizeMode::Shrink;
+	size_mode_y = SizeMode::Shrink;
 	grid.spacing = 2;
 }
 

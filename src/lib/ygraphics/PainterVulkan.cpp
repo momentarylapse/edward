@@ -51,11 +51,11 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = text_cache->get(str, face, font_size, ui_scale);
+	auto& tc = text_cache->get(str, face, font_size, ui_scale.y);
 	bool round_to_pixels = true;
 
-	float w = (float)tc.texture->width / ui_scale;
-	float h = (float)tc.texture->height / ui_scale;
+	float w = (float)tc.texture->width / ui_scale.x;
+	float h = (float)tc.texture->height / ui_scale.y;
 	Parameters params;
 	vec2 q = p + offset;
 	if (round_to_pixels) {
@@ -87,8 +87,8 @@ void fill_rect(Painter* p, const rect& r, const color& _color, float radius, flo
 	Parameters params;
 	params.matrix = p->mat_pixel_to_rel * mat4::translation({r.x1, r.y1, 0}) *  mat4::scale(r.width(), r.height(), 1);
 	params.col = _color;
-	params.size = r.size() * p->ui_scale;
-	params.radius = radius * p->ui_scale;
+	params.size = r.size() * p->ui_scale.y;
+	params.radius = radius * p->ui_scale.y;
 	params.softness = softness;
 
 	auto cb = p->cb;
@@ -137,7 +137,7 @@ void Painter::set_transform(float rot[], const vec2& _offset) {
 
 void Painter::set_clip(const rect &r) {
 	_clip = r;
-	cb->set_scissor({r.x1 * ui_scale, r.x2 * ui_scale, r.y1 * ui_scale, r.y2 * ui_scale});
+	cb->set_scissor({r.x1 * ui_scale.x, r.x2 * ui_scale.x, r.y1 * ui_scale.y, r.y2 * ui_scale.y});
 }
 
 

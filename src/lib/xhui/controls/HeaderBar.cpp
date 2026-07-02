@@ -56,7 +56,7 @@ void HeaderBar::on_mouse_move(const vec2& m, const vec2& d) {
 }
 
 void HeaderBar::negotiate_content_area(const rect &available) {
-	vec2 s = grid_right->get_effective_min_size();
+	vec2 s = grid_right->effective_min_size();
 	float R = Theme::_default.spacing;
 	grid_right->negotiate_outer_area(rect(available.x2 - s.x - R, available.x2 - R, available.y1 + R, available.y2 - R));
 }

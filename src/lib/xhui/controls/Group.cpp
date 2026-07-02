@@ -15,6 +15,7 @@ Group::Group(const string& id, const string& title) :
 		Control(id),
 		header(id + ":header", title)
 {
+	header.size_mode_x = SizeMode::Fill;
 	header.font_size = Theme::_default.font_size * 1.0f;
 	header.bold = true;
 	ignore_hover = true;
@@ -53,36 +54,20 @@ Array<const layout::Node*> Group::_get_children(ChildFilter f) const {
 }
 
 void Group::negotiate_content_area(const rect& available) {
-	float hh = header.get_effective_min_size().y;
+	float hh = header.effective_min_size().y;
 	header.negotiate_outer_area({available.p00(), available.p10() + vec2(0, hh)});
 	if (child and child->visible)
 		child->negotiate_outer_area({available.p00() + vec2(0, hh + SPACING), available.p11()});
 }
 
 vec2 Group::get_content_min_size() const {
-	vec2 s = header.get_effective_min_size();
+	vec2 s = header.effective_min_size();
 	if (child and child->visible) {
-		vec2 cs = child->get_effective_min_size();
+		vec2 cs = child->effective_min_size();
 		s.x = max(s.x, cs.x);
 		s.y += SPACING + cs.y;
 	}
 	return s;
-}
-
-vec2 Group::get_greed_factor() const {
-	vec2 cf = {0, 0};
-	if (child)
-		cf = child->get_greed_factor();
-	vec2 f = {0, 0};
-	if (size_mode_x == SizeMode::Expand)
-		f.x = 1;
-	else if (size_mode_x == SizeMode::ForwardChild and child)
-		f.x = cf.x;
-	if (size_mode_y == SizeMode::Expand)
-		f.y = 1;
-	else if (size_mode_y == SizeMode::ForwardChild and child)
-		f.y = cf.y;
-	return f;
 }
 
 

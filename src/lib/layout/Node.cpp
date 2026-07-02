@@ -31,28 +31,45 @@ Node::~Node() = default;
 
 
 vec2 Node::get_content_min_size() const {
-	vec2 s = {0,0};
+	vec2 s = {0, 0};
 	for (auto c: _get_children(ChildFilter::OnlyActive))
-		s = vec2::max(s, c->get_effective_min_size());
+		s = vec2::max(s, c->effective_min_size());
 	return s;
 }
 
-vec2 Node::get_greed_factor() const {
-	vec2 f = greed_factor;
-	if (size_mode_x != SizeMode::Expand)
-		f.x = 0;
-	if (size_mode_y != SizeMode::Expand)
-		f.y = 0;
-	return f;
-}
-
-vec2 Node::get_effective_min_size() const {
+vec2 Node::effective_min_size() const {
 	vec2 s = get_content_min_size() + padding.p00() + padding.p11();
 	if (min_width_user >= 0)
 		s.x = min_width_user;
 	if (min_height_user >= 0)
 		s.y = min_height_user;
 	return s + margin.p00() + margin.p11();
+}
+
+SizeMode Node::most_aggressive_child_size_mode_x() const {
+	auto m = SizeMode::Shrink;
+	for (auto c: _get_children(ChildFilter::OnlyActive))
+		m = max(m, c->effective_size_mode_x());
+	return m;
+}
+
+SizeMode Node::most_aggressive_child_size_mode_y() const {
+	auto m = SizeMode::Shrink;
+	for (auto c: _get_children(ChildFilter::OnlyActive))
+		m = max(m, c->effective_size_mode_y());
+	return m;
+}
+
+SizeMode Node::effective_size_mode_x() const {
+	if (size_mode_x == SizeMode::ForwardChild)
+		return most_aggressive_child_size_mode_x();
+	return size_mode_x;
+}
+
+SizeMode Node::effective_size_mode_y() const {
+	if (size_mode_y == SizeMode::ForwardChild)
+		return most_aggressive_child_size_mode_y();
+	return size_mode_y;
 }
 
 void Node::negotiate_content_area(const rect &available) {
@@ -64,13 +81,15 @@ void Node::negotiate_outer_area(const rect& _available) {
 	const rect available = {_available.p00() + margin.p00(), _available.p11() - margin.p11()};
 	area = available;
 
-	if (size_mode_x != SizeMode::Expand or size_mode_y != SizeMode::Expand) {
-		const auto min_size = get_effective_min_size() - margin.p00() - margin.p11();
-		if (size_mode_x == SizeMode::Shrink) {
+	auto mx = effective_size_mode_x();
+	auto my = effective_size_mode_y();
+	if (mx == SizeMode::Shrink or my == SizeMode::Shrink) {
+		const auto min_size = effective_min_size() - margin.p00() - margin.p11();
+		if (mx == SizeMode::Shrink) {
 			area.x1 = available.x1 + align.x * (available.width() - min_size.x);
 			area.x2 = area.x1 + min_size.x;
 		}
-		if (size_mode_y == SizeMode::Shrink) {
+		if (my == SizeMode::Shrink) {
 			area.y1 = available.y1 + align.y * (available.height() - min_size.y);
 			area.y2 = area.y1 + min_size.y;
 		}
@@ -122,18 +141,23 @@ void Node::set_option(const string& key, const string& value) {
 		size_mode_x = SizeMode::Shrink;
 	} else if (key == "shrinky") {
 		size_mode_y = SizeMode::Shrink;
+	} else if (key == "forwardchild") {
+		size_mode_x = SizeMode::ForwardChild;
+		size_mode_y = SizeMode::ForwardChild;
+	} else if (key == "forwardchildx") {
+		size_mode_x = SizeMode::ForwardChild;
+	} else if (key == "forwardchildy") {
+		size_mode_y = SizeMode::ForwardChild;
 	} else if (key == "width") {
 		min_width_user = value._float();
 		size_mode_x = SizeMode::Shrink;
 	} else if (key == "height") {
 		min_height_user = value._float();
 		size_mode_y = SizeMode::Shrink;
-	} else if (key == "greedfactorx") {
+	} else if (key == "greedfactorx" or key == "greedx") {
 		greed_factor.x = value._float();
-		size_mode_x = SizeMode::Expand;
-	} else if (key == "greedfactory") {
+	} else if (key == "greedfactory" or key == "greedy") {
 		greed_factor.y = value._float();
-		size_mode_y = SizeMode::Expand;
 	} else if (key == "top") {
 		align.y = 0;
 		size_mode_y = SizeMode::Shrink;

@@ -23,7 +23,8 @@ Painter::Painter(DrawingHelperData* _aux, FontManager* fm, TextCache* tc, const 
 	width = (int)area.width();
 	height = (int)area.height();
 	_clip = _area;
-	ui_scale = native_area.height() / area.height();
+	ui_scale.x = native_area.height() / area.height();
+	ui_scale.y = native_area.width() / area.width();
 	if (font_manager)
 		face = font_manager->default_font_regular;
 	mat_pixel_to_rel = mat4::translation({-1,-1, 0}) *  mat4::scale(2/area.width(), 2/area.height(), 1);
@@ -35,7 +36,7 @@ Painter::Painter(DrawingHelperData* _aux, FontManager* fm, TextCache* tc, const 
 	if (aux) {
 		context = aux->context;
 		Painter::set_color(White);
-		Painter::set_font("", min(16.0f, 100.0f / ui_scale), false, false);
+		Painter::set_font("", min(16.0f, 100.0f / ui_scale.y), false, false);
 #ifdef USING_VULKAN
 		cb = aux->cb;
 #endif
@@ -69,18 +70,18 @@ void Painter::set_font(const string &font, float size, bool bold, bool italic) {
 		font_size = size;
 	face = font_manager->pick(font_name, bold, italic);
 	if (face)
-		face->set_size(font_size * ui_scale);
+		face->set_size(font_size * ui_scale.y);
 }
 
 void Painter::set_font_size(float size) {
 	font_size = size;
 	if (face)
-		face->set_size(size * ui_scale);
+		face->set_size(size * ui_scale.y);
 }
 
 vec2 Painter::get_str_size(const string &str) {
-	const auto& dim = text_cache->get_dimensions(str, face, font_size, ui_scale);
-	return {dim.bounding_width / ui_scale, dim.inner_height() / ui_scale};
+	const auto& dim = text_cache->get_dimensions(str, face, font_size, ui_scale.y);
+	return {dim.bounding_width / ui_scale.x, dim.inner_height() / ui_scale.y};
 }
 
 void Painter::set_line_width(float width) {
@@ -94,8 +95,8 @@ void Painter::set_roundness(float radius) {
 void Painter::draw_arc(const vec2& p, float r, float w0, float w1) {
 	if (w0 > w1)
 		std::swap(w0, w1);
-	if (r * ui_scale > 4) {
-		int n = clamp((int)(r * ui_scale / 3), 2, 30);
+	if (r * ui_scale.y > 4) {
+		int n = clamp((int)(r * ui_scale.y / 3), 2, 30);
 		Array<vec2> points;
 		points.resize(n + 1);
 		for (int i=0; i<=n; i++) {

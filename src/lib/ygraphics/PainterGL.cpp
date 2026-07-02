@@ -39,9 +39,9 @@ void Painter::clear(const color &c) {
 void Painter::draw_str(const vec2 &p, const string &str) {
 	if (str.num == 0)
 		return;
-	auto& tc = text_cache->get(str, face, font_size, ui_scale);
-	float w = (float)tc.texture->width / ui_scale;
-	float h = (float)tc.texture->height / ui_scale;
+	auto& tc = text_cache->get(str, face, font_size, ui_scale.y);
+	float w = (float)tc.texture->width / ui_scale.x;
+	float h = (float)tc.texture->height / ui_scale.y;
 	const auto mat = mat4::translation(vec3(p + offset, 0)) * mat4::scale(w, h, 1);
 
 	auto s = aux->shader;
@@ -60,9 +60,9 @@ void Painter::draw_rect(const rect &r) {
 		auto s = aux->shader;
 		if (corner_radius > 0) {
 			s = aux->shader_round;
-			vec2 size = r.size() * ui_scale;
+			vec2 size = {r.width() * ui_scale.x, r.height() * ui_scale.y};
 			s->set_floats("size", &size.x, 2);
-			s->set_float("radius", corner_radius * ui_scale);
+			s->set_float("radius", corner_radius * ui_scale.y);
 			s->set_float("softness", softness);
 		}
 		if (user_shader)
@@ -108,7 +108,7 @@ void Painter::set_transform(float rot[], const vec2& _offset) {
 
 void Painter::set_clip(const rect &r) {
 	_clip = r;
-	nix::set_scissor({r.x1 * ui_scale, max(r.x2, r.x1) * ui_scale, r.y1 * ui_scale, max(r.y2, r.y1) * ui_scale}, native_area_window);
+	nix::set_scissor({r.x1 * ui_scale.x, max(r.x2, r.x1) * ui_scale.x, r.y1 * ui_scale.y, max(r.y2, r.y1) * ui_scale.y}, native_area_window);
 }
 
 

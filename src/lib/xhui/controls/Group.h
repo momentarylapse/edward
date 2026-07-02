@@ -15,7 +15,6 @@ public:
 	Group(const string& id, const string& title);
 	void negotiate_content_area(const rect& available) override;
 	vec2 get_content_min_size() const override;
-	vec2 get_greed_factor() const override;
 	void _draw(Painter* p) override;
 
 	void set_string(const string& s) override;

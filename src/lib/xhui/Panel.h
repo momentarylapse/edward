@@ -24,7 +24,6 @@ public:
 	void _draw(Painter* p) override;
 	void negotiate_content_area(const rect& available) override;
 	vec2 get_content_min_size() const override;
-	vec2 get_greed_factor() const override;
 	Array<const Node*> _get_children(ChildFilter f) const override;
 
 	void add_child(shared<Control> c, int x=0, int y=0) override;

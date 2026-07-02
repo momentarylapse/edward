@@ -54,23 +54,8 @@ void Panel::negotiate_content_area(const rect &available) {
 
 vec2 Panel::get_content_min_size() const {
 	if (top_control)
-		return top_control->get_effective_min_size();
+		return top_control->effective_min_size();
 	return {0, 0};
-}
-
-vec2 Panel::get_greed_factor() const {
-	vec2 f = {0, 0};
-	if (top_control)
-		f = top_control->get_greed_factor();
-	if (size_mode_x == SizeMode::Expand)
-		f.x = 1;
-	else if (size_mode_x == SizeMode::Fill or size_mode_x == SizeMode::Shrink)
-		f.x = 0;
-	if (size_mode_y == SizeMode::Expand)
-		f.y = 1;
-	else if (size_mode_y == SizeMode::Fill or size_mode_y == SizeMode::Shrink)
-		f.y = 0;
-	return f;
 }
 
 

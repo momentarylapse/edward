@@ -53,7 +53,7 @@ void CheckBox::on_mouse_leave(const vec2&) {
 }
 
 vec2 CheckBox::get_content_min_size() const {
-	return label.get_effective_min_size() + vec2(22, 0);
+	return label.effective_min_size() + vec2(22, 0);
 }
 
 void CheckBox::negotiate_content_area(const rect& available) {

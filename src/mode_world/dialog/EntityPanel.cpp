@@ -23,6 +23,8 @@
 #include <lib/base/iter.h>
 #include <lib/kaba/Context.h>
 
+#include "lib/os/msg.h"
+
 
 EntityPanel::EntityPanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("entity-panel") {
 	mode_world = _mode;

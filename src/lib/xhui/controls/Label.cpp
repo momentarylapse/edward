@@ -10,12 +10,14 @@ Label::Label(const string &_id, const string &t) : Control(_id) {
 	text_w = text_h = -1;
 	font_size = Theme::_default.font_size;
 	align = Align::Left;
+	Node::align.x = 0;
+	Node::align.y = 0.5f;
 	padding.x1 = padding.x2 = 0;
 	padding.y1 = padding.y2 = Theme::_default.label_margin_y;
 	ignore_hover = true;
 
-	size_mode_x = SizeMode::Fill;
-	size_mode_y = SizeMode::Fill;
+	size_mode_x = SizeMode::Shrink;
+	size_mode_y = SizeMode::Shrink;
 
 	Label::set_string(t);
 }
@@ -50,7 +52,7 @@ vec2 Label::get_content_min_size() const {
 }
 
 void Label::_draw(Painter *p) {
-	ui_scale = p->ui_scale;
+	ui_scale = p->ui_scale.y;
 
 	if (image) {
 		prepare_image(image);
@@ -99,16 +101,25 @@ void Label::set_option(const string& key, const string& value) {
 	if (key == "image") {
 		image = load_image(value);
 	} else if (key == "align") {
-		if (value == "left")
+		if (value == "left") {
+			Node::align.x = 0;
 			align = Align::Left;
-		if (value == "center")
+		} else if (value == "center") {
+			Node::align.x = 0.5f;
 			align = Align::Center;
-		if (value == "right")
+		} else if (value == "right") {
+			Node::align.x = 1;
 			align = Align::Right;
-	} else if (key == "right") {
+		}
+	} else if (key == "left") {
+		Node::align.x = 0;
 		align = Align::Right;
 	} else if (key == "center") {
+		Node::align.x = 0.5f;
 		align = Align::Center;
+	} else if (key == "right") {
+		Node::align.x = 1;
+		align = Align::Right;
 	} else if (key == "bold") {
 		bold = (value == "") ? true : value._bool();
 	} else if (key == "italic") {

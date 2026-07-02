@@ -153,16 +153,12 @@ void Node::set_option(const string& key, const string& value) {
 
 HBox::HBox() {
 	type = Type::HBOX;
-	size_mode_x = SizeMode::Fill;
-	size_mode_y = SizeMode::Fill;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 vec2 HBox::get_content_min_size() const {
 	return layout::hbox_get_content_min_size(weak_nodes(children), spacing);
-}
-
-vec2 HBox::get_greed_factor() const {
-	return hbox_get_greed_factor(this, weak_nodes(children));
 }
 
 void HBox::negotiate_content_area(const rect& available) {
@@ -181,16 +177,12 @@ void HBox::set_option(const string &key, const string &value) {
 
 VBox::VBox() {
 	type = Type::VBOX;
-	size_mode_x = SizeMode::Fill;
-	size_mode_y = SizeMode::Fill;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 }
 
 vec2 VBox::get_content_min_size() const {
 	return layout::vbox_get_content_min_size(weak_nodes(children), spacing);
-}
-
-vec2 VBox::get_greed_factor() const {
-	return vbox_get_greed_factor(this, weak_nodes(children));
 }
 
 void VBox::negotiate_content_area(const rect& available) {

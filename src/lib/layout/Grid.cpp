@@ -47,7 +47,7 @@ void Grid::get_min_sizes(Array<float> &w, Array<float> &h) const {
 	for (auto &c: children) {
 		if (!c.node->visible)
 			continue;
-		vec2 s = c.node->get_effective_min_size();
+		vec2 s = c.node->effective_min_size();
 		w[c.x] = max(w[c.x], s.x);
 		h[c.y] = max(h[c.y], s.y);
 	}
@@ -62,29 +62,15 @@ vec2 Grid::get_content_min_size() const {
 	return s;
 }
 
-vec2 Grid::get_greed_factor() const {
-	Array<float> xx, yy;
-	get_greed_factors(xx, yy);
-	vec2 f = {0, 0};
-	if (node.size_mode_x == SizeMode::Expand)
-		f.x = node.greed_factor.x;
-	else if (node.size_mode_x == SizeMode::ForwardChild)
-		f.x = sum(xx);
-	if (node.size_mode_y == SizeMode::Expand)
-		f.y = node.greed_factor.y;
-	else if (node.size_mode_y == SizeMode::ForwardChild)
-		f.y = sum(yy);
-	return f;
-}
-
-void Grid::get_greed_factors(Array<float> &x, Array<float> &y) const {
+void Grid::get_greed_factors(Array<float> &x, Array<float> &y, SizeMode mamx, SizeMode mamy) const {
 	x.resize(nx);
 	y.resize(ny);
 	for (auto& c: children)
 		if (c.node->visible) {
-			vec2 f = c.node->get_greed_factor();
-			x[c.x] = max(x[c.x], f.x);
-			y[c.y] = max(y[c.y], f.y);
+			if (c.node->effective_size_mode_x() >= mamx)
+				x[c.x] = max(x[c.x], c.node->greed_factor.x);
+			if (c.node->effective_size_mode_y() >= mamy)
+				y[c.y] = max(y[c.y], c.node->greed_factor.y);
 		}
 }
 
@@ -95,17 +81,23 @@ void Grid::negotiate_content_area(const rect &available) {
 	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
 	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
 
+	auto mamx = node.most_aggressive_child_size_mode_x();
+	auto mamy = node.most_aggressive_child_size_mode_x();
+
 	Array<float> gx, gy;
-	get_greed_factors(gx, gy);
-	vec2 total_greed = get_greed_factor();
+	get_greed_factors(gx, gy, mamx, mamy);
+	vec2 total_greed = vec2(sum(gx), sum(gy));
 
-	float greed_to_x = (total_greed.x > 0) ? diff_x / total_greed.x : 0;
-	float greed_to_y = (total_greed.y > 0) ? diff_y / total_greed.y : 0;
-
-	for (int i=0; i<w.num; i++)
-		w[i] += greed_to_x * gx[i];
-	for (int i=0; i<h.num; i++)
-		h[i] += greed_to_y * gy[i];
+	if (mamx > SizeMode::Shrink) {
+		float greed_to_x = (total_greed.x > 0) ? diff_x / total_greed.x : 0;
+		for (int i=0; i<w.num; i++)
+			w[i] += greed_to_x * gx[i];
+	}
+	if (mamy > SizeMode::Shrink) {
+		float greed_to_y = (total_greed.y > 0) ? diff_y / total_greed.y : 0;
+		for (int i=0; i<h.num; i++)
+			h[i] += greed_to_y * gy[i];
+	}
 
 	for (auto &c: children)
 		if (c.node->visible) {
@@ -141,11 +133,11 @@ void Grid::set_option(const string& key, const string& value) {
 
 vec2 hbox_get_content_min_size(const Array<Node*>& children, float spacing) {
 	vec2 s = {0,0};
-	for (auto c: children) {
-		if (s.x > 0)
+	for (auto&& [i, c]: enumerate(children)) {
+		if (i > 0)
 			s.x += spacing;
 		if (c->visible) {
-			const auto ss = c->get_effective_min_size();
+			const auto ss = c->effective_min_size();
 			s.y = max(s.y, ss.y);
 			s.x += ss.x;
 		}
@@ -153,27 +145,13 @@ vec2 hbox_get_content_min_size(const Array<Node*>& children, float spacing) {
 	return s;
 }
 
-Array<float> hbox_get_greed_factors(const Array<Node*>& children) {
+Array<float> hbox_get_greed_factors(const Array<Node*>& children, SizeMode mam) {
 	Array<float> x;
 	x.resize(children.num);
 	for (auto&& [i, c]: enumerate(children))
-		if (c->visible) {
-			if (c->size_mode_x == SizeMode::Fill)
-				x[i] = 1;
-			else if (c->size_mode_x == SizeMode::Expand)
-				x[i] = c->get_greed_factor().x;
-		}
+		if (c->visible and c->effective_size_mode_x() >= mam)
+				x[i] = c->greed_factor.x;
 	return x;
-}
-
-vec2 hbox_get_greed_factor(const Node* self, const Array<Node*>& children) {
-	Array<float> xx = hbox_get_greed_factors(children);
-	vec2 f = {0, 0};
-	if (self->size_mode_x == SizeMode::Expand)
-		f.x = self->greed_factor.x;
-	else if (self->size_mode_x == SizeMode::ForwardChild)
-		f.x = sum(xx);
-	return f;
 }
 
 Array<float> hbox_get_min_widths(const Array<Node*>& children) {
@@ -181,22 +159,24 @@ Array<float> hbox_get_min_widths(const Array<Node*>& children) {
 	w.resize(children.num);
 	for (auto&& [i, c]: enumerate(children))
 		if (c->visible)
-			w[i] = c->get_effective_min_size().x;
+			w[i] = c->effective_min_size().x;
 	return w;
 }
 
 void hbox_negotiate_content_area(const Node* self, const rect& available, const Array<Node*>& children, float spacing) {
 	auto w = hbox_get_min_widths(children);
 	vec2 total_min_size = hbox_get_content_min_size(children, spacing);
-	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
+	float diff_x = max(available.width() - total_min_size.x, 0.0f);
 
-	auto gx = hbox_get_greed_factors(children);
-	float total_greed_x = sum(gx);
+	auto mam = self->most_aggressive_child_size_mode_x();
+	if (mam > SizeMode::Shrink) {
+		auto gx = hbox_get_greed_factors(children, mam);
+		float total_greed_x = sum(gx);
 
-	float greed_to_x = (total_greed_x > 0) ? diff_x / total_greed_x : 0;
-
-	for (int i=0; i<w.num; i++)
-		w[i] += greed_to_x * gx[i];
+		float greed_to_x = (total_greed_x > 0) ? diff_x / total_greed_x : 0;
+		for (int i=0; i<w.num; i++)
+			w[i] += greed_to_x * gx[i];
+	}
 
 	float x0 = available.x1;
 	for (auto&& [i, c]: enumerate(children)) {
@@ -216,11 +196,11 @@ void hbox_negotiate_content_area(const Node* self, const rect& available, const 
 
 vec2 vbox_get_content_min_size(const Array<Node*>& children, float spacing) {
 	vec2 s = {0,0};
-	for (auto c: children) {
-		if (s.y > 0)
+	for (auto&& [i, c]: enumerate(children)) {
+		if (i > 0)
 			s.y += spacing;
 		if (c->visible) {
-			const auto ss = c->get_effective_min_size();
+			const auto ss = c->effective_min_size();
 			s.x = max(s.x, ss.x);
 			s.y += ss.y;
 		}
@@ -228,27 +208,13 @@ vec2 vbox_get_content_min_size(const Array<Node*>& children, float spacing) {
 	return s;
 }
 
-Array<float> vbox_get_greed_factors(const Array<Node*>& children) {
+Array<float> vbox_get_greed_factors(const Array<Node*>& children, SizeMode mam) {
 	Array<float> y;
 	y.resize(children.num);
 	for (auto&& [i, c]: enumerate(children))
-		if (c->visible) {
-			if (c->size_mode_y == SizeMode::Fill)
-				y[i] = 1;
-			else if (c->size_mode_y == SizeMode::Expand)
-				y[i] = c->get_greed_factor().y;
-		}
+		if (c->visible and c->effective_size_mode_y() >= mam)
+			y[i] = c->greed_factor.y;
 	return y;
-}
-
-vec2 vbox_get_greed_factor(const Node* self, const Array<Node*>& children) {
-	Array<float> yy = vbox_get_greed_factors(children);
-	vec2 f = {0, 0};
-	if (self->size_mode_y == SizeMode::Expand)
-		f.y = self->greed_factor.y;
-	else if (self->size_mode_y == SizeMode::ForwardChild)
-		f.y = sum(yy);
-	return f;
 }
 
 Array<float> vbox_get_min_heights(const Array<Node*>& children) {
@@ -256,22 +222,24 @@ Array<float> vbox_get_min_heights(const Array<Node*>& children) {
 	h.resize(children.num);
 	for (auto&& [i, c]: enumerate(children))
 		if (c->visible)
-			h[i] = c->get_effective_min_size().y;
+			h[i] = c->effective_min_size().y;
 	return h;
 }
 
 void vbox_negotiate_content_area(const Node* self, const rect& available, const Array<Node*>& children, float spacing) {
 	auto h = vbox_get_min_heights(children);
 	vec2 total_min_size = vbox_get_content_min_size(children, spacing);
-	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
+	float diff_y = max(available.height() - total_min_size.y, 0.0f);
 
-	auto gy = vbox_get_greed_factors(children);
-	float total_greed_y = sum(gy);
+	auto mam = self->most_aggressive_child_size_mode_y();
+	if (mam > SizeMode::Shrink) {
+		auto gy = vbox_get_greed_factors(children, mam);
+		float total_greed_y = sum(gy);
 
-	float greed_to_y = (total_greed_y > 0) ? diff_y / total_greed_y : 0;
-
-	for (int i=0; i<h.num; i++)
-		h[i] += greed_to_y * gy[i];
+		float greed_to_y = (total_greed_y > 0) ? diff_y / total_greed_y : 0;
+		for (int i=0; i<h.num; i++)
+			h[i] += greed_to_y * gy[i];
+	}
 
 	float y0 = available.y1;
 	for (auto&& [i, c]: enumerate(children)) {

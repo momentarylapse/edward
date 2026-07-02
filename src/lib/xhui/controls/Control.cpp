@@ -10,6 +10,7 @@ namespace xhui {
 Control::Control(const string &_id, ControlType _type) : Node(_id) {
 	type = _type;
 	enabled = true;
+	align = {0, 0};
 }
 
 Control::~Control() = default;

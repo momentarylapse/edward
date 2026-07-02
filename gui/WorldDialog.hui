@@ -37,7 +37,7 @@ Dialog world_dialog "World properties" width=320
 						SpinButton gravitation_z "" range=::0.1
 						Label /luss "/s²"
 			Grid ? "" vertical
-				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle tooltip="Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc."
+				ListView systems "systems" nobar sunkenbackground=no showselection=no selectsingle spacing=8 tooltip="Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc."
 				Grid ? ""
 					Button add-system "" image=open tooltip="Add system"
 					Button create-system "" image=new tooltip="Create new system"

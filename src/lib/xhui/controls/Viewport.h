@@ -20,7 +20,6 @@ public:
 	void add_child(shared<Control> c, int x, int y) override;
 	void remove_child(Control* c) override;
 
-	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect &available) override;
 	Array<const Node*> _get_children(ChildFilter f) const override;

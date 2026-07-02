@@ -137,7 +137,7 @@ int ListView::get_hover(const vec2& m) const {
 
 
 vec2 ListView::get_content_min_size() const {
-	vec2 s = viewport.get_effective_min_size();
+	vec2 s = viewport.effective_min_size();
 	if (show_headers)
 		s.y += HEADER_DY;
 	return s;
@@ -208,7 +208,8 @@ void ListView::add_string(const string& s) {
 			continue;
 		string cid = format("%s:%d:%d", id, row, col);
 		auto c = column_factories[col].f_create(cid);
-		//c->size_mode_x = SizeMode::Expand;
+		if (col == column_factories.num - 1)
+			c->size_mode_x = SizeMode::Fill;
 		if (auto p = as_panel(c))
 			owner->embed(cell_grid->id, col, row, p);
 		else

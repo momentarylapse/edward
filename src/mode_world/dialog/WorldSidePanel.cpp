@@ -14,7 +14,7 @@ WorldSidePanel::WorldSidePanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("world
 	mode_world = _mode;
 	from_source(R"foodelim(
 Dialog world-side-panel '' padding=0
-	Grid main-grid '' spacing=0
+	Grid main-grid '' spacing=0 filly
 )foodelim");
 
 	add_entity_panel = new AddEntityPanel(mode_world);

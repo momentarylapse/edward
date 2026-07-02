@@ -16,6 +16,7 @@ public:
 	explicit TabControlHeader(const string& id, const Array<string>& headers, const std::function<void(int)>& f) : Grid(id) {
 		callback = f;
 		grid.spacing = 2;
+		size_mode_x = SizeMode::Fill;
 		for (const auto&& [i, h] : enumerate(headers)) {
 			auto b = new CallbackToggleButton(id + i2s(i), h, [this, i=i] {
 				current_page = i;
@@ -46,6 +47,8 @@ public:
 };
 
 TabControl::TabControl(const string& id, const string& title) : Control(id) {
+	size_mode_x = SizeMode::Fill;
+	size_mode_y = SizeMode::Fill;
 	header = new TabControlHeader(id + ":header", title.explode("\\"), [this](int i) {
 		current_page = i;
 		emit_event(event_id::Changed, true);
@@ -61,10 +64,10 @@ vec2 TabControl::get_content_min_size() const {
 
 	for (const auto& p: pages)
 		if (p.child)
-			s = vec2::max(s, p.child->get_effective_min_size());
+			s = vec2::max(s, p.child->effective_min_size());
 
 	if (show_header) {
-		const vec2 cs = header->get_effective_min_size();
+		const vec2 cs = header->effective_min_size();
 		s.y += cs.y + Theme::_default.spacing;
 	}
 	return s;
@@ -73,21 +76,13 @@ vec2 TabControl::get_content_min_size() const {
 void TabControl::negotiate_content_area(const rect& available) {
 	vec2 p00 = available.p00();
 	if (show_header) {
-		const vec2 s = header->get_effective_min_size();
+		const vec2 s = header->effective_min_size();
 		header->negotiate_outer_area({available.p00(), available.p10() + vec2(0, s.y)});
-		p00 = header->area.p01() + vec2(0, Theme::_default.spacing);
+		p00.y = header->area.y2 + Theme::_default.spacing;
 	}
 	for (auto& p: pages)
 		if (p.child)
 			p.child->negotiate_outer_area({p00, available.p11()});
-}
-
-vec2 TabControl::get_greed_factor() const {
-	vec2 f = {0, 0};
-	for (const auto& p: pages)
-		if (p.child)
-			f = vec2::max(f, p.child->get_greed_factor());
-	return f;
 }
 
 Array<const layout::Node*> TabControl::_get_children(ChildFilter f) const {

@@ -373,7 +373,7 @@ void Edit::draw_text(Painter* p) {
 		float y0 = area.y1 + padding.y1 - viewport_offset.y;
 		cache.content_size = {0,0};
 		for (const string &l: lines) {
-			auto dim = p->text_cache->get_dimensions(l, face, font_size, p->ui_scale);
+			auto dim = p->text_cache->get_dimensions(l, face, font_size, p->ui_scale.y);
 			inner_height = dim.inner_height() / ui_scale;
 			line_height = dim.bounding_height / ui_scale * line_height_scale;
 			cache.line_height.add(line_height);
@@ -706,7 +706,7 @@ void Edit::draw_line_numbers(Painter* p, const color& bg) {
 
 
 void Edit::_draw(Painter *p) {
-	ui_scale = p->ui_scale;
+	ui_scale = p->ui_scale.y;
 
 	if (markup_dirty) {
 		base::inplace_sort(markups, [] (const Markup& a, const Markup& b) {

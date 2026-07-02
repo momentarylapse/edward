@@ -61,7 +61,7 @@ void MenuPopup::set_sub_menu(const Menu* m) {
 
 	//size_mode_x = SizeMode::ForwardChild;
 	//size_mode_y = SizeMode::ForwardChild;
-	const vec2 size = get_effective_min_size();
+	const vec2 size = effective_min_size();
 	width = (int)size.x;
 	height = (int)size.y;
 }

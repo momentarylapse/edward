@@ -190,7 +190,7 @@ Dialog x x padding=0
 	});
 	event_xp(id, xhui::event_id::JustBeforeDraw, [this] (Painter* p) {
 		session->material_preview_manager->update();
-		session->line_helper->start_frame(p->ui_scale);
+		session->line_helper->start_frame(p->ui_scale.y);
 	});
 	event_xp("overlay-area", xhui::event_id::Draw, [this] (Painter* p) {
 		p->set_color(White);

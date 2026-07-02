@@ -7,7 +7,7 @@ Dialog model-material-dialog ''
 				---|
 				Label subheader '' italic small
 		---|
-		Expander contents ''
+		Expander contents '' fillx
 			Grid contents-grid ''
 				.
 				---|

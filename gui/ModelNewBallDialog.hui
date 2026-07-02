@@ -1,4 +1,4 @@
-Dialog new_ball_dialog "New ball" width=250 noexpandx
+Dialog new_ball_dialog "New ball" noexpandx
 	Grid ? "" vertical class=card
 		Label header "New sphere" big bold center expandx
 		Grid ? "" vertical

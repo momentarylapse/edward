@@ -15,6 +15,8 @@ Button::Button(const string &_id, const string &t) :
 	size_mode_y = SizeMode::Fill;
 	label.align = Label::Align::Center;
 	label.padding = {0,0,0,0};
+	label.size_mode_x = SizeMode::Fill;
+	label.size_mode_y = SizeMode::Fill;
 	label.bold = true;
 	padding.x1 = padding.x2 = Theme::_default.button_margin_x;
 	padding.y1 = padding.y2 = Theme::_default.button_margin_y;
@@ -60,7 +62,7 @@ void Button::on_mouse_leave(const vec2&) {
 }
 
 vec2 Button::get_content_min_size() const {
-	return label.get_effective_min_size();
+	return label.effective_min_size();
 }
 
 void Button::negotiate_content_area(const rect& available) {

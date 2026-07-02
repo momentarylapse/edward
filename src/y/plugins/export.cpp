@@ -649,7 +649,6 @@ void export_ui(kaba::IExporter* ext) {
 		ext->link_class_func("Node._get", &gui::Node::get);
 		ext->link_virtual("Node.set_option", &gui::Node::set_option, &node);
 		ext->link_virtual("Node.get_content_min_size", &gui::Node::get_content_min_size, &node);
-		ext->link_virtual("Node.get_greed_factor", &gui::Node::get_greed_factor, &node);
 		ext->link_virtual("Node.negotiate_content_area", &gui::Node::negotiate_content_area, &node);
 		ext->link_virtual("Node.get_children", &gui::Node::_get_children, &node);
 		ext->link_virtual("Node.on_iterate", &gui::Node::on_iterate, &node);

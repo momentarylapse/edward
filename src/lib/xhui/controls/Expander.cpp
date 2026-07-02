@@ -96,7 +96,7 @@ void Expander::negotiate_content_area(const rect& available) {
 		state = State::Compact;
 	float hh = 0;
 	if (show_header)
-		hh = header.get_effective_min_size().y;
+		hh = header.effective_min_size().y;
 	header.negotiate_outer_area({available.p00(), available.p10() + vec2(0, hh)});
 	if (child)
 		child->negotiate_outer_area({available.p00() + vec2(0, hh + SPACING), available.p11()});
@@ -105,33 +105,18 @@ void Expander::negotiate_content_area(const rect& available) {
 vec2 Expander::get_content_min_size() const {
 	vec2 s = {0,0};
 	if (show_header)
-		s += header.get_effective_min_size();
+		s += header.effective_min_size();
 	if (child) {
-		vec2 cs = child->get_effective_min_size();
+		vec2 cs = child->effective_min_size();
 		vec2 max_size = {max(s.x, cs.x), s.y + SPACING + cs.y};
 		if (state == State::Expanded) {
 			s = max_size;
 		} else if (state == State::Expanding or state == State::Shrinking) {
-			s = s + animator.t * (max_size - s);
+			s.x = max_size.x;
+			s.y = s.y + animator.t * (max_size.y - s.y);
 		}
 	}
 	return s;
-}
-
-vec2 Expander::get_greed_factor() const {
-	vec2 cf = {0, 0};
-	if (child and state == State::Expanded)
-		cf = child->get_greed_factor();
-	vec2 f = {0, 0};
-	if (size_mode_x == SizeMode::Expand)
-		f.x = 1;
-	else if (size_mode_x == SizeMode::ForwardChild and child)
-		f.x = cf.x;
-	if (size_mode_y == SizeMode::Expand)
-		f.y = 1;
-	else if (size_mode_y == SizeMode::ForwardChild and child)
-		f.y = cf.y;
-	return f;
 }
 
 void Expander::set_option(const string &key, const string &value) {

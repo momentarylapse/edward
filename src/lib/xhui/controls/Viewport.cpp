@@ -32,7 +32,7 @@ void Viewport::remove_child(Control* c) {
 
 void Viewport::on_mouse_wheel(const vec2& d) {
 	if (child) {
-		content_size = child->get_effective_min_size();
+		content_size = child->effective_min_size();
 #ifdef OS_LINUX
 		constexpr float speed = 30;
 #else
@@ -50,7 +50,7 @@ void Viewport::on_mouse_wheel(const vec2& d) {
 void Viewport::_draw(Painter *p) {
 	if (child and child->visible) {
 		// hack :P
-		content_size = child->get_effective_min_size();
+		content_size = child->effective_min_size();
 
 		auto clip0 = p->clip();
 		p->set_clip(area and clip0);
@@ -62,29 +62,13 @@ void Viewport::_draw(Painter *p) {
 vec2 Viewport::get_content_min_size() const {
 	vec2 s = {min_width_user, min_height_user};
 	if (child) {
-		vec2 cs = child->get_effective_min_size();
+		vec2 cs = child->effective_min_size();
 		if (size_mode_x == SizeMode::ForwardChild)
 			s.x = cs.x;
 		if (size_mode_y == SizeMode::ForwardChild)
 			s.y = cs.y;
 	}
 	return s;
-}
-
-vec2 Viewport::get_greed_factor() const {
-	vec2 f = {0, 0};
-	if (child) {
-		vec2 cf = child->get_greed_factor();
-		if (size_mode_x == SizeMode::Expand)
-			f.x = 1;
-		else if (size_mode_x == SizeMode::ForwardChild)
-			f.x = cf.x;
-		if (size_mode_y == SizeMode::Expand)
-			f.y = 1;
-		else if (size_mode_y == SizeMode::ForwardChild)
-			f.y = cf.y;
-	}
-	return f;
 }
 
 void Viewport::negotiate_content_area(const rect &available) {

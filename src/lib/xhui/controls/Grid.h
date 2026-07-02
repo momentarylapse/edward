@@ -20,8 +20,7 @@ public:
 	base::optional<color> background;
 
 	layout::Grid grid;
-	
-	vec2 get_greed_factor() const override;
+
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect &available) override;
 	Array<const Node*> _get_children(ChildFilter f) const override;

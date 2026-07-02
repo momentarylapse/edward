@@ -1,4 +1,4 @@
-Dialog new-platonic-dialog "New platonic" width=240 noexpandx
+Dialog new-platonic-dialog "New platonic" noexpandx
 	Grid ? "" vertical class=card
 		Label header "New platonic" big bold center expandx
 		Grid ? "" vertical

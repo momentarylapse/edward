@@ -44,10 +44,6 @@ vec2 Grid::get_content_min_size() const {
 	return grid.get_content_min_size();
 }
 
-vec2 Grid::get_greed_factor() const {
-	return grid.get_greed_factor();
-}
-
 void Grid::negotiate_content_area(const rect &available) {
 	grid.negotiate_content_area(available);
 }

@@ -78,7 +78,6 @@ public:
 class HBox : public Node {
 public:
 	HBox();
-	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect& available) override;
 	void set_option(const string &key, const string &value) override;
@@ -88,7 +87,6 @@ public:
 class VBox : public Node {
 public:
 	VBox();
-	vec2 get_greed_factor() const override;
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect& available) override;
 	void set_option(const string &key, const string &value) override;

@@ -4622,7 +4622,7 @@ italic,small
 0
 Expander
 contents
-
+fillx
 0
 1
 1
@@ -5937,7 +5937,7 @@ image=hui:about
 # Resource
 Dialog
 new_ball_dialog
-width=250,noexpandx
+noexpandx
 0
 0
 1
@@ -6283,7 +6283,7 @@ range=1:
 # Resource
 Dialog
 new-platonic-dialog
-width=240,noexpandx
+noexpandx
 0
 0
 1
@@ -7500,7 +7500,7 @@ image=hui:about
 # Resource
 Dialog
 model_dialog
-width=450,height=500,resizable,headerbar,closebutton=no,borderwidth=0
+width=450,height=500,resizable,headerbar,closebutton=no
 0
 0
 1
@@ -11127,7 +11127,7 @@ vertical
 2
 ListView
 systems
-nobar,sunkenbackground=no,showselection=no,selectsingle
+nobar,sunkenbackground=no,showselection=no,selectsingle,spacing=8
 0
 0
 0

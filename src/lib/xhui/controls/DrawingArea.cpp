@@ -33,7 +33,7 @@ void DrawingArea::for_painter_do(Painter* p, std::function<void(Painter*)> f) {
 	p->width = (int)area.width();
 	p->height = (int)area.height();
 	p->_area = area;
-	p->native_area = {area.x1 * p->ui_scale, area.x2 * p->ui_scale, area.y1 * p->ui_scale, area.y2 * p->ui_scale};
+	p->native_area = {area.x1 * p->ui_scale.x, area.x2 * p->ui_scale.x, area.y1 * p->ui_scale.y, area.y2 * p->ui_scale.y};
 
 	p->set_clip(area);
 	//p->set_transform({}, vec2(area.x1, area.y1)); // NOPE, we use window coordinates!

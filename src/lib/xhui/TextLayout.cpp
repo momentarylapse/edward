@@ -102,16 +102,16 @@ TextLayout TextLayout::from_format_string(::Painter* p, const string& s, float f
 	int line_first_chunk = 0;
 	auto add_chunk = [&] (const string& text, const TextFormat& fmt) {
 		auto face = global_font_manager->pick(Theme::_default.font_name, fmt.bold, false);
-		face->set_size(fmt.font_size * p->ui_scale);
+		face->set_size(fmt.font_size * p->ui_scale.y);
 		const auto dims = face->get_text_dimensions(text);
 
-		max_line_height = max(max_line_height, dims.line_dy / p->ui_scale);
-		max_line_ascender = max(max_line_ascender, dims.ascender / p->ui_scale);
+		max_line_height = max(max_line_height, dims.line_dy / p->ui_scale.y);
+		max_line_ascender = max(max_line_ascender, dims.ascender / p->ui_scale.y);
 
-		float dy =  - dims.ascender / p->ui_scale;
+		float dy =  - dims.ascender / p->ui_scale.y;
 		l.parts.add({text, fmt, pos + vec2(0, dy)});
 
-		vec2 size = {dims.bounding_width / p->ui_scale, dims.inner_height() / p->ui_scale};
+		vec2 size = {dims.bounding_width / p->ui_scale.x, dims.inner_height() / p->ui_scale.y};
 		l.parts.back().box = {pos.x, pos.x + size.x, pos.y + dy, pos.y + size.y + dy};
 		pos += vec2(size.x, 0);
 	};

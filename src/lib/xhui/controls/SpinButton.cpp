@@ -144,7 +144,7 @@ void SpinButton::on_mouse_wheel(const vec2& d) {
 
 
 void SpinButton::_draw(Painter* p) {
-	ui_scale = p->ui_scale;
+	ui_scale = p->ui_scale.y;
 	if (text_needs_update)
 		_update_text_from_value();
 	Edit::_draw(p);

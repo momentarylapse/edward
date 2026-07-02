@@ -27,7 +27,7 @@ public:
 		from_source(R"foodelim(
 Dialog system 'System'
 	Grid ? '' class=card
-		Grid ? ''
+		Grid ? '' left
 			Label class '' bold
 			Label filename '' small
 		---|
