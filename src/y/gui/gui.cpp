@@ -18,8 +18,6 @@
 #include "lib/os/msg.h"
 
 
-extern bool _parse_tokens_smart_strings_;
-
 namespace gui {
 
 Array<Node*> all_nodes;

@@ -12,6 +12,8 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <EngineData.h>
 
+#include "helper/ResourceManager.h"
+
 
 namespace gui {
 
@@ -43,13 +45,21 @@ Picture::~Picture() = default;
 
 void Picture::set_option(const string &k, const string &v) {
 	if (k == "texture") {
-		// ...
+		texture = engine.resource_manager->load_texture(v);
 	} else if (k == "angle") {
 		angle = v._float();
 	} else if (k == "radius") {
 		radius = v._float();
 	} else if (k == "softness") {
 		softness = v._float();
+	} else if (k == "source") {
+		const auto a = Any::parse(v);
+		if (a.is_list() and a.length() >= 4) {
+			source.x1 = a[0].to_f32();
+			source.x2 = a[1].to_f32();
+			source.y1 = a[2].to_f32();
+			source.y2 = a[3].to_f32();
+		}
 	} else {
 		Node::set_option(k, v);
 	}

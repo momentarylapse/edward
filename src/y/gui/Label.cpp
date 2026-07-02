@@ -46,7 +46,7 @@ vec2 Label::get_content_min_size() const {
 }
 
 void Label::set_option(const string &k, const string &v) {
-	if (k == "size") {
+	if (k == "size" or k == "font.size") {
 		font_size = v._float();
 	} else if (k == "text") {
 		text = v;

@@ -119,17 +119,17 @@ void Node::set_option(const string& key, const string& value) {
 	if (key == "expand") {
 		size_mode_x = SizeMode::Expand;
 		size_mode_y = SizeMode::Expand;
-	} else if (key == "expandx") {
+	} else if (key == "expandx" or key == "expand.x") {
 		size_mode_x = SizeMode::Expand;
 		if (value._bool())
 			size_mode_x = SizeMode::Fill;
-	} else if (key == "expandy") {
+	} else if (key == "expandy" or key == "expand.y") {
 		size_mode_y = SizeMode::Expand;
 		if (value._bool())
 			size_mode_y = SizeMode::Fill;
-	} else if (key == "noexpandx" or key == "fillx") {
+	} else if (key == "noexpandx" or key == "fillx" or key == "fill.x") {
 		size_mode_x = SizeMode::Fill;
-	} else if (key == "noexpandy" or key == "filly") {
+	} else if (key == "noexpandy" or key == "filly" or key == "filly") {
 		size_mode_y = SizeMode::Fill;
 	} else if (key == "fill") {
 		size_mode_x = SizeMode::Fill;
@@ -137,9 +137,9 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "shrink") {
 		size_mode_x = SizeMode::Shrink;
 		size_mode_y = SizeMode::Shrink;
-	} else if (key == "shrinkx") {
+	} else if (key == "shrinkx" or key == "shrink.x") {
 		size_mode_x = SizeMode::Shrink;
-	} else if (key == "shrinky") {
+	} else if (key == "shrinky" or key == "shrink.y") {
 		size_mode_y = SizeMode::Shrink;
 	} else if (key == "forwardchild") {
 		size_mode_x = SizeMode::ForwardChild;
@@ -154,9 +154,9 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "height") {
 		min_height_user = value._float();
 		size_mode_y = SizeMode::Shrink;
-	} else if (key == "greedfactorx" or key == "greedx") {
+	} else if (key == "greedfactorx" or key == "greedx" or key == "greed.x") {
 		greed_factor.x = value._float();
-	} else if (key == "greedfactory" or key == "greedy") {
+	} else if (key == "greedfactory" or key == "greedy" or key == "greed.y") {
 		greed_factor.y = value._float();
 	} else if (key == "top") {
 		align.y = 0;
@@ -183,34 +183,34 @@ void Node::set_option(const string& key, const string& value) {
 	} else if (key == "padding") {
 		float f = value._float();
 		padding = {f, f, f, f};
-	} else if (key == "paddingx" or key == "paddingh") {
+	} else if (key == "paddingx" or key == "paddingh" or key == "padding.x") {
 		float f = value._float();
 		padding.x1 = padding.x2 = f;
-	} else if (key == "paddingy" or key == "paddingv") {
+	} else if (key == "paddingy" or key == "paddingv" or key == "padding.y") {
 		float f = value._float();
 		padding.y1 = padding.y2 = f;
-	} else if (key == "paddingtop") {
+	} else if (key == "paddingtop" or key == "padding.top") {
 		padding.y1 = value._float();
-	} else if (key == "paddingbottom") {
+	} else if (key == "paddingbottom" or key == "padding.bottom") {
 		padding.y2 = value._float();
-	} else if (key == "paddingleft") {
+	} else if (key == "paddingleft" or key == "padding.left") {
 		padding.x1 = value._float();
-	} else if (key == "paddingright") {
+	} else if (key == "paddingright" or key == "padding.right") {
 		padding.x2 = value._float();
 	} else if (key == "margin") {
 		float f = value._float();
 		margin = rect(f, f, f, f);
-	} else if (key == "hmargin" or key == "marginh" or key == "marginx") {
+	} else if (key == "hmargin" or key == "marginh" or key == "marginx" or key == "margin.x") {
 		margin.x1 = margin.x2 = value._float();
-	} else if (key == "vmargin" or key == "marginv" or key == "marginy") {
+	} else if (key == "vmargin" or key == "marginv" or key == "marginy" or key == "margin.y") {
 		margin.y1 = margin.y2 = value._float();
-	} else if (key == "margintop") {
+	} else if (key == "margintop" or key == "margin.top") {
 		margin.y1 = value._float();
-	} else if (key == "marginbottom") {
+	} else if (key == "marginbottom" or key == "margin.bottom") {
 		margin.y2 = value._float();
-	} else if (key == "marginleft") {
+	} else if (key == "marginleft" or key == "margin.left") {
 		margin.x1 = value._float();
-	} else if (key == "marginright") {
+	} else if (key == "marginright" or key == "margin.right") {
 		margin.x2 = value._float();
 	} else if (key == "hidden") {
 		visible = false;

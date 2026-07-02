@@ -77,12 +77,6 @@ Node* Node::get(const string& _id) {
 	return nullptr;
 }
 
-void print_resource(const layout::Resource& r, const string& prefix) {
-	msg_write(format("%s%s %s  %s", prefix, r.type, r.id, str(r.options)));
-	for (const auto& c: r.children)
-		print_resource(c, prefix + "    ");
-}
-
 void Node::apply_resource(const layout::Resource &r) {
 	if (r.id != "?" and r.id != "")
 		id = r.id;
@@ -105,9 +99,8 @@ Node* Node::add_from_resource(const layout::Resource& r) {
 }
 
 Node* Node::add_from_source(const string& source) {
-	auto r = layout::Resource::parse(source, false);
-	print_resource(r, "");
-	//if (r.id != "?")
+	const auto r = layout::Resource::parse(source, false);
+	r.show();
 
 	return add_from_resource(r);
 }
@@ -138,6 +131,8 @@ void Node::set_option(const string& key, const string& value) {
 		dz = value._float();
 	} else if (key == "color") {
 		col = color::parse(value);
+	} else if (key == "alpha" or key == "color.a") {
+		col.a = value._float();
 	} else if (key == "allowhover") {
 		allow_hover = value == "" or value._bool();
 	} else if (key == "ignorehover") {
