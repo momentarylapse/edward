@@ -615,36 +615,13 @@ void Window::set_title(const string& t) {
 }
 
 Control *Window::get_hover_control(const vec2 &p) {
-	Array<Control*> seeds;
-	if (dialogs.num > 0) {
-		seeds.append(dialogs.back()->get_children(ChildFilter::All));
-	} else {
-		if (header_bar)
-			seeds.add(header_bar);
-		seeds.add(top_control.get());
-	}
-	int cur_seed = 0;
+	if (dialogs.num > 0)
+		return layout::get_hover_as<Control>(dialogs.back().get(), p);
 
-	// we might need multiple seeds, if we encounter Overlays!
-
-	Control* best = nullptr;
-	while (cur_seed < seeds.num) {
-		auto c = seeds[cur_seed ++];
-		while (c) {
-			if (c->area.inside(p) and !c->ignore_hover and c->visible)
-				best = c;
-			Control* next = nullptr;
-			for (auto cc: c->get_children(ChildFilter::OnlyActive))
-				if (cc->area.inside(p) and cc->visible) {
-					if (next)
-						seeds.add(cc);
-					else
-						next = cc;
-				}
-			c = next;
-		}
-	}
-	return best;
+	if (header_bar)
+		if (auto h = layout::get_hover_as<Control>(header_bar, p))
+			return h;
+	return layout::get_hover_as<Control>(top_control.get(), p);
 }
 
 void Window::update_hover(const vec2& m) {

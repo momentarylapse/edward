@@ -79,7 +79,6 @@ public:
 	Window* get_window() const;
 
 	bool can_grab_focus = false;
-	bool ignore_hover = false;
 	bool enabled;
 	string tooltip;
 

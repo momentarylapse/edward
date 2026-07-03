@@ -219,5 +219,30 @@ void Node::set_option(const string& key, const string& value) {
 	}
 }
 
+Node* get_hover(Node* top, const vec2& p) {
+	Array<const Node*> seeds = {top};
+	int cur_seed = 0;
+
+	// we might need multiple seeds, if we encounter Overlays!
+
+	const Node* best = nullptr;
+	while (cur_seed < seeds.num) {
+		auto c = seeds[cur_seed ++];
+		while (c) {
+			if (c->area.inside(p) and !c->ignore_hover and c->visible)
+				best = c;
+			const Node* next = nullptr;
+			for (auto cc: c->_get_children(ChildFilter::OnlyActive))
+				if (cc->area.inside(p) and cc->visible) {
+					if (next)
+						seeds.add(cc);
+					else
+						next = cc;
+				}
+			c = next;
+		}
+	}
+	return const_cast<Node*>(best);
+}
 
 }

@@ -63,6 +63,7 @@ public:
 	vec2 align = vec2(0.5f, 0.5f); // (0,0)=top-left (1,1)=bottom-right
 	vec2 greed_factor = vec2(1, 1); // if expanding... (only compared against direct siblings!)
 	bool visible = true;
+	bool ignore_hover = false;
 	rect padding; // space "inside", around children/content
 	rect margin; // space "outside"
 
@@ -76,5 +77,12 @@ public:
 	virtual void negotiate_content_area(const rect& available); // excluding padding/margin
 	void negotiate_outer_area(const rect& available); // including padding/margin
 };
+
+Node* get_hover(Node* top, const vec2& p);
+
+template<class T>
+T* get_hover_as(Node* top, const vec2& p) {
+	return reinterpret_cast<T*>(get_hover(top, p));
+}
 
 }
