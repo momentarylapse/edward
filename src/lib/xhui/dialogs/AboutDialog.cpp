@@ -13,12 +13,8 @@ namespace xhui {
 AboutDialog::AboutDialog(Panel* parent) : Dialog("About", 400, 400, parent) {
 	from_source(R"foo(
 Dialog about-dialog 'About' width=400 height=400
-	Grid ? '' spacing=-2
-		Label ? '' expandy
-		---|
-		Image logo ''
-		---|
-		Label ? '' expandy
+	Grid ? '' spacing=0
+		Image logo '' expand padding=20
 		---|
 		Label program-name '' bold big center expandx
 		---|

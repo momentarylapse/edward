@@ -65,12 +65,21 @@ vec2 Grid::get_content_min_size() const {
 void Grid::get_greed_factors(Array<float> &x, Array<float> &y, SizeMode mamx, SizeMode mamy) const {
 	x.resize(nx);
 	y.resize(ny);
+	Array<int> modes_x, modes_y;
+	modes_x.resize(nx);
+	modes_y.resize(ny);
 	for (auto& c: children)
 		if (c.node->visible) {
-			if (c.node->effective_size_mode_x() >= mamx)
+			auto mx = c.node->effective_size_mode_x();
+			auto my = c.node->effective_size_mode_y();
+			if (mx >= mamx and (int)mx > modes_x[c.x]) {
+				modes_x[c.x] = (int)mx;
 				x[c.x] = max(x[c.x], c.node->greed_factor.x);
-			if (c.node->effective_size_mode_y() >= mamy)
+			}
+			if (my >= mamy and (int)my > modes_y[c.y]) {
+				modes_y[c.y] = (int)my;
 				y[c.y] = max(y[c.y], c.node->greed_factor.y);
+			}
 		}
 }
 
@@ -78,8 +87,8 @@ void Grid::negotiate_content_area(const rect &available) {
 	Array<float> w, h;
 	get_min_sizes(w, h);
 	vec2 total_min_size = get_content_min_size();
-	float diff_x = max(available.width() - total_min_size.x, 0.0f); //  - spacing * (w.num + 1)
-	float diff_y = max(available.height() - total_min_size.y, 0.0f); //  - spacing * (h.num + 1)
+	float diff_x = max(available.width() - total_min_size.x, 0.0f);
+	float diff_y = max(available.height() - total_min_size.y, 0.0f);
 
 	auto mamx = node.most_aggressive_child_size_mode_x();
 	auto mamy = node.most_aggressive_child_size_mode_x();
