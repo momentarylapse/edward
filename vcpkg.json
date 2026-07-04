@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    "freetype",
+    "glew",
+    "glfw3",
+    "opengl",
+    "pkgconf",
+    "shaderc",
+    "spirv-tools",
+    "vulkan",
+    "vulkan-headers",
+    "zlib"
+  ]
+}
