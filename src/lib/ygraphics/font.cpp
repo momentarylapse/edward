@@ -58,26 +58,35 @@ Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic, cons
 	if (bold)
 		namex = name + " Bold";
 
-	//msg_write(os::fs::current_directory().str());
-	if (!try_load_font(format("/System/Library/Fonts/%s.ttc", name)))
-	if (!try_load_font(format("/System/Library/Fonts/Supplemental/%s.ttc", name)))
-	if (!try_load_font(format("/System/Library/Fonts/Supplemental/%s.ttf", namex)))
-	if (!try_load_font(format("/usr/share/fonts/noto/%s-%s.ttf", name, type)))
-	if (!try_load_font(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type)))
-	if (!try_load_font(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type)))
-	if (!try_load_font(format("/usr/share/fonts/opentype/cantarell/%s-VF.otf", name)))
-	if (!try_load_font(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", ""))))
-	if (!try_load_font(format("/usr/share/fonts/truetype/dejavu/%s.ttf", namex.replace(" ", "-"))))
-	if (!try_load_font(format("static/%s-%s.ttf", name, type))) {
-		for (const auto& dir: directories)
-			if (try_load_font(format("%s/%s.ttf", dir, name)))
-				return face;
-		delete face;
-		return nullptr;
+	Array<Path> candidates;
+
+	// user locations
+	for (const auto& dir : directories) {
+		candidates.add(dir | format("%s.ttf", name));
+		candidates.add(dir | format("%s-%s.ttf", name, type));
 	}
 
+	// system locations
+#if defined(OS_MAC)
+	candidates.add(format("/System/Library/Fonts/%s.ttc", name));
+	candidates.add(format("/System/Library/Fonts/Supplemental/%s.ttc", name));
+	candidates.add(format("/System/Library/Fonts/Supplemental/%s.ttf", namex));
+#elif defined(OS_WINDOWS)
+	candidates.add(format("c:/Windows/Fonts/%s.ttf", name.lower()));
+#else
+	candidates.add(format("/usr/share/fonts/noto/%s-%s.ttf", name, type));
+	candidates.add(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type));
+	candidates.add(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type));
+	candidates.add(format("/usr/share/fonts/opentype/cantarell/%s-VF.otf", name));
+	candidates.add(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", "")));
+	candidates.add(format("/usr/share/fonts/truetype/dejavu/%s.ttf", namex.replace(" ", "-")));
+#endif
 
-	return face;
+	for (const auto& filename: candidates)
+		if (try_load_font(filename))
+			return face;
+	delete face;
+	return nullptr;
 }
 #endif
 

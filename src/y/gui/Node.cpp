@@ -36,7 +36,7 @@ Node::Node() : layout::Node(p2s(this)) {
 
 Node::~Node() = default;
 
-void Node::add(shared<Node> n) {
+void Node::add(shared<Node>& n) {
 	children.add(n);
 	n->parent = this;
 	update_tree();
@@ -89,11 +89,11 @@ void Node::apply_resource(const layout::Resource &r) {
 }
 
 Node* Node::add_from_resource(const layout::Resource& r) {
-	if (Node* n = create_node(r.type)) {
+	if (shared<Node> n = create_node(r.type)) {
 		//msg_write("create... " + c.type + "   " + p2s(n));
 		add(n);
 		n->apply_resource(r);
-		return n;
+		return n.get();
 	}
 	return nullptr;
 }

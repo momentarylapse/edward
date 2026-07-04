@@ -129,7 +129,7 @@ void Node::set_option(const string& key, const string& value) {
 			size_mode_y = SizeMode::Fill;
 	} else if (key == "noexpandx" or key == "fillx" or key == "fill.x") {
 		size_mode_x = SizeMode::Fill;
-	} else if (key == "noexpandy" or key == "filly" or key == "filly") {
+	} else if (key == "noexpandy" or key == "filly" or key == "fill.y") {
 		size_mode_y = SizeMode::Fill;
 	} else if (key == "fill") {
 		size_mode_x = SizeMode::Fill;

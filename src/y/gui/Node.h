@@ -48,7 +48,7 @@ public:
 	Node *parent;
 	shared_array<Node> children;
 
-	void add(shared<Node> n);
+	void add(shared<Node>& n);
 	Node* add_from_source(const string& source);
 	Node* add_from_resource(const layout::Resource& r);
 	void apply_resource(const layout::Resource& r);
