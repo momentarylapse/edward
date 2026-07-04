@@ -9,8 +9,8 @@
 
 
 namespace polymesh {
-	class Mesh;
-	class MeshEdit;
+	struct Mesh;
+	struct MeshEdit;
 
 	MeshEdit auto_merge_polygons(const Mesh& mesh, const base::set<int>& selp, float dang = 0.1f);
 }

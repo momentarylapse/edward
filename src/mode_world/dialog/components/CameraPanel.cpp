@@ -134,11 +134,11 @@ public:
 constexpr float SENSOR_HEIGHT = 24.0f; // "35mm"
 //constexpr float SENSOR_HEIGHT = 15.7f; // "APS-C"
 
-constexpr float fov_to_35mm_focal_length(float fov) {
+static float fov_to_35mm_focal_length(float fov) {
 	return SENSOR_HEIGHT/2/tanf(fov/2);
 }
 
-constexpr float fov_from_35mm_focal_length(float f) {
+static float fov_from_35mm_focal_length(float f) {
 	return atanf(SENSOR_HEIGHT/2/f)*2;
 }
 

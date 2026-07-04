@@ -8,8 +8,8 @@
 #include <lib/base/set.h>
 
 namespace polymesh {
-	class Mesh;
-	class MeshEdit;
+	struct Mesh;
+	struct MeshEdit;
 
 	MeshEdit extrude_polygons(const Mesh& mesh, const base::set<int>& sel, float distance, bool keep_connected);
 }

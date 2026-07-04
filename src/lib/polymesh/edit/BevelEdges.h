@@ -8,8 +8,8 @@
 #include <lib/base/set.h>
 
 namespace polymesh {
-	class Mesh;
-	class MeshEdit;
+	struct Mesh;
+	struct MeshEdit;
 
 	MeshEdit bevel_edges(const Mesh& mesh, const base::set<int>& selv, const base::set<int>& sele, float distance);
 }

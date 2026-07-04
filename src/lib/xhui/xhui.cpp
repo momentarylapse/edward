@@ -62,7 +62,7 @@ void init(const Array<string> &arg, const string& app_name) {
 	Theme::load_default();
 
 
-	const Array<string> font_names = {"Cantarell", "FreeSans", "OpenSans", "Helvetica", "NotoSans"};
+	const Array<string> font_names = {"Cantarell", "FreeSans", "OpenSans", "Helvetica", "NotoSans", "Verdana"};
 	const Array<string> font_names_mono = {"DejaVuSansMono", "Menlo", "NotoSansMono", "AdwaitaMono", "Courier New", "FreeMono"};
 	global_font_manager = new ygfx::FontManager();
 	global_font_manager->try_load_defaults(font_names, font_names_mono);
