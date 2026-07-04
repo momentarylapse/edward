@@ -2,6 +2,8 @@ message.txt
 build
 Debug
 Release
+/out
+.vs
 .settings
 config.txt
 admin_database.txt
