@@ -8,18 +8,184 @@
 #include <vulkan/vulkan.h>
 
 #include "common.h"
-#include "helper.h"
 #include "../os/file.h"
 #include "../os/filesystem.h"
 #include "../os/formatter.h"
 #include "../os/msg.h"
-#include "../image/image.h"
 
-#define HAS_LIB_SHADERC 1
+#include <glslang/Include/glslang_c_interface.h>
+#include <glslang/Public/ShaderLang.h>
+#include <glslang/SPIRV/GlslangToSpv.h>
 
-#if HAS_LIB_SHADERC
-#include <shaderc/shaderc.h>
-#endif
+static TBuiltInResource create_glslang_resources() {
+    TBuiltInResource resources{};
+    resources.maxLights                                 = 32;
+    resources.maxClipPlanes                             = 6;
+    resources.maxTextureUnits                           = 32;
+    resources.maxTextureCoords                          = 32;
+    resources.maxVertexAttribs                          = 64;
+    resources.maxVertexUniformComponents                = 4096;
+    resources.maxVaryingFloats                          = 64;
+    resources.maxVertexTextureImageUnits                = 32;
+    resources.maxCombinedTextureImageUnits              = 80;
+    resources.maxTextureImageUnits                      = 32;
+    resources.maxFragmentUniformComponents              = 4096;
+    resources.maxDrawBuffers                            = 32;
+    resources.maxVertexUniformVectors                   = 128;
+    resources.maxVaryingVectors                         = 8;
+    resources.maxFragmentUniformVectors                 = 16;
+    resources.maxVertexOutputVectors                    = 16;
+    resources.maxFragmentInputVectors                   = 15;
+    resources.minProgramTexelOffset                     = -8;
+    resources.maxProgramTexelOffset                     = 7;
+    resources.maxClipDistances                          = 8;
+    resources.maxComputeWorkGroupCountX                 = 65535;
+    resources.maxComputeWorkGroupCountY                 = 65535;
+    resources.maxComputeWorkGroupCountZ                 = 65535;
+    resources.maxComputeWorkGroupSizeX                  = 1024;
+    resources.maxComputeWorkGroupSizeY                  = 1024;
+    resources.maxComputeWorkGroupSizeZ                  = 64;
+    resources.maxComputeUniformComponents               = 1024;
+    resources.maxComputeTextureImageUnits               = 16;
+    resources.maxComputeImageUniforms                   = 8;
+    resources.maxComputeAtomicCounters                  = 8;
+    resources.maxComputeAtomicCounterBuffers            = 1;
+    resources.maxVaryingComponents                      = 60;
+    resources.maxVertexOutputComponents                 = 64;
+    resources.maxGeometryInputComponents                = 64;
+    resources.maxGeometryOutputComponents               = 128;
+    resources.maxFragmentInputComponents                = 128;
+    resources.maxImageUnits                             = 8;
+    resources.maxCombinedImageUnitsAndFragmentOutputs   = 8;
+    resources.maxCombinedShaderOutputResources          = 8;
+    resources.maxImageSamples                           = 0;
+    resources.maxVertexImageUniforms                    = 0;
+    resources.maxTessControlImageUniforms               = 0;
+    resources.maxTessEvaluationImageUniforms            = 0;
+    resources.maxGeometryImageUniforms                  = 0;
+    resources.maxFragmentImageUniforms                  = 8;
+    resources.maxCombinedImageUniforms                  = 8;
+    resources.maxGeometryTextureImageUnits              = 16;
+    resources.maxGeometryOutputVertices                 = 256;
+    resources.maxGeometryTotalOutputComponents          = 1024;
+    resources.maxGeometryUniformComponents              = 1024;
+    resources.maxGeometryVaryingComponents              = 64;
+    resources.maxTessControlInputComponents             = 128;
+    resources.maxTessControlOutputComponents            = 128;
+    resources.maxTessControlTextureImageUnits           = 16;
+    resources.maxTessControlUniformComponents           = 1024;
+    resources.maxTessControlTotalOutputComponents       = 4096;
+    resources.maxTessEvaluationInputComponents          = 128;
+    resources.maxTessEvaluationOutputComponents         = 128;
+    resources.maxTessEvaluationTextureImageUnits        = 16;
+    resources.maxTessEvaluationUniformComponents        = 1024;
+    resources.maxTessPatchComponents                    = 120;
+    resources.maxPatchVertices                          = 32;
+    resources.maxTessGenLevel                           = 64;
+    resources.maxViewports                              = 16;
+    resources.maxVertexAtomicCounters                   = 0;
+    resources.maxTessControlAtomicCounters              = 0;
+    resources.maxTessEvaluationAtomicCounters           = 0;
+    resources.maxGeometryAtomicCounters                 = 0;
+    resources.maxFragmentAtomicCounters                 = 8;
+    resources.maxCombinedAtomicCounters                 = 8;
+    resources.maxAtomicCounterBindings                  = 1;
+    resources.maxVertexAtomicCounterBuffers             = 0;
+    resources.maxTessControlAtomicCounterBuffers        = 0;
+    resources.maxTessEvaluationAtomicCounterBuffers     = 0;
+    resources.maxGeometryAtomicCounterBuffers           = 0;
+    resources.maxFragmentAtomicCounterBuffers           = 1;
+    resources.maxCombinedAtomicCounterBuffers           = 1;
+    resources.maxAtomicCounterBufferSize                = 16384;
+    resources.maxTransformFeedbackBuffers               = 4;
+    resources.maxTransformFeedbackInterleavedComponents = 64;
+    resources.maxCullDistances                          = 8;
+    resources.maxCombinedClipAndCullDistances           = 8;
+    resources.maxSamples                                = 4;
+    resources.maxMeshOutputVerticesNV                   = 256;
+    resources.maxMeshOutputPrimitivesNV                 = 512;
+    resources.maxMeshWorkGroupSizeX_NV                  = 32;
+    resources.maxMeshWorkGroupSizeY_NV                  = 1;
+    resources.maxMeshWorkGroupSizeZ_NV                  = 1;
+    resources.maxTaskWorkGroupSizeX_NV                  = 32;
+    resources.maxTaskWorkGroupSizeY_NV                  = 1;
+    resources.maxTaskWorkGroupSizeZ_NV                  = 1;
+    resources.maxMeshViewCountNV                        = 4;
+
+    resources.limits.nonInductiveForLoops                 = true;
+    resources.limits.whileLoops                           = true;
+    resources.limits.doWhileLoops                         = true;
+    resources.limits.generalUniformIndexing               = true;
+    resources.limits.generalAttributeMatrixVectorIndexing = true;
+    resources.limits.generalVaryingIndexing               = true;
+    resources.limits.generalSamplerIndexing               = true;
+    resources.limits.generalVariableIndexing              = true;
+    resources.limits.generalConstantMatrixVectorIndexing  = true;
+
+    return resources;
+}
+
+static TBuiltInResource default_resource;
+
+bytes glslang_to_spirv(const string& source, VkShaderStageFlagBits type) {
+	static bool initialized = false;
+	if (!initialized) {
+		[[maybe_unused]] int r = ShInitialize();
+		default_resource = create_glslang_resources();
+		initialized = true;
+	}
+
+	auto stage = EShLangVertex;
+	if (type == VK_SHADER_STAGE_GEOMETRY_BIT)
+		stage = EShLangGeometry;
+	if (type == VK_SHADER_STAGE_FRAGMENT_BIT)
+		stage = EShLangFragment;
+	if (type == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT)
+		stage = EShLangTessControl;
+	if (type == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
+		stage = EShLangTessEvaluation;
+	if (type == VK_SHADER_STAGE_MESH_BIT_EXT)
+		stage = EShLangMesh;
+	if (type == VK_SHADER_STAGE_TASK_BIT_EXT)
+		stage = EShLangTask;
+	if (type == VK_SHADER_STAGE_RAYGEN_BIT_KHR)
+		stage = EShLangRayGen;
+	if (type == VK_SHADER_STAGE_INTERSECTION_BIT_KHR)
+		stage = EShLangIntersect;
+	if (type == VK_SHADER_STAGE_ANY_HIT_BIT_KHR)
+		stage = EShLangAnyHit;
+	if (type == VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR)
+		stage = EShLangClosestHit;
+	if (type == VK_SHADER_STAGE_COMPUTE_BIT)
+		stage = EShLangCompute;
+
+	glslang::TShader shader(stage);
+	const char* s = (char*)source.data;
+	int l = source.num;
+	shader.setStringsWithLengths(&s, &l, 1);
+	shader.setPreamble("#define vulkan 1\n#define gl 0\n");
+
+//	shader.setEnvInput(glslang::EShSourceGlsl, EShLangVertex, glslang::EShClientVulkan, 330);
+	shader.setEnvClient(glslang::EShClientVulkan, glslang::EShTargetVulkan_1_3);
+	shader.setEnvTarget(glslang::EshTargetSpv, glslang::EShTargetSpv_1_6);
+
+	if (!shader.parse(&default_resource, 330, false, (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules))) {
+		throw Exception(format("compiling shader: %s", shader.getInfoLog()));
+	}
+
+	glslang::TProgram program;
+	program.addShader(&shader);
+	if (!program.link((EShMessages)(EShMsgSpvRules | EShMsgVulkanRules))) {
+		throw Exception(format("linking shader: %s", program.getInfoLog()));
+	}
+
+	glslang::TIntermediate *intermediate = program.getIntermediate(stage);
+	std::vector<uint32_t> spirv;
+	glslang::GlslangToSpv(*intermediate, spirv);
+
+	return bytes(&spirv[0], (int)spirv.size() * 4);
+}
+
 
 string with_line_numbers(const string& s) {
 	auto xx = s.explode("\n");
@@ -30,10 +196,6 @@ string with_line_numbers(const string& s) {
 }
 
 namespace vulkan {
-
-#if HAS_LIB_SHADERC
-static shaderc_compiler_t shaderc = nullptr;
-#endif
 
 
 	VkShaderModule create_shader_module(const bytes &code) {
@@ -67,7 +229,6 @@ static shaderc_compiler_t shaderc = nullptr;
 
 	string shader_error;
 
-#if HAS_LIB_SHADERC
 	struct ShaderSourcePart {
 		VkShaderStageFlagBits type;
 		string source;
@@ -202,60 +363,22 @@ static shaderc_compiler_t shaderc = nullptr;
 		return intro + r;
 	}
 
-	shaderc_shader_kind vk_to_shaderc(VkShaderStageFlagBits s) {
-		if (s == VK_SHADER_STAGE_VERTEX_BIT)
-			return shaderc_glsl_vertex_shader;
-		if (s == VK_SHADER_STAGE_FRAGMENT_BIT)
-			return shaderc_glsl_fragment_shader;
-		if (s == VK_SHADER_STAGE_COMPUTE_BIT)
-			return shaderc_compute_shader;
-		if (s == VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT)
-			return shaderc_tess_control_shader;
-		if (s == VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT)
-			return shaderc_tess_evaluation_shader;
-		if (s == VK_SHADER_STAGE_GEOMETRY_BIT)
-			return shaderc_geometry_shader;
-		if (s == VK_SHADER_STAGE_RAYGEN_BIT_KHR)
-			return shaderc_raygen_shader;
-		if (s == VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR)
-			return shaderc_closesthit_shader;
-		if (s == VK_SHADER_STAGE_ANY_HIT_BIT_KHR)
-			return shaderc_anyhit_shader;
-		if (s == VK_SHADER_STAGE_MISS_BIT_KHR)
-			return shaderc_miss_shader;
-		throw Exception("unhandled shader type...");
-		return shaderc_glsl_vertex_shader;
-	}
-
 	VkShaderModule create_vk_shader(const string &_source, VkShaderStageFlagBits type, ShaderMetaData &meta) {
 		string source = expand_shader_source(_source, meta);
 		if (source.num == 0)
 			return nullptr;
-		static shaderc_compile_options_t options;
-		if (!shaderc) {
-			shaderc = shaderc_compiler_initialize();
-			options = shaderc_compile_options_initialize();
-			shaderc_compile_options_add_macro_definition(options, "vulkan", 6, "1", 1);
-			shaderc_compile_options_set_target_spirv(options, shaderc_spirv_version_1_6);
-		}
-		//msg_write(">>>----------------------------------------------------------------------------------- xxxx");
-		//msg_write(source);
 
-		auto result = shaderc_compile_into_spv(shaderc,
-				(const char*)&source[0], source.num,
-				vk_to_shaderc(type), "dummy", "main", options);
+		bytes _code = glslang_to_spirv(source, type);
+		return create_shader_module(_code);
 
-		if (shaderc_result_get_compilation_status(result) == shaderc_compilation_status_success) {
-			bytes code = bytes(shaderc_result_get_bytes(result), shaderc_result_get_length(result));
-			shaderc_result_release(result);
-			return create_shader_module(code);
-		} else {
+		/*
+		 *
 			shader_error = shaderc_result_get_error_message(result);
 			shaderc_result_release(result);
 			msg_error(shader_error);
 			throw Exception("while compiling shader: " + shader_error);
 		}
-		return nullptr;
+		return nullptr;*/
 	}
 
 	ShaderMetaData parse_meta(const string& source) {
@@ -321,13 +444,6 @@ static shaderc_compiler_t shaderc = nullptr;
 		s->descr_layouts = DescriptorSet::parse_bindings(meta.bindings);
 		return s;
 	}
-#else
-
-	xfer<Shader> Shader::create(const string &source) {
-		throw Exception("Shader.crete() requires this program to be compiled with shaderc support!");
-		return nullptr;
-	}
-#endif
 
 
 
@@ -352,10 +468,8 @@ static shaderc_compiler_t shaderc = nullptr;
 		if (verbosity >= 1)
 			msg_write(format("load shader %s", filename));
 
-#if HAS_LIB_SHADERC
 		if (!os::fs::exists(filename.with(".compiled")))
-			return Shader::create(os::fs::read_text(filename));
-#endif
+			return create(os::fs::read_text(filename));
 
 		Shader *s = new Shader();
 
