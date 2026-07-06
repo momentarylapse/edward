@@ -4,7 +4,6 @@
 
 #include "ModeWorld.h"
 #include "terrain/ModeEditTerrain.h"
-#include "ModeWorldProperties.h"
 #include "dialog/WorldSidePanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
@@ -72,8 +71,6 @@ ModeWorld::ModeWorld(DocumentSession* doc) :
 
 	material_physical = create_material(session->ctx, Black.with_alpha(0.4f), 0.7f, 0.2f, color(1,1,1,0.4f).srgb_to_linear(), true);
 
-	mode_properties = new ModeWorldProperties(this);
-
 	animation_manager = new AnimationManager();
 	animation_manager->entity_manager = data->entity_manager.get();
 	data->entity_manager->out_add_component >> animation_manager->in_add_component;
@@ -109,10 +106,6 @@ void ModeWorld::on_enter_rec() {
 void ModeWorld::on_connect_events_rec() {
 	doc->event("mode_world", [this] {
 		doc->set_mode(this);
-	});
-	doc->event("properties", [this] {
-		doc->set_mode(mode_properties.get());
-		//session->win->open_dialog(new PropertiesDialog(session->win, data));
 	});
 	doc->event("run-game", [this] {
 		Path engine_dir = xhui::config.get_str("EngineDir", "");
@@ -278,7 +271,6 @@ void ModeWorld::on_update_menu() {
 	auto win = session->win;
 
 	win->check("mode_world", doc->cur_mode == this);
-	win->check("properties", doc->cur_mode == mode_properties.get());
 }
 
 

@@ -10938,7 +10938,7 @@ world_dialog_tab_control
 
 0
 0
-4
+3
 Grid
 ?
 vertical
@@ -11118,36 +11118,6 @@ luss
 
 2
 2
-0
-Grid
-?
-vertical
-3
-0
-2
-ListView
-systems
-nobar,sunkenbackground=no,showselection=no,selectsingle,spacing=8
-0
-0
-0
-Grid
-?
-
-1
-0
-2
-Button
-add-system
-image=open
-0
-0
-0
-Button
-create-system
-image=new
-1
-0
 0
 # Resource
 Toolbar
@@ -12919,7 +12889,7 @@ world-toolbar
 
 0
 0
-16
+15
 Item
 new
 image=new
@@ -12998,22 +12968,16 @@ checkable,image=world-cam,hidden
 12
 0
 0
-Item
-properties
-checkable,image=configure
-13
-0
-0
 Separator
 
 
-14
+13
 0
 0
 Item
 run-game
 image=media-playback-start-symbolic
-15
+14
 0
 0
 # Number Of Languages
@@ -13021,7 +12985,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1405
+1401
 # Text
 /ambient
 Ambient
@@ -17094,9 +17058,6 @@ Camera flight
 world-toolbar/mode_world_terrain
 Height map
 
-world-toolbar/properties
-Properties
-
 world-toolbar/run-game
 Run game
 
@@ -17127,15 +17088,9 @@ Delete
 world_camera_dialog/world_camera_dialog
 Camera flight
 
-world_dialog/add-system
-
-Add system
 world_dialog/bgc
 
 Sky color
-world_dialog/create-system
-
-Create new system
 world_dialog/fog-distance
 
 fog intensity = exp( - distance / viewing-distance )
@@ -17157,9 +17112,6 @@ Simple\\Full (using Bullet)
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
-world_dialog/systems
-systems
-Global scripts - a class derived from yengine.System is instantiated and running in the background\n * click to edit variables etc.
 world_dialog/t-fog-color
 Color
 
@@ -17179,7 +17131,7 @@ world_dialog/world_dialog
 World properties
 
 world_dialog/world_dialog_tab_control
-Background\\Fog\\Physics\\Systems
+Background\\Fog\\Physics
 
 world_new_object_dialog/l-title
 New object

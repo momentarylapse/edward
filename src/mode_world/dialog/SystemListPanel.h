@@ -1,5 +1,5 @@
 //
-// Created by Michael Ankele on 2025-02-10.
+// Created by michi on 7/6/26.
 //
 
 #pragma once
@@ -9,9 +9,9 @@
 #include "../data/DataWorld.h"
 
 
-class PropertiesDialog : public obs::Node<xhui::Panel> {
+class SystemListPanel : public obs::Node<xhui::Panel> {
 public:
-	explicit PropertiesDialog(DataWorld* data);
+	explicit SystemListPanel(DataWorld* data);
 	DataWorld* data;
 
 	DataWorld::MetaData temp;
@@ -19,6 +19,8 @@ public:
 
 	void apply();
 	void update_ui();
-};
+	void fill_systems_list();
 
+	void add_new_system();
+};
 

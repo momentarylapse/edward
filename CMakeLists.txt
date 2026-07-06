@@ -536,6 +536,7 @@ add_executable(edward
 	src/mode_world/dialog/EntityListPanel.cpp
 	src/mode_world/dialog/EntityPanel.cpp
 	src/mode_world/dialog/PropertiesDialog.cpp
+	src/mode_world/dialog/SystemListPanel.cpp
 	src/mode_world/dialog/WorldSidePanel.cpp
 	src/mode_world/terrain/action/ActionWorldAddTerrain.cpp
 	src/mode_world/terrain/action/ActionWorldEditTerrainMetaData.cpp
@@ -543,7 +544,6 @@ add_executable(edward
 	src/mode_world/terrain/dialog/EditTerrainPanel.cpp
 	src/mode_world/terrain/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
-	src/mode_world/ModeWorldProperties.cpp
 	src/storage/format/old/LoadModelV11.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
 	src/storage/format/Format.cpp

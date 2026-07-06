@@ -19,7 +19,6 @@ namespace yrenderer {
 }
 class MultiViewWindow;
 class EntityPanel;
-class ModeWorldProperties;
 namespace xhui {
 	class Panel;
 }
@@ -72,8 +71,6 @@ public:
 	VisibilityStack visibility_stack;
 	yrenderer::Material* material_physical;
 	base::map<PhysicalMesh*, ygfx::VertexBuffer*> physical_vertex_buffers;
-
-	owned<ModeWorldProperties> mode_properties;
 
 	Array<int> event_ids;
 	owned<AnimationManager> animation_manager;
