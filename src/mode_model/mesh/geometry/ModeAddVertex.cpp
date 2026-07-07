@@ -11,7 +11,7 @@
 #include <lib/xhui/xhui.h>
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 
 ModeAddVertex::ModeAddVertex(ModeMeshGeometry* parent) :
 	SubMode(parent)

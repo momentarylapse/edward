@@ -5,7 +5,7 @@
 #include "EntityListPanel.h"
 #include "../ModeWorld.h"
 #include <lib/base/iter.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
 #include <ecs/EntityManager.h>
 #include <ecs/Entity.h>

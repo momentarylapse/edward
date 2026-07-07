@@ -12,7 +12,7 @@
 #include <lib/base/set.h>
 #include <y/world/Model.h>
 #include <lib/yrenderer/Material.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 namespace polymesh {
 	struct MeshEdit;

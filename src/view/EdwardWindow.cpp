@@ -21,9 +21,9 @@
 #include <lib/yrenderer/helper/LineHelper.h>
 #include <lib/ygraphics/ShaderManager.h>
 #include <y/EngineData.h>
-#include "ActionController.h"
+#include "multiview/ActionController.h"
 #include "DrawingHelper.h"
-#include "MultiView.h"
+#include "multiview/MultiView.h"
 #include "DocumentSession.h"
 #include "dialogs/DocumentSwitcher.h"
 #include "dialogs/ProjectPanel.h"

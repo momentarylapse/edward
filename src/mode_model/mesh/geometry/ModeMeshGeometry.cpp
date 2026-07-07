@@ -27,8 +27,8 @@
 #include <lib/os/msg.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/Menu.h>
-#include <view/ActionController.h>
-#include <view/MultiView.h>
+#include <view/multiview/ActionController.h>
+#include <view/multiview/MultiView.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>

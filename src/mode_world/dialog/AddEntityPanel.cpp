@@ -8,7 +8,7 @@
 #include <lib/xhui/xhui.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 
 #include "../ModeWorld.h"
 

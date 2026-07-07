@@ -3,7 +3,7 @@
 //
 
 #include "DrawingHelper.h"
-#include "MultiView.h"
+#include "multiview/MultiView.h"
 #include "SingleData.h"
 #include "VisibilityStack.h"
 #include <lib/ygraphics/graphics-impl.h>

@@ -6,8 +6,8 @@
 
 #include "MultiViewWindow.h"
 #include "ViewPort.h"
-#include "Hover.h"
-#include <stuff/Selection.h>
+#include "../Hover.h"
+#include <view/Selection.h>
 #include <lib/history/Data.h>
 #include <lib/xhui/Panel.h>
 #include <lib/yrenderer/Renderer.h>

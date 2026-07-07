@@ -9,7 +9,7 @@
 #define ACTIONMODELSETMATERIAL_H_
 
 #include <lib/history/Action.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 class DataModel;
 
 class ActionModelSetMaterial: public history::Action {

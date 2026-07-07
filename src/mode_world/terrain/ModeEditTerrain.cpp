@@ -4,7 +4,7 @@
 
 #include "ModeEditTerrain.h"
 #include "../ModeWorld.h"
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
 #include "dialog/EditTerrainPanel.h"
 #include <lib/xhui/xhui.h>

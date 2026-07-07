@@ -10,8 +10,8 @@
 #include <lib/base/iter.h>
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
-#include <view/MultiView.h>
-#include <view/MultiViewPanel.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/MultiViewPanel.h>
 #include <view/DocumentSession.h>
 #include "data/DataWorld.h"
 #include <lib/yrenderer/Renderer.h>
@@ -36,7 +36,7 @@
 #include <lib/xhui/controls/Toolbar.h>
 #include <storage/Storage.h>
 #include <view/EdwardWindow.h>
-#include <view/ActionController.h>
+#include <view/multiview/ActionController.h>
 #include <view/DrawingHelper.h>
 #include "dialog/PropertiesDialog.h"
 #include <cmath>

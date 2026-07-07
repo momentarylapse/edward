@@ -4,9 +4,9 @@
 
 #include "MultiViewPanel.h"
 #include "MultiView.h"
-#include "Mode.h"
-#include "DocumentSession.h"
-#include "EdwardWindow.h"
+#include "../Mode.h"
+#include "../DocumentSession.h"
+#include "../EdwardWindow.h"
 #include <Session.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/controls/DrawingArea.h>

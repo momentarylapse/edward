@@ -9,8 +9,8 @@
 #include "../ModeModel.h"
 #include "../data/DataModel.h"
 #include <view/DrawingHelper.h>
-#include <view/MultiView.h>
-#include <view/MultiViewWindow.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/MultiViewWindow.h>
 #include <view/EdwardWindow.h>
 #include <Session.h>
 #include <lib/base/iter.h>

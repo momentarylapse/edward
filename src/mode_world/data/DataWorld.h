@@ -17,7 +17,7 @@
 #include <lib/any/any.h>
 #include <lib/math/Box.h>
 #include <lib/math/quaternion.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 #include "fx/ParticleEmitter.h"
 //#include <y/EntityManager.h>

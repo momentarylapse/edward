@@ -11,8 +11,7 @@
 #include <lib/math/vec3.h>
 #include <lib/math/mat4.h>
 //#include <lib/xhui/Context.h>
-
-#include "MultiView.h"
+#include "multiview/MultiView.h"
 
 namespace polymesh {
 	struct Mesh;

@@ -8,7 +8,7 @@
 
 #include <lib/history/Action.h>
 #include <lib/polymesh/MeshEdit.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 class DataModel;
 struct ModelMesh;

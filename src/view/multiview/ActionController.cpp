@@ -11,7 +11,7 @@
 //#include "ColorScheme.h"
 //#include "Window.h"
 //#include "MouseWrapper.h"
-#include "EdwardWindow.h"
+#include "../EdwardWindow.h"
 #include <Session.h>
 #include <action/ActionMultiView.h>
 #include <lib/polymesh/Mesh.h>
@@ -25,7 +25,7 @@
 #include <lib/math/mat3.h>
 #include <lib/math/plane.h>
 #include <lib/os/msg.h>
-#include "DrawingHelper.h"
+#include "../DrawingHelper.h"
 #include <cmath>
 
 const float ActionController::PIXEL_RADIUS = 200;

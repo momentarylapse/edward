@@ -18,8 +18,7 @@
 #include <lib/math/random.h>
 #include <lib/math/rect.h>
 #include <lib/math/vec2.h>
-
-#include "stuff/Selection.h"
+#include <view/Selection.h>
 
 namespace unittest {
 

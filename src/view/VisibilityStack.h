@@ -2,7 +2,7 @@
 
 #include <lib/base/pointer.h>
 #include <lib/pattern/Observable.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 struct VisibilityFilter {
 	bool bypass;

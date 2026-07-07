@@ -16,7 +16,7 @@
 #include <mode_world/ModeWorld.h>
 #include <mode_coding/ModeCoding.h>
 #include <stuff/PluginManager.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <lib/base/algo.h>
 #include <view/Mode.h>
 #include <lib/history/Data.h>

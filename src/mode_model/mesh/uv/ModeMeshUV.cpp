@@ -9,9 +9,9 @@
 #include <lib/xhui/Menu.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <view/DrawingHelper.h>
-#include <view/MultiView.h>
-#include <view/MultiViewPanel.h>
-#include <view/ActionController.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/MultiViewPanel.h>
+#include <view/multiview/ActionController.h>
 #include <lib/base/iter.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/yrenderer/helper/LineHelper.h>

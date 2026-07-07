@@ -9,7 +9,7 @@
 #include "SystemListPanel.h"
 #include "PropertiesDialog.h"
 #include "../ModeWorld.h"
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
 
 WorldSidePanel::WorldSidePanel(ModeWorld* _mode) : obs::Node<xhui::Panel>("world-side-panel") {

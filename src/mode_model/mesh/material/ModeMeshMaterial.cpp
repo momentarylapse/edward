@@ -10,7 +10,7 @@
 #include <lib/os/msg.h>
 #include <view/DocumentSession.h>
 #include <view/EdwardWindow.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <mode_material/dialog/MaterialSelectionDialog.h>
 #include "action/ActionModelAddMaterial.h"
 

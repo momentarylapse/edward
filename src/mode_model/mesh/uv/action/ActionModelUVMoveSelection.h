@@ -9,7 +9,7 @@
 
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 struct ModelMesh;
 struct vec3;

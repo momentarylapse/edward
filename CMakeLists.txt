@@ -562,18 +562,18 @@ add_executable(edward
 	src/view/dialogs/DocumentSwitcher.cpp
 	src/view/dialogs/ProjectPanel.cpp
 	src/view/helper/InstanceEditor.cpp
-	src/view/ActionController.cpp
+	src/view/multiview/ActionController.cpp
+	src/view/multiview/MultiView.cpp
+	src/view/multiview/MultiViewMeshEmitter.cpp
+	src/view/multiview/MultiViewPanel.cpp
+	src/view/multiview/MultiViewWindow.cpp
+	src/view/multiview/ViewPort.cpp
 	src/view/DocumentSession.cpp
 	src/view/DrawingHelper.cpp
 	src/view/EdwardWindow.cpp
 	src/view/MaterialPreviewManager.cpp
 	src/view/Mode.cpp
-	src/view/MultiView.cpp
-	src/view/MultiViewMeshEmitter.cpp
-	src/view/MultiViewPanel.cpp
-	src/view/MultiViewWindow.cpp
 	src/view/SingleData.cpp
-	src/view/ViewPort.cpp
 	src/view/VisibilityStack.cpp
 	src/y/audio/audio.cpp
 	src/y/audio/AudioBuffer.cpp

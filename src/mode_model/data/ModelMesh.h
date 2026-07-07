@@ -12,7 +12,7 @@
 #include <lib/polymesh/Mesh.h>
 #include <lib/math/vec4.h>
 #include <lib/history/Data.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 struct Box;
 class DataModel;

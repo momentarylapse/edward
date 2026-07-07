@@ -5,7 +5,7 @@
 #include "DocumentSession.h"
 #include "Mode.h"
 #include "EdwardWindow.h"
-#include "MultiView.h"
+#include "multiview/MultiView.h"
 #include <mode_coding/ModeCoding.h>
 #include <mode_material/ModeMaterial.h>
 #include <mode_model/ModeModel.h>

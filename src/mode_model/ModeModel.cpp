@@ -9,8 +9,8 @@
 #include <Session.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
-#include <view/MultiView.h>
-#include <view/MultiViewPanel.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/MultiViewPanel.h>
 #include <view/EdwardWindow.h>
 #include <view/DocumentSession.h>
 

@@ -16,7 +16,7 @@
 #include <view/DocumentSession.h>
 #include <view/DrawingHelper.h>
 #include <view/EdwardWindow.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <cmath>
 
 ModeAddCube::ModeAddCube(ModeMeshGeometry* parent) :

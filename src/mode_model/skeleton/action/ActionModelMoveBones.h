@@ -8,7 +8,7 @@
 
 #include <action/ActionMultiView.h>
 #include <lib/base/set.h>
-#include <stuff/Selection.h>
+#include <view/Selection.h>
 
 class DataModel;
 struct vec3;

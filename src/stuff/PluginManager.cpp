@@ -11,9 +11,8 @@
 #include <view/EdwardWindow.h>
 #include <Session.h>
 #include <view/Mode.h>
-#include <view/MultiView.h>
-#include <view/ActionController.h>
-#include <view/MultiViewWindow.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/ActionController.h>
 #include <view/DocumentSession.h>
 #include <lib/history/Data.h>
 #include <lib/polymesh/Mesh.h>

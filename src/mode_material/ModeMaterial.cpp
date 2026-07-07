@@ -8,8 +8,8 @@
 #include <lib/base/iter.h>
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
-#include <view/MultiView.h>
-#include <view/MultiViewPanel.h>
+#include <view/multiview/MultiView.h>
+#include <view/multiview/MultiViewPanel.h>
 #include <view/DocumentSession.h>
 #include "data/DataMaterial.h"
 #include <y/helper/ResourceManager.h>

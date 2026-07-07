@@ -5,8 +5,8 @@
 #include "MultiViewMeshEmitter.h"
 #include "MultiView.h"
 #include "MultiViewWindow.h"
-#include "Mode.h"
-#include "DocumentSession.h"
+#include "../Mode.h"
+#include "../DocumentSession.h"
 
 
 void MultiViewBackgroundEmitter::emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) {

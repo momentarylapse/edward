@@ -19,7 +19,7 @@
 #include <lib/xhui/controls/Grid.h>
 #include <lib/xhui/controls/ListView.h>
 #include <y/EngineData.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
 #include <view/MaterialPreviewManager.h>
 

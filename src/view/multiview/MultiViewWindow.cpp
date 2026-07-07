@@ -5,8 +5,8 @@
 #include "MultiViewWindow.h"
 #include "MultiView.h"
 #include "MultiViewMeshEmitter.h"
-#include "Mode.h"
-#include "DrawingHelper.h"
+#include "../Mode.h"
+#include "../DrawingHelper.h"
 #include <lib/yrenderer/scene/MeshEmitter.h>
 #include <lib/yrenderer/scene/SceneRenderer.h>
 #include <lib/yrenderer/helper/LineHelper.h>

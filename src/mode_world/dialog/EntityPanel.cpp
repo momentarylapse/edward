@@ -12,7 +12,7 @@
 #include <lib/xhui/controls/ListView.h>
 #include <lib/xhui/dialogs/FileSelectionDialog.h>
 #include <lib/xhui/xhui.h>
-#include <view/MultiView.h>
+#include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
 #include <view/dialogs/CommonDialogs.h>
 #include <ecs/Entity.h>
