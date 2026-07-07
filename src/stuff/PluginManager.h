@@ -64,6 +64,8 @@ public:
 
 	Array<const kaba::Class*> component_classes;
 	Array<const kaba::Class*> system_classes;
+
+	const kaba::Class* get_class(const ecs::InstanceData& desc) const;
 };
 
 }

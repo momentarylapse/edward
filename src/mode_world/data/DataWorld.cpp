@@ -286,11 +286,10 @@ ecs::Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
 
 
 void DataWorld::entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
-	for (const auto c: session->plugin_manager->component_classes)
-		if (cc.class_name == c->name) {
-			entity_add_component_generic(e, c, cc.variables);
-			return;
-		}
+	if (const auto c = session->plugin_manager->get_class(cc)) {
+		entity_add_component_generic(e, c, cc.variables);
+		return;
+	}
 
 	msg_error("UNKNOWN COMPONENT: " + cc.class_name);
 	auto tag = e->get_component<EdwardTag>();
@@ -298,12 +297,11 @@ void DataWorld::entity_apply_component(ecs::Entity *e, const ecs::InstanceData& 
 };
 
 void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
-	for (const auto c: session->plugin_manager->component_classes)
-		if (cc.class_name == c->name) {
-			auto comp = entity_manager->_add_component_generic_(e, c);
-			session->plugin_manager->set_variables(comp, c, cc.variables);
-			return;
-		}
+	if (const auto c = session->plugin_manager->get_class(cc)) {
+		auto comp = entity_manager->_add_component_generic_(e, c);
+		session->plugin_manager->set_variables(comp, c, cc.variables);
+		return;
+	}
 
 	msg_error("UNKNOWN COMPONENT: " + cc.class_name);
 	auto tag = e->get_component<EdwardTag>();

@@ -477,5 +477,13 @@ void PluginManager::set_variables(void *p, const kaba::Class *type, const Array<
 	::PluginManager::assign_variables(p, type, variables);
 }
 
-
+const kaba::Class *PluginManager::get_class(const ecs::InstanceData &desc) const {
+	for (const auto c: component_classes)
+		if (c->name == desc.class_name)
+			return c;
+	for (const auto c: system_classes)
+		if (c->name == desc.class_name)
+			return c;
+	return nullptr;
+}
 }

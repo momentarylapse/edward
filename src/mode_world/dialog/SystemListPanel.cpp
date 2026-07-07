@@ -7,14 +7,16 @@
 #include <mode_world/data/DataWorld.h>
 #include <lib/os/msg.h>
 #include <lib/xhui/xhui.h>
-#include <lib/base/iter.h>
 #include <lib/xhui/Menu.h>
 #include <lib/xhui/controls/ListView.h>
 #include <mode_world/action/ActionWorldEditData.h>
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>
+#include <view/helper/InstanceEditor.h>
 #include <world/systems/Physics.h>
 #include <stuff/PluginManager.h>
+
+#include "lib/kaba/syntax/Class.h"
 
 
 class SystemPanel : public obs::Node<xhui::Panel> {
@@ -58,42 +60,48 @@ Dialog system 'System'
 	void set_index(int _index) {
 		if (editing)
 			return;
+
+		if (editor)
+			unembed(editor.get());
+
 		index = _index;
+
 		auto& s = data->meta_data.systems[index];
-		set_target("variables");
-		for (const auto& [i, v]: enumerate(s.variables)) {
-			string id_var = format("var-%d", i);
-			add_control("Label", v.name, 0, i, format("l-var-%d", i));
-			set_options(format("l-var-%d", i), "right,disabled");
-			add_control("Edit", str(v.value), 1, i, id_var);
-			event(id_var, [this, i=i, id=id_var] {
-				properties_dialog->temp = data->meta_data;
-				properties_dialog->temp.systems[index].variables[i].value = Any::parse(get_string(id));
-				editing = true;
-				properties_dialog->apply();
-				editing = false;
-			});
-		}
-		if (s.variables.num == 0)
-			add_control("Label", "no variables", 0, 0, "");
+
+		type = data->session->plugin_manager->get_class(s);
+		if (!type)
+			return;
+		editor = new InstanceEditor(data->session, type, [this] (const ecs::InstanceData& desc) {
+			properties_dialog->temp = data->meta_data;
+			properties_dialog->temp.systems[index] = desc;
+			editing = true;
+			properties_dialog->apply();
+			editing = false;
+		});
+		embed("variables", 0, 0, editor.get());
+		temp_instance = type->create_instance();
+		data->session->plugin_manager->set_variables(temp_instance, type, s.variables);
+		editor->build(temp_instance);
+
 		update_ui();
 	}
 	void update_ui() {
 		auto& s = data->meta_data.systems[index];
 		set_string("class", s.class_name);
 		set_string("filename", str(s.filename));
-		for (const auto& [i, v]: enumerate(s.variables)) {
-			string id_var = format("var-%d", i);
-			set_string(id_var, str(v.value));
-		}
+		data->session->plugin_manager->set_variables(temp_instance, type, s.variables);
+		editor->update_ui(temp_instance);
 	}
 	void set_selected(bool selected) {
 		expand("contents", selected);
 	}
 	SystemListPanel* properties_dialog;
 	DataWorld* data;
+	const kaba::Class* type = nullptr;
+	void* temp_instance = nullptr;
 	int index = -1;
 	bool editing = false;
+	shared<InstanceEditor> editor;
 };
 
 SystemListPanel::SystemListPanel(DataWorld* _data) : Node<xhui::Panel>("") {//: Dialog("world_dialog", parent) {

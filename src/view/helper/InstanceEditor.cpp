@@ -59,6 +59,8 @@ void InstanceEditor::build(void* data) {
 			on_edit();
 		});
 	}
+	if (desc.variables.num == 0)
+		add_control("Label", "no variables", 0, 0, "");
 }
 
 void InstanceEditor::update_ui(void* data) {
