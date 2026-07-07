@@ -17,6 +17,7 @@
 #include "../nix/nix_textures.h"
 #include "../os/app.h"
 #include "../ygraphics/graphics-impl.h"
+#include <cmath>
 
 
 namespace xhui {
@@ -81,6 +82,8 @@ void init(const Array<string> &arg, const string& app_name) {
 		set_language(config.get_str("Language", def_lang));
 
 	create_default_images();
+
+	init_file_icons();
 }
 
 
@@ -363,6 +366,49 @@ vec2 XImage::size() const {
 	if (texture)
 		return {(float)texture->width, (float)texture->height};
 	return {20,20};
+}
+
+
+static base::map<string, string> file_icons;
+static string default_file_icon;
+static string directory_icon;
+
+string create_rounded_icon(int N, const color& c) {
+	const float r = 1.0f;
+	const float R0 = (float)N / (float)sqrtf(2.0) - r;
+	::Image im(N, N, c);
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++) {
+			vec2 d = vec2((float)i - (float)N/2 + 0.5f, (float)j - (float)N/2 + 0.5f);
+			im.set_pixel(i, j, c.with_alpha(clamp(R0 - d.length(), 0.0f, 1.0f)));
+		}
+	return create_image(im);
+}
+
+static constexpr int FILE_ICON_SIZE = 16;
+
+void init_file_icons() {
+	if (directory_icon != "")
+		return;
+	directory_icon = create_rounded_icon(FILE_ICON_SIZE, color(1, 0.8f, 0.6f, 0));
+	default_file_icon = create_rounded_icon(FILE_ICON_SIZE, Theme::_default.text_label);
+}
+
+void register_file_icon(const string& ext, const Path& icon) {
+	::Image im;
+	im._load(os::app::directory_static | icon);
+	auto m = im.scale(FILE_ICON_SIZE, FILE_ICON_SIZE);
+	file_icons.set(ext, create_image(*m));
+	delete m;
+}
+
+string get_file_icon(bool is_dir, const string& ext) {
+	if (is_dir)
+		return directory_icon;
+	for (const auto&& [k, v]: file_icons)
+		if (k == ext)
+			return v;
+	return default_file_icon;
 }
 
 }

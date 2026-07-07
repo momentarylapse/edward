@@ -202,12 +202,11 @@ string texture_to_image(const shared<ygfx::Texture>& texture);
 void delete_image(const string& name);
 void prepare_image(XImage* image);
 
+void init_file_icons();
+void register_file_icon(const string& ext, const Path& icon);
+string get_file_icon(bool is_dir, const string& ext);
 
-/*extern ygfx::Face* default_font_regular;
-extern ygfx::Face* default_font_bold;
-extern ygfx::Face* default_font_mono_regular;
-extern ygfx::Face* default_font_mono_bold;
-ygfx::Face* pick_font(const string &font, bool bold, bool italic);*/
+
 extern ygfx::FontManager* global_font_manager;
 extern ygfx::TextCache* global_text_cache;
 

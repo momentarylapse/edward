@@ -180,6 +180,16 @@ int main(const Array<string>& args) {
 	//	xhui::Application::set_property("website", "http://michi.is-a-geek.org/software");
 		xhui::Application::set_property("copyright", "© 2006-2026 by Michael Ankele"); // ??? min=2004 (objectmaker) max=2006
 		xhui::Application::set_property("logo-big", "icons/png/model_128.png");
+
+		xhui::register_file_icon("model", "icons/png/model_32.png");
+		xhui::register_file_icon("world", "icons/png/world_32.png");
+		xhui::register_file_icon("map", "icons/png/terrain_32.png");
+		xhui::register_file_icon("material", "icons/png/material_32.png");
+		xhui::register_file_icon("kaba", "icons/png/kaba_64.png");
+		xhui::register_file_icon("bmp", "icons/hicolor/24x24/actions/model-uv.png");
+		xhui::register_file_icon("tga", "icons/hicolor/24x24/actions/model-uv.png");
+		xhui::register_file_icon("jpg", "icons/hicolor/24x24/actions/model-uv.png");
+		xhui::register_file_icon("png", "icons/hicolor/24x24/actions/model-uv.png");
 	} catch (Exception &e) {
 		msg_error(e.message());
 		return 1;

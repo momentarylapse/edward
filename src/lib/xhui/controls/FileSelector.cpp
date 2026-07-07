@@ -18,31 +18,16 @@
 namespace xhui {
 
 
-string create_rounded_icon(int N, const color& c) {
-	const float r = 1.0f;
-	const float R0 = (float)N / (float)sqrt(2.0) - r;
-	::Image im(N, N, c);
-	for (int i = 0; i < N; i++)
-		for (int j = 0; j < N; j++) {
-			vec2 d = vec2((float)i - (float)N/2 + 0.5f, (float)j - (float)N/2 + 0.5f);
-			im.set_pixel(i, j, c.with_alpha(clamp(R0 - d.length(), 0.0f, 1.0f)));
-		}
-	return create_image(im);
-}
 
 class FileListView : public ListView {
 public:
-	string icon_dir;
-	string icon_file;
 	explicit FileListView(const string& id) : ListView(id, "icon\\name") {
 		show_headers = false;
-		icon_dir = create_rounded_icon(16, color(1, 0.8f, 0.6f, 0));
-		icon_file = create_rounded_icon(16, Theme::_default.text_label);
 		column_factories[0].f_create = [] (const string& _id) {
 			return create_control("Image", "!padding=6", _id);
 		};
-		column_factories[0].f_set = [this] (Control* c, const string& t) {
-			c->set_option("image", (t == "d") ? icon_dir : icon_file);
+		column_factories[0].f_set = [] (Control* c, const string& t) {
+			c->set_option("image", t);
 		};
 		column_factories[1].f_create = [] (const string& _id) {
 			return create_control("Label", "!padding=0", _id);
@@ -78,8 +63,10 @@ public:
 				else if (ff(e))
 					items.add({e, false});
 			}
-		for (const auto& it: items)
-			add_string(format("%s\\%s", it.is_directory ? "d" : "f", it.filename.basename()));
+		for (const auto& it: items) {
+			string icon = get_file_icon(it.is_directory, it.filename.extension());
+			add_string(format("%s\\%s", icon, it.filename.basename()));
+		}
 		request_redraw();
 		emit_event(event_id::Select, false);
 	}
