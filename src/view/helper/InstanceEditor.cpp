@@ -8,6 +8,8 @@
 #include <Session.h>
 #include <lib/base/iter.h>
 #include <lib/kaba/kaba.h>
+#include <lib/any/conversion.h>
+#include <lib/math/vec3.h>
 
 
 const kaba::Class* find_class_member_type(const kaba::Class* c, const string& name) {
@@ -52,6 +54,30 @@ void InstanceEditor::build(void* data) {
 			add_control("SpinButton", "", 2, i, id);
 		} else if (t == kaba::common_types._bool) {
 			add_control("CheckBox", "", 2, i, id);
+		} else if (t == kaba::common_types.vec3) {
+			add_control("Grid", "", 2, i, id + ":grid");
+			set_target(id + ":grid");
+			add_control("SpinButton", "", 0, 0, id + ":x");
+			add_control("SpinButton", "", 0, 1, id + ":y");
+			add_control("SpinButton", "", 0, 2, id + ":z");
+			set_options(id + ":x", "range=::0.001");
+			set_options(id + ":y", "range=::0.001");
+			set_options(id + ":z", "range=::0.001");
+			set_target("grid-variables");
+			event(id + ":x", [this] {
+				on_edit();
+			});
+			event(id + ":y", [this] {
+				on_edit();
+			});
+			event(id + ":z", [this] {
+				on_edit();
+			});
+		} else if (t->is_enum()) {
+			add_control("ComboBox", "", 2, i, id);
+			for (auto c: weak(t->constants))
+				if (c->type == t)
+					add_string(id, c->name);
 		} else {
 			add_control("Edit", "", 2, i, id);
 		}
@@ -76,6 +102,20 @@ void InstanceEditor::update_ui(void* data) {
 			set_int(id, v.value.to_i32());
 		} else if (t == kaba::common_types._bool) {
 			check(id, v.value.to_bool());
+		} else if (t == kaba::common_types.vec3) {
+			if (v.value.is_list() and v.value.as_list().num >= 3) {
+				set_float(id + ":x", v.value.as_list()[0].to_f32());
+				set_float(id + ":y", v.value.as_list()[1].to_f32());
+				set_float(id + ":z", v.value.as_list()[2].to_f32());
+			}
+		} else if (t->is_enum()) {
+			int n = 0;
+			for (auto c: weak(t->constants))
+				if (c->type == t) {
+					if (v.value.to_i32() == c->as_int())
+						set_int(id, n);
+					n ++;
+				}
 		} else {
 			set_string(id, str(v.value));
 		}
@@ -94,6 +134,19 @@ void InstanceEditor::on_edit() {
 			v.value = get_int(id);
 		} else if (t == kaba::common_types._bool) {
 			v.value = is_checked(id);
+		} else if (t == kaba::common_types.vec3) {
+			if (v.value.is_list() and v.value.as_list().num >= 3) {
+				v.value = vec3_to_any(vec3(get_float(id + ":x"), get_float(id + ":y"), get_float(id + ":z")));
+			}
+		} else if (t->is_enum()) {
+			int n = 0;
+			int nn = get_int(id);
+			for (auto c: weak(t->constants))
+				if (c->type == t) {
+					if (n == nn)
+						v.value = c->as_int();
+					n ++;
+				}
 		} else {
 			v.value = get_string(id);
 		}
