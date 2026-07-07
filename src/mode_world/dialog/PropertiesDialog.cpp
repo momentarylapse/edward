@@ -65,30 +65,6 @@ PropertiesDialog::PropertiesDialog(DataWorld* _data) : Node<xhui::Panel>("") {//
 		temp.fog.col = get_color("fog-color");
 		apply();
 	});
-	event("physics_enabled", [this] {
-		temp.physics_enabled = is_checked("physics_enabled");
-		apply();
-	});
-	event("physics-mode", [this] {
-		int n = get_int("physics-mode");
-		if (n == 0)
-			temp.physics_mode = PhysicsMode::SIMPLE;
-		else if (n == 1)
-			temp.physics_mode = PhysicsMode::FULL_EXTERNAL;
-		apply();
-	});
-	event("gravitation_x", [this] {
-		temp.gravity.x = get_float("gravitation_x");
-		apply();
-	});
-	event("gravitation_y", [this] {
-		temp.gravity.y = get_float("gravitation_y");
-		apply();
-	});
-	event("gravitation_z", [this] {
-		temp.gravity.z = get_float("gravitation_z");
-		apply();
-	});
 }
 
 
@@ -101,16 +77,6 @@ void PropertiesDialog::update_ui() {
 	check("fog-enabled", temp.fog.enabled);
 	set_float("fog-distance", 1/temp.fog.density);
 	set_color("fog-color", temp.fog.col);
-
-	check("physics_enabled", temp.physics_enabled);
-	if (temp.physics_mode == PhysicsMode::SIMPLE)
-		set_int("physics-mode", 0);
-	else if (temp.physics_mode == PhysicsMode::FULL_EXTERNAL)
-		set_int("physics-mode", 1);
-
-	set_float("gravitation_x", temp.gravity.x);
-	set_float("gravitation_y", temp.gravity.y);
-	set_float("gravitation_z", temp.gravity.z);
 }
 
 

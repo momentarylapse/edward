@@ -314,6 +314,8 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 			return EgoMarker::_class;
 		if (name == "NameTag")
 			return NameTag::_class;
+		if (name == "Physics")
+			return Physics::_class;
 	}
 	try {
 		auto s = kaba::default_context->load_module(filename, false);
@@ -377,6 +379,8 @@ void* create_instance(const kaba::Class *c, const Array<ecs::InstanceDataVariabl
 			return new CubeMapSource;
 		if (c == NameTag::_class)
 			return new NameTag;
+		if (c == Physics::_class)
+			return new Physics;
 		return c->create_instance();
 	};
 	auto p = instantiate();

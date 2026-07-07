@@ -13,15 +13,13 @@
 #include <lib/doc/xml.h>
 #include <lib/yrenderer/scene/Light.h>
 #include <lib/os/file.h>
+#include <lib/any/conversion.h>
 
 
 LevelData::LevelData() {
 	background_color = Gray;
 
-	gravity = v_0;
 	fog.enabled = false;
-	physics_enabled = false;
-	physics_mode = PhysicsMode::FULL_EXTERNAL;
 }
 
 
@@ -43,12 +41,17 @@ bool LevelData::load(const Path& filename) {
 					}
 				}
 			} else if (e.tag == "physics") {
-				physics_enabled = e.value("enabled")._bool();
+				ecs::InstanceData physics{"Physics"};
+
+				physics.set("enabled", e.value("enabled")._bool());
+				auto mode = PhysicsMode::FULL_EXTERNAL;
 				if (e.value("mode") == "simple")
-					physics_mode = PhysicsMode::SIMPLE;
+					mode = PhysicsMode::SIMPLE;
 				else if (e.value("mode") == "full")
-					physics_mode = PhysicsMode::FULL_EXTERNAL;
-				gravity = s2v(e.value("gravity"));
+					mode = PhysicsMode::FULL_EXTERNAL;
+				physics.set("mode", (int)mode);
+				physics.set("gravity", vec3_to_any(s2v(e.value("gravity"))));
+				systems.add(physics);
 			} else if (e.tag == "fog") {
 				fog.enabled = e.value("enabled")._bool();
 				fog.mode = e.value("mode")._int();

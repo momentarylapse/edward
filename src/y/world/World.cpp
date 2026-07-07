@@ -125,14 +125,6 @@ bool World::load(const LevelData& ld) {
 	bool ok = true;
 	reset();
 
-	if (auto physics = ecs::SystemManager::get<Physics>()) {
-		physics->mode = PhysicsMode::FULL_EXTERNAL;
-		physics->enabled = ld.physics_enabled;
-		physics->mode = ld.physics_mode;
-		physics->gravity = ld.gravity;
-		physics->collisions_enabled = true;//LevelData.physics_enabled;
-	}
-
 	fog = ld.fog;
 
 	// skybox

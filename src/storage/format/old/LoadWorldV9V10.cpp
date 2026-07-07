@@ -16,6 +16,8 @@
 #include <lib/os/msg.h>
 #include <lib/yrenderer/scene/Light.h>
 
+#include "lib/any/conversion.h"
+
 
 void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 	msg_write("LOAD V10...");
@@ -43,9 +45,12 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 		}
 		// Gravitation
 		f->read_comment();
-		ld.gravity.x = f->read_float();
-		ld.gravity.y = f->read_float();
-		ld.gravity.z = f->read_float();
+		ecs::InstanceData physics = {"Physics"};
+		vec3 gravity;
+		gravity.x = f->read_float();
+		gravity.y = f->read_float();
+		gravity.z = f->read_float();
+		physics.set("gravity", vec3_to_any(gravity));
 		// EgoIndex
 		f->read_comment();
 		int EgoIndex = f->read_int();
@@ -145,10 +150,11 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 			sun.components.add(l);
 			ld.entities.add(sun);
 
-			if (f->read_str() != "#"){
-				ld.physics_enabled = f->read_bool();
+			if (f->read_str() != "#") {
+				physics.set("enabled", f->read_bool());
 			}
 		}
+		ld.systems.add(physics);
 
 	}else{
 		throw Exception(format("File '%s' has an unhandled legacy file format: %d (expected: %d - %d)!", lf.filename.c_str(), lf.ffv, 8, 10));

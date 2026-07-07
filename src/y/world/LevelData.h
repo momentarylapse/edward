@@ -64,9 +64,6 @@ struct LevelData {
 	Array<Entity> entities;
 	Array<ecs::InstanceData> systems;
 
-	bool physics_enabled;
-	PhysicsMode physics_mode;
-	vec3 gravity;
 	Fog fog;
 };
 

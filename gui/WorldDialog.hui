@@ -1,11 +1,10 @@
 Dialog world_dialog "World properties" width=320
 	Grid ? "" vertical padding=7
-		TabControl world_dialog_tab_control "Background\\Fog\\Physics"
-			Grid ? "" vertical
-				Group grp_bg_color "Color"
-					ColorButton bgc "" alpha linear tooltip="Sky color"
-				Group grp_skybox "Skybox models"
-					ListView skybox "#\\Model" tooltip="Models drawn over the sky color\n- double click to select" reorderable style=rich-list
+		Group grp_bg_color "Background color"
+			ColorButton bgc "" alpha linear tooltip="Sky color"
+		Group grp_skybox "Skybox models"
+			ListView skybox "#\\Model" tooltip="Models drawn over the sky color\n- double click to select" reorderable style=rich-list height=300
+		Group grp-fog "Fog"
 			Grid ? ""
 				Label t-fog-enabled "Enabled" right disabled
 				CheckBox fog-enabled "" expandx
@@ -15,24 +14,3 @@ Dialog world_dialog "World properties" width=320
 				---|
 				Label t-fog-color "Color" right disabled
 				ColorButton fog-color "" linear
-			Grid ? "" vertical
-				Group grp-simulation "Simulation"
-					Grid ? ""
-						Label t-physics-enabled "Enabled" right disabled
-						CheckBox physics_enabled "" expandx
-						---|
-						Label t-physics-mode "Mode" right disabled
-						ComboBox physics-mode "Simple\\Full (using Bullet)" expandx tooltip="* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links"
-				Group grp_gravitation "Gravity"
-					Grid ? ""
-						Label /x "X" right disabled
-						SpinButton gravitation_x "" range=::0.1 expandx
-						Label /luss "/s²"
-						---|
-						Label /y "Y" right disabled
-						SpinButton gravitation_y "" range=::0.1
-						Label /luss "/s²"
-						---|
-						Label /z "Z" right disabled
-						SpinButton gravitation_z "" range=::0.1
-						Label /luss "/s²"

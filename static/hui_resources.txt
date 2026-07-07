@@ -10932,19 +10932,7 @@ Grid
 vertical,padding=7
 0
 0
-1
-TabControl
-world_dialog_tab_control
-
-0
-0
 3
-Grid
-?
-vertical
-0
-0
-2
 Group
 grp_bg_color
 
@@ -10965,14 +10953,20 @@ grp_skybox
 1
 ListView
 skybox
-reorderable,style=rich-list
+reorderable,style=rich-list,height=300
 0
 0
 0
+Group
+grp-fog
+
+2
+0
+1
 Grid
 ?
 
-1
+0
 0
 6
 Label
@@ -11009,114 +11003,6 @@ ColorButton
 fog-color
 linear
 1
-2
-0
-Grid
-?
-vertical
-2
-0
-2
-Group
-grp-simulation
-
-0
-0
-1
-Grid
-?
-
-0
-0
-4
-Label
-t-physics-enabled
-right,disabled
-0
-0
-0
-CheckBox
-physics_enabled
-expandx
-1
-0
-0
-Label
-t-physics-mode
-right,disabled
-0
-1
-0
-ComboBox
-physics-mode
-expandx
-1
-1
-0
-Group
-grp_gravitation
-
-1
-0
-1
-Grid
-?
-
-0
-0
-9
-Label
-x
-right,disabled
-0
-0
-0
-SpinButton
-gravitation_x
-range=::0.1,expandx
-1
-0
-0
-Label
-luss
-
-2
-0
-0
-Label
-y
-right,disabled
-0
-1
-0
-SpinButton
-gravitation_y
-range=::0.1
-1
-1
-0
-Label
-luss
-
-2
-1
-0
-Label
-z
-right,disabled
-0
-2
-0
-SpinButton
-gravitation_z
-range=::0.1
-1
-2
-0
-Label
-luss
-
-2
 2
 0
 # Resource
@@ -12985,7 +12871,7 @@ image=media-playback-start-symbolic
 # Language
 English
 # Number Of IDs
-1401
+1396
 # Text
 /ambient
 Ambient
@@ -17094,21 +16980,15 @@ Sky color
 world_dialog/fog-distance
 
 fog intensity = exp( - distance / viewing-distance )
-world_dialog/grp-simulation
-Simulation
+world_dialog/grp-fog
+Fog
 
 world_dialog/grp_bg_color
-Color
-
-world_dialog/grp_gravitation
-Gravity
+Background color
 
 world_dialog/grp_skybox
 Skybox models
 
-world_dialog/physics-mode
-Simple\\Full (using Bullet)
-* Simple: only update positions via velocity\n* Full: gravity, collisions, friction, links
 world_dialog/skybox
 #\\Model
 Models drawn over the sky color\n- double click to select
@@ -17121,17 +17001,8 @@ Distance
 world_dialog/t-fog-enabled
 Enabled
 
-world_dialog/t-physics-enabled
-Enabled
-
-world_dialog/t-physics-mode
-Mode
-
 world_dialog/world_dialog
 World properties
-
-world_dialog/world_dialog_tab_control
-Background\\Fog\\Physics
 
 world_new_object_dialog/l-title
 New object

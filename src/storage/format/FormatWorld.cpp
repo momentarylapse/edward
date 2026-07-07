@@ -162,9 +162,6 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 		data->links.add(l);
 	}*/
 
-	data->meta_data.physics_enabled = ld.physics_enabled;
-	data->meta_data.physics_mode = ld.physics_mode;
-	data->meta_data.gravity = ld.gravity;
 	data->meta_data.fog.enabled = ld.fog.enabled;
 	data->meta_data.fog.density = 1/ld.fog.distance;
 	data->meta_data.fog.col = ld.fog._color;
@@ -318,12 +315,6 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		if (!sb.is_empty())
 			bg.add(xml::Element("skybox").witha("file", sb.str()));
 	meta.add(bg);
-
-	auto phys = xml::Element("physics")
-	.witha("enabled", b2s(data->meta_data.physics_enabled))
-	.witha("gravity", v2s(data->meta_data.gravity))
-	.witha("mode", phys_mode_name(data->meta_data.physics_mode));
-	meta.add(phys);
 
 	auto f = xml::Element("fog")
 	.witha("enabled", b2s(data->meta_data.fog.enabled))

@@ -98,11 +98,6 @@ public:
 
 	struct MetaData {
 
-		// physics
-		bool physics_enabled;
-		PhysicsMode physics_mode;
-		vec3 gravity;
-
 		// background
 		color background_color;
 		Array<Path> skybox_files;

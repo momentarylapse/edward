@@ -104,11 +104,12 @@ void DataWorld::MetaData::reset() {
 
 	background_color = color(1, 0.2f, 0.4f, 0.6f).srgb_to_linear();
 
-	physics_enabled = false;
-	physics_mode = PhysicsMode::FULL_EXTERNAL;
-	gravity = vec3(0, -981, 0);
-
 	systems.clear();
+	ecs::InstanceData physics{"Physics"};
+	physics.set("enabled", true);
+	physics.set("gravity", vec3_to_any(vec3(0, -981, 0)));
+	physics.set("mode", (int)PhysicsMode::FULL_EXTERNAL);
+	systems.add(physics);
 	music_files.clear();
 }
 
