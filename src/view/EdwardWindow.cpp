@@ -27,6 +27,7 @@
 #include "DocumentSession.h"
 #include "dialogs/DocumentSwitcher.h"
 #include "dialogs/ProjectPanel.h"
+#include "dialogs/SettingsDialog.h"
 #include <y/helper/ResourceManager.h>
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
@@ -57,11 +58,9 @@ namespace yrenderer {
 }
 
 string nice_path(const Path& p) {
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_MINGW) //defined(__GNUC__) || defined(OS_LINUX)
-	string home = getenv("HOME");
+	string home = str(os::app::home_directory);
 	if (str(p).head(home.num) == home)
 		return "~" + str(p).sub_ref(home.num);
-#endif
 	return str(p);
 }
 
@@ -267,6 +266,9 @@ Dialog x x padding=0
 			else if (a == xhui::Answer::No)
 				session->close_doc(session->cur_doc);
 		});
+	});
+	event("settings", [this] {
+		open_dialog(new SettingsDialog(this));
 	});
 	auto quit = [this] {
 		auto m = cur_mode();

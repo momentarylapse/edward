@@ -1,26 +1,5 @@
-Dialog editor_dialog "Editor" width=400 height=370 resizable
-	TabControl editor_dialog_tab_control "Information\\Properties\\Keys"
-		Grid ? "" vertical
-			DrawingArea logo "Data/model.png" height=150
-			Grid ? ""
-				Text t_version "Version" right disabled
-				Text version "" expandx
-				---|
-				Text t_creator "Creator" right disabled
-				Text creator ""
-				---|
-				Text t_adress "Website" right disabled
-				Button adress ""
-		Grid ? "" vertical
-			Grid ? ""
-				Text t_language "Language" right disabled
-				ComboBox language ""
-				---|
-				Text t_workingdirectory "Working directory" right disabled
-				Grid ? ""
-					Edit working_directory "" expandx disabled
-					Button find_workingdir "" image=hui:open
-			Grid ? "" vertical
-				CheckBox look_for_updates "Look for updates at program start"
-				CheckBox local_documentation "Use local documentation instead of online version"
-		TreeView key_list "command\\keys" tree
+Dialog settings-dialog "Settings" width=400 height=370 resizable
+	Grid ? ""
+		Label t-engine-dir "Engine location" right disabled
+		Button engine-directory "" expandx
+		---|

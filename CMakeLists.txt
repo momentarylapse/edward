@@ -561,6 +561,7 @@ add_executable(edward
 	src/view/dialogs/CommonDialogs.cpp
 	src/view/dialogs/DocumentSwitcher.cpp
 	src/view/dialogs/ProjectPanel.cpp
+	src/view/dialogs/SettingsDialog.cpp
 	src/view/helper/InstanceEditor.cpp
 	src/view/multiview/ActionController.cpp
 	src/view/multiview/MultiView.cpp
