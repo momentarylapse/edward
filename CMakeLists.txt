@@ -335,6 +335,7 @@ add_executable(edward
 	src/lib/syntaxhighlight/ParserShader.cpp
 	src/lib/syntaxhighlight/ParserText.cpp
 	src/lib/syntaxhighlight/Theme.cpp
+	src/lib/threads/_kaba_export.cpp
 	src/lib/threads/Mutex.cpp
 	src/lib/threads/Thread.cpp
 	src/lib/threads/ThreadedWork.cpp
