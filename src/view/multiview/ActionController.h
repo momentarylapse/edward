@@ -13,7 +13,7 @@
 #include "../lib/image/color.h"
 #include "../lib/math/mat4.h"
 #include "../lib/math/vec3.h"
-#include "../lib/pattern/Observable.h"
+#include "../lib/obs/Observable.h"
 #include <lib/ygraphics/graphics-fwd.h>
 
 namespace polymesh {

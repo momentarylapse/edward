@@ -5,7 +5,7 @@
 #include <lib/base/set.h>
 #include <lib/base/pointer.h>
 #include <lib/ygraphics/graphics-fwd.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 
 class Session;

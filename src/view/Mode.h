@@ -6,7 +6,7 @@
 
 #include <lib/base/base.h>
 #include <lib/math/vec2.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 namespace yrenderer {
 	struct RenderViewData;

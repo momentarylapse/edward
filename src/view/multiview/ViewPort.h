@@ -9,7 +9,7 @@
 #include <lib/base/pointer.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <lib/yrenderer/scene/CameraParams.h>
 
 struct Box;

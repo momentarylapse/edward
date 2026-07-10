@@ -5,7 +5,7 @@
 #pragma once
 
 #include <lib/xhui/Panel.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 class DataWorld;
 namespace kaba {

@@ -9,7 +9,7 @@
 
 #include "Entity.h"
 #include "EntityManager.h"
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 namespace ecs {
 

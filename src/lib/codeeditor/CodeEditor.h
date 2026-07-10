@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/os/path.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <lib/xhui/controls/MultilineEdit.h>
 #include <lib/xhui/Panel.h>
 

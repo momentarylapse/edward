@@ -14,7 +14,7 @@
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/math/Box.h>
 #include <lib/math/vec3.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <functional>
 
 namespace yrenderer {

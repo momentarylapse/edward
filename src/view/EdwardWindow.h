@@ -5,7 +5,7 @@
 #pragma once
 
 #include "lib/xhui/xhui.h"
-#include "lib/pattern/Observable.h"
+#include "lib/obs/Observable.h"
 
 namespace xhui {
 	class MenuBar;

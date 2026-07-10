@@ -35,6 +35,7 @@ const string RawConfig::ID_SHADOW_QUALITY = "shadow.quality";
 const string RawConfig::ID_CUBEMAP_RESOLUTION = "cubemap.resolution";
 const string RawConfig::ID_CUBEMAP_UPDATE_RATE = "cubemap.update-rate";
 const string RawConfig::ID_TERRAIN_TESSELLATED = "terrain.tessellated";
+const string RawConfig::ID_INPUT_MOUSE_SPEED = "input.mouse-speed";
 const string RawConfig::ID_DEBUG_LEVEL = "debug.level";
 const string RawConfig::ID_DEBUG_SCRIPTS1 = "debug.scripts1";
 const string RawConfig::ID_DEBUG_SCRIPTS2 = "debug.scripts2";
@@ -211,6 +212,8 @@ DigestedConfig RawConfig::digest() const {
 	c.ambient_occlusion_radius = get_float("renderer.ssao.radius", 10);
 	if (!get_bool("renderer.ssao.enabled", true))
 		c.ambient_occlusion_radius = -1;
+
+	c.input_mouse_speed = get_float(ID_INPUT_MOUSE_SPEED, 1.0f);
 
 	if (has("cli.game-dir"))
 		c.game_dir = get_str("cli.game-dir");

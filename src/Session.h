@@ -12,7 +12,7 @@
 #include <lib/base/future.h>
 #include <lib/os/time.h>
 #include <lib/os/path.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/yrenderer/Context.h>
 

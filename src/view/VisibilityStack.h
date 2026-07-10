@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lib/base/pointer.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <view/Selection.h>
 
 struct VisibilityFilter {

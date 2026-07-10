@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include <lib/xhui/Panel.h>
 
 #include "lib/ygraphics/graphics-impl.h"

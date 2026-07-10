@@ -5,7 +5,7 @@
 #pragma once
 
 #include <lib/xhui/Dialog.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 #include "../data/DataWorld.h"
 
 

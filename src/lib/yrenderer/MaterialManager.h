@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Material.h"
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 namespace ygfx {
 	class TextureManager;

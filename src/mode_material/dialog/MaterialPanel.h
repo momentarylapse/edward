@@ -8,7 +8,7 @@
 
 #include "../ModeMaterial.h"
 #include <lib/xhui/xhui.h>
-#include <lib/pattern/Observable.h>
+#include <lib/obs/Observable.h>
 
 class DataMaterial;
 class MaterialParameterPanel;
