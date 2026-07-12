@@ -37,15 +37,15 @@ void _export_package_profiler_internal(kaba::IExporter* e) {
 	e->link_func("profiler.end", &profiler::end);
 	e->link_func("profiler.next_frame", &profiler::next_frame);
 	e->link_func("profiler.digest_report", &profiler::digest_report);
-	e->link("profiler.avg_frame_time", &profiler::avg_frame_time);
-	e->link("profiler.frames", &profiler::frames);
-	e->link("profiler.channels", &profiler::channels);
-	e->link("profiler.previous_frame_timing", &profiler::previous_frame_timing);
-	e->link("profiler.history", &profiler::history);
+	e->link_func("profiler.avg_frame_time", &profiler::avg_frame_time);
+	e->link_func("profiler.frames", &profiler::frames);
+	e->link_func("profiler.channels", &profiler::channels);
+	e->link_func("profiler.previous_frame_timing", &profiler::previous_frame_timing);
+	e->link_func("profiler.history", &profiler::history);
 }
 
 void export_package_profiler(kaba::IExporter* ext) {
-	ext->package_info("profiler", "0.2");
+	ext->package_info("profiler", "0.3");
 	_export_package_profiler_internal(ext);
 }
 

@@ -95,11 +95,11 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	rvd.set_view(params, view);
 	rvd.update_light_ubo();
 
-	int w = width * engine.resolution_scale_x;
-	int h = height * engine.resolution_scale_y;
+	int w = (int)((float)width * engine.resolution_scale_x);
+	int h = (int)((float)height * engine.resolution_scale_y);
 
 	pc.iview = view.view_matrix().inverse();
-	pc.background = world.background;
+	pc.background = world->background;
 	pc.num_lights = scene_view.lights.num;
 	pc.t_rand += loop(pc.t_rand + 0.01f, 0.0f, 10.678f);
 

@@ -29,7 +29,7 @@ void add_ui(gui::Node *n) {
 
 void delete_all() {
 	for (auto e: queue_entity)
-		world.delete_entity(e);
+		world->delete_entity(e);
 	for (auto n: queue_ui)
 		gui::delete_node(n);
 	reset();

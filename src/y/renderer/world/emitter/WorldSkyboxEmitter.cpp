@@ -24,7 +24,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	profiler::begin(channel);
 	ctx->gpu_timestamp_begin(params, channel);
 
-	rvd.clear(params, {world.background}, 1.0f);
+	rvd.clear(params, {world->background}, 1.0f);
 
 #if 1
 
@@ -49,7 +49,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	int nlights = rvd.light_meta_data.num_lights;
 	rvd.light_meta_data.num_lights = 0;
 
-	for (auto sb: weak(world.skybox))
+	for (auto sb: weak(world->skybox))
 		if (auto m = sb->model) {
 			sb->update_materials();
 			auto matrix = mat4::rotation(sb->owner->ang);

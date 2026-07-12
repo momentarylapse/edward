@@ -39,10 +39,6 @@ namespace profiler {
 	};
 	Array<ChannelStats> digest_report(const FrameTimingData& td);
 
-	class Profiler {
-	public:
-		//Profiler();
-	};
 
 	int create_channel(const string &name, int parent = -1);
 	void delete_channel(int channel);
@@ -57,19 +53,22 @@ namespace profiler {
 	void _reset();
 
 
-	extern int frames;
-	extern bool just_cleared;
-	extern std::chrono::high_resolution_clock::time_point frame_start;
+	int frames();
+	bool just_cleared();
 
-	extern float temp_frame_time;
-	extern float avg_frame_time;
+	float temp_frame_time();
+	float avg_frame_time();
 
-	extern Array<Channel> channels;
-	extern FrameTimingData current_frame_timing;
-	extern FrameTimingData previous_frame_timing;
-	extern FrameHistory history;
-	extern int max_history_length;
+	Array<Channel>& channels();
+	FrameTimingData& current_frame_timing();
+	FrameTimingData& previous_frame_timing();
+	FrameHistory& history();
 
-	extern float frame_dt;
+	float frame_dt();
+
+	struct State;
+	extern State* state;
+	void init();
+	void init_external(void* state);
 }
 

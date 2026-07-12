@@ -12,7 +12,7 @@
 #include <lib/yrenderer/Renderer.h>
 #include <helper/ResourceManager.h>
 
-const string EngineData::CURRENT_API_VERSION = "0.21";
+const string EngineData::CURRENT_API_VERSION = "0.22";
 
 EngineData engine;
 

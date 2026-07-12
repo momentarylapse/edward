@@ -128,7 +128,7 @@ public:
 		vec3 v;
 	} msg_data;
 };
-extern World world;
+extern World* world;
 
 
 

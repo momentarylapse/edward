@@ -35,8 +35,8 @@ const kaba::Class* Link::_class = nullptr;
 
 
 void Link::_create_link_data(vec3 &pa, vec3 &pb, quaternion &iqa, quaternion &iqb, const vec3 &pos) {
-	auto _a = world.get_entity(a);
-	auto _b = world.get_entity(b);
+	auto _a = world->get_entity(a);
+	auto _b = world->get_entity(b);
 	iqa = _a->ang.bar();
 	iqb = quaternion::ID;
 	pa = iqa * (pos - _a->pos);
@@ -65,7 +65,7 @@ void Link::create() {
 
 void unfreeze(int index) {
 #if HAS_LIB_BULLET
-	if (auto e = world.get_entity(index))
+	if (auto e = world->get_entity(index))
 		if (auto b = e->get_component<RigidBody>())
 			b->body->activate(true);
 #endif
@@ -73,8 +73,8 @@ void unfreeze(int index) {
 
 
 void Link::create_socket() {
-	auto _a = world.get_entity(a);
-	auto _b = world.get_entity(b);
+	auto _a = world->get_entity(a);
+	auto _b = world->get_entity(b);
 	if (!_a)
 		return;
 	if (!_a->get_component<RigidBody>())
@@ -100,8 +100,8 @@ void Link::create_socket() {
 }
 
 void Link::create_hinge() {
-	auto _a = world.get_entity(a);
-	auto _b = world.get_entity(b);
+	auto _a = world->get_entity(a);
+	auto _b = world->get_entity(b);
 	if (!_a)
 		return;
 	if (!_a->get_component<RigidBody>())
@@ -132,8 +132,8 @@ void Link::create_hinge() {
 }
 
 void Link::create_universal() {
-	auto _a = world.get_entity(a);
-	auto _b = world.get_entity(b);
+	auto _a = world->get_entity(a);
+	auto _b = world->get_entity(b);
 	if (!_a or !_b)
 		return;
 	if (!_a->get_component<RigidBody>() or !_b->get_component<RigidBody>())

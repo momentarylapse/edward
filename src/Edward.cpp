@@ -19,9 +19,11 @@
 #include <mode_model/data/DataModel.h>
 #include <mode_world/data/DataWorld.h>
 #include <test/UnitTest.h>
-
 #include <lib/any/conversion.h>
+#include <lib/profiler/Profiler.h>
 #include <mode_model/data/ModelMesh.h>
+#include <y/world/World.h>
+
 
 string AppVersion = "0.5.-1.0";
 string AppName = "Edward";
@@ -195,9 +197,12 @@ int main(const Array<string>& args) {
 		return 1;
 	}
 
+	profiler::init();
 	kaba::init();
 	syntaxhighlight::init();
 	syntaxhighlight::default_theme = syntaxhighlight::get_theme("dark2");
+
+	world = new World;
 
 
 	CommandLineParser p;

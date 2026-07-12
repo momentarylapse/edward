@@ -42,7 +42,7 @@
 
 
 // game data
-World world;
+World* world = nullptr;
 
 
 #ifdef _X_ALLOW_X_

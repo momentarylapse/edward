@@ -182,7 +182,7 @@ void FullCameraRenderer::suggest_cube_map_pos() {
 		return;
 	cube_map_source->min_depth = cam->min_depth;
 	cube_map_source->max_depth = cam->max_depth;
-	if (auto e = world.ego()) {
+	if (auto e = world->ego()) {
 		cube_map_source->pos = e->pos;
 		cube_map_source->min_depth = 200;
 		if (auto m = entity_get_model(e))
@@ -261,9 +261,9 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 		lights.add(&l->light);
 	}
 	render_path->set_lights(lights);
-	render_path->scene_view.fog_enabled = world.fog.enabled;
-	render_path->scene_view.fog_density = 1 / world.fog.distance;
-	render_path->scene_view.fog_color = world.fog._color;
+	render_path->scene_view.fog_enabled = world->fog.enabled;
+	render_path->scene_view.fog_density = 1 / world->fog.distance;
+	render_path->scene_view.fog_color = world->fog._color;
 
 	if (hdr_resolver) {
 		hdr_resolver->exposure = cam->exposure;
