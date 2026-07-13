@@ -5,6 +5,7 @@
 #include "CommandBuffer.h"
 #include "helper.h"
 #include "../os/msg.h"
+#include "lib/os/time.h"
 
 namespace vulkan{
 
@@ -78,6 +79,10 @@ VertexBuffer::VertexBuffer(const string &format) :
 	vertex_buffers.add(this);
 }
 
+DynamicVertexBuffer::DynamicVertexBuffer(const string &format) : VertexBuffer(format) {
+	dynamic = true;
+}
+
 VertexBuffer::~VertexBuffer() {
 	_destroy();
 
@@ -109,30 +114,44 @@ void VertexBuffer::update_v3_v3_v2(const Array<Vertex1> &vertices) {
 void VertexBuffer::_create_buffer(Buffer &buf, const DynamicArray &array) {
 	if (array.num == 0)
 		return;
+	os::Timer timer;
 
 	VkDeviceSize buffer_size = array.num * array.element_size;
 
-	// -> staging
-	Buffer staging(vertex_buffer.device);
-	staging.create(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-	staging.update_part(array.data, 0, buffer_size);
+	if (dynamic) {
+		if (buffer_size > buf.size) {
+			buf.destroy();
+			//auto usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+			auto usage =
+					VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+					VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
+					VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+					VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+			buf.create(buffer_size + 64, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT); //VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		}
+		buf.update_part(array.data, 0, buffer_size);
+	} else {
+		// -> staging
+		Buffer staging(vertex_buffer.device);
+		staging.create(buffer_size, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+		staging.update_part(array.data, 0, buffer_size);
 
+		// gpu
+		if (buffer_size > buf.size) {
+			buf.destroy();
+			//auto usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+			auto usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+					VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
+					VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
+					VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
+					VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
+			buf.create(buffer_size, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		}
 
-	// gpu
-	if (buffer_size > buf.size) {
-		buf.destroy();
-		//auto usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-		auto usage = VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-				VK_BUFFER_USAGE_VERTEX_BUFFER_BIT |
-				VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR |
-				VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT |
-				VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR;
-		buf.create(buffer_size, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+		auto cb = begin_single_time_commands();
+		copy_buffer(cb, staging.buffer, buf.buffer, buffer_size);
+		end_single_time_commands(cb);
 	}
-
-	auto cb = begin_single_time_commands();
-	copy_buffer(cb, staging.buffer, buf.buffer, buffer_size);
-	end_single_time_commands(cb);
 }
 
 void VertexBuffer::_create_index_buffer_i16(const Array<uint16_t> &indices) {

@@ -28,6 +28,7 @@ namespace vulkan {
 	class TextureMultiSample;
 	class Shader;
 	class VertexBuffer;
+	class DynamicVertexBuffer;
 	class FrameBuffer;
 	class DepthBuffer;
 	class Buffer;
@@ -57,6 +58,7 @@ namespace ygfx {
 	using Texture = vulkan::Texture;
 	using Shader = vulkan::Shader;
 	using VertexBuffer = vulkan::VertexBuffer;
+	using DynamicVertexBuffer = vulkan::DynamicVertexBuffer;
 	using FrameBuffer = vulkan::FrameBuffer;
 	using DepthBuffer = vulkan::DepthBuffer;
 	using CubeMap = vulkan::CubeMap;
@@ -117,6 +119,7 @@ namespace ygfx {
 	using Texture = nix::Texture;
 	using Shader = nix::Shader;
 	using VertexBuffer = nix::VertexBuffer;
+	using DynamicVertexBuffer = nix::VertexBuffer;
 	using FrameBuffer = nix::FrameBuffer;
 	using DepthBuffer = nix::DepthBuffer;
 	using CubeMap = nix::CubeMap;

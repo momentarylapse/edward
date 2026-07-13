@@ -168,7 +168,7 @@ VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
 		if (num_line_vbs_with_color_used < line_vbs_with_color.num)
 			return line_vbs_with_color[num_line_vbs_with_color_used ++];
 
-		auto _vb = new VertexBuffer("3f,3f,2f,4f");
+		auto _vb = new DynamicVertexBuffer("3f,3f,2f,4f");
 		line_vbs_with_color.add(_vb);
 		num_line_vbs_with_color_used ++;
 		return _vb;
@@ -176,7 +176,7 @@ VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
 		if (num_line_vbs_used < line_vbs.num)
 			return line_vbs[num_line_vbs_used ++];
 
-		auto _vb = new VertexBuffer("3f,3f,2f");
+		auto _vb = new DynamicVertexBuffer("3f,3f,2f");
 		line_vbs.add(_vb);
 		num_line_vbs_used ++;
 		return _vb;

@@ -303,6 +303,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->link_class_func("VertexBuffer.update", &vertexbuffer_update_array);
 	ext->link_class_func("VertexBuffer.create_quad", &VertexBuffer::create_quad);
 
+	ext->link_class_func("DynamicVertexBuffer.__init__", &kaba::generic_init_ext<DynamicVertexBuffer, const string&>);
+
 	ext->declare_class_size("UniformBuffer", sizeof(UniformBuffer));
 	ext->link_class_func("UniformBuffer.__init__", &uniformbuffer_init);
 
@@ -572,7 +574,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.14");
+	ext->package_info("yrenderer", "0.15");
 	_export_package_yrenderer_internal(ext);
 }
 

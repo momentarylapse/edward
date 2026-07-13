@@ -33,6 +33,7 @@ namespace vulkan {
 		unsigned int output_count;
 		unsigned int vertex_count;
 		VkIndexType index_type;
+		bool dynamic = false; // optimize for frequent updates
 		Array<VkVertexInputAttributeDescription> attribute_descriptions;
 		VkVertexInputBindingDescription binding_description;
 
@@ -47,6 +48,11 @@ namespace vulkan {
 		int stride() const;
 
 		void create_quad(const rect &r, const rect &s = rect::ID);
+	};
+
+	class DynamicVertexBuffer : public VertexBuffer {
+	public:
+		explicit DynamicVertexBuffer(const string &format);
 	};
 };
 
