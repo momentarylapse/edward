@@ -79,8 +79,7 @@ void ParserKaba::clear_symbols() {
 	constants.clear();
 }
 
-int file_line_column_to_offset(const Path& file, int line, int col) {
-	string text = os::fs::read_text(file);
+int text_line_column_to_offset(const string& text, int line, int col) {
 	int offset = col;
 	auto lines = text.explode("\n");
 	for (int i=0; i<min(line, lines.num); i++)
@@ -123,7 +122,14 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 		while (ee->parent)
 			ee = ee->parent.get();
 
-		int offset = file_line_column_to_offset(ee->filename, ee->line, ee->column);
+		int offset = 0;
+		if (ee == &e) {
+			offset = text_line_column_to_offset(text, ee->line, ee->column);
+		} else {
+			try {
+				offset = text_line_column_to_offset(os::fs::read_text(ee->filename), ee->line, ee->column);
+			} catch (...) {}
+		}
 		errors.add({ee->filename, ee->message(), offset});
 	} catch (Exception &e) {
 		errors.add({"", e.message(), 0});

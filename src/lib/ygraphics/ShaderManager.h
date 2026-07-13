@@ -14,6 +14,7 @@ namespace ygfx {
 class ShaderManager {
 public:
 	explicit ShaderManager(Context *ctx, const Array<Path>& _shader_dirs);
+	void add_directory(const Path& dir);
 	Context *ctx;
 
 	shared<Shader> load_shader(const Path& path);

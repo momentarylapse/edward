@@ -50,6 +50,10 @@ ShaderManager::ShaderManager(Context* _ctx, const Array<Path>& _shader_dirs) {
 	default_shader = "default.shader";
 }
 
+void ShaderManager::add_directory(const Path& dir) {
+	shader_dirs.add(dir);
+}
+
 
 xfer<Shader> ShaderManager::__load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size) {
 #ifdef USING_VULKAN

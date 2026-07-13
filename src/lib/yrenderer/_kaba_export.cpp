@@ -550,6 +550,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->declare_class_size("MaterialManager", sizeof(MaterialManager));
 	ext->declare_class_size("ShaderManager", sizeof(ShaderManager));
 	ext->declare_class_element("ShaderManager.default_shader", &ShaderManager::default_shader);
+	ext->link_class_func("ShaderManager.add_directory", &ShaderManager::add_directory);
 	ext->link_class_func("ShaderManager.load_shader_module", &ShaderManager::load_shader_module);
 
 	ext->declare_class_size("Context", sizeof(yrenderer::Context));

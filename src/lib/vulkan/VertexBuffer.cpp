@@ -5,7 +5,6 @@
 #include "CommandBuffer.h"
 #include "helper.h"
 #include "../os/msg.h"
-#include "lib/os/time.h"
 
 namespace vulkan{
 
@@ -114,7 +113,6 @@ void VertexBuffer::update_v3_v3_v2(const Array<Vertex1> &vertices) {
 void VertexBuffer::_create_buffer(Buffer &buf, const DynamicArray &array) {
 	if (array.num == 0)
 		return;
-	os::Timer timer;
 
 	VkDeviceSize buffer_size = array.num * array.element_size;
 

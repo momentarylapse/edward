@@ -99,11 +99,15 @@ namespace profiler {
 	}
 
 	void _reset() {
+		if (!state)
+			return;
 		state->temp_frame_time = 0;
 		state->frames = 0;
 	}
 
 	int create_channel(const string &name, int parent) {
+		if (!state)
+			return -1;
 		for (auto&& [i, c]: enumerate(state->channels))
 			if (!c.used) {
 				c.used = true;
@@ -116,18 +120,26 @@ namespace profiler {
 	}
 
 	void delete_channel(int channel) {
+		if (!state)
+			return;
 		state->channels[channel].used = false;
 	}
 
 	void set_parent(int channel, int parent) {
+		if (!state)
+			return;
 		state->channels[channel].parent = parent;
 	}
 
 	void set_name(int channel, const string& name) {
+		if (!state)
+			return;
 		state->channels[channel].name = name;
 	}
 
 	string get_name(int channel) {
+		if (!state)
+			return "";
 		return state->channels[channel].name;
 	}
 
