@@ -72,7 +72,7 @@ bool LevelData::load(const Path& filename) {
 				for (auto &ee: e.elements) {
 					ecs::InstanceDataVariable v;
 					v.name = ee.value("name");//.lower().replace("_", "");
-					v.value = ee.value("value");
+					v.value = Any::parse(ee.value("value"));
 					s.variables.add(v);
 				}
 				systems.add(s);

@@ -1496,6 +1496,8 @@ shared<Node> Concretifier::concretify_statement_match(shared<Node> node, Block *
 		} else {
 			do_error("'match' requires a default pattern ('else =>'), except for fully covered enums", node);
 		}
+		// turn into "else" case, to make block-returns easier
+		node->params[ncases*2-1] = add_node_statement(StatementID::Pass, node->params[ncases*2-1]->token_id, common_types._void);
 	}
 	return node;
 }
@@ -2764,6 +2766,8 @@ shared<Node> Concretifier::build_function_pipe(const shared<Node> &abs_input, co
 
 
 shared<Node> Concretifier::build_lambda_template(const shared<Node>& param, const shared<Node>& expression, Block *block, const Class* ns, int token_id) {
+	if (param->kind != NodeKind::AbstractToken)
+		do_error("single parameter name expected to the left of mapping '=>'", param);
 
 	static int lambda_count = 0;
 	string name = format(":lambda-evil-%d:", lambda_count ++);
