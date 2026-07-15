@@ -14,8 +14,8 @@
 #include <lib/xhui/controls/ListView.h>
 
 ComponentSelectionDialog::ComponentSelectionDialog(xhui::Panel* parent, Session* session, const string& base_class) : Dialog("component-selection-dialog", parent) {
-	width = 400;
-	height = 600;
+	min_width_user = 400;
+	min_height_user = 600;
 	flags = flags | xhui::DialogFlags::CloseByEscape;
 
 	if (base_class.match("*System")) {

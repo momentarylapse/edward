@@ -26,12 +26,13 @@ MenuPopup::MenuPopup(const shared<Menu>& m, Panel* _parent, const rect& anchor, 
 	menu = m;
 	parent = _parent;
 	callback = f;
+	current_sub_menu = nullptr;
 
 	owner = parent; // can only call get_content_min_size() with an owner...
 	set_sub_menu(menu.get());
 	if (auto w = get_window()) {
-		pos.y = max(min(pos.y, w->area.y2 - (float)height), w->area.y1);
-		pos.x = max(min(pos.x, w->area.x2 - (float)width), w->area.x1);
+		pos.y = max(min(pos.y, w->area.y2 - min_height_user), w->area.y1);
+		pos.x = max(min(pos.x, w->area.x2 - min_width_user), w->area.x1);
 	}
 	owner = nullptr;
 }
@@ -58,12 +59,6 @@ void MenuPopup::set_sub_menu(const Menu* m) {
 		set_options(item.id, "flat,align=left");
 		enable(item.id, item.enabled);
 	}
-
-	//size_mode_x = SizeMode::ForwardChild;
-	//size_mode_y = SizeMode::ForwardChild;
-	const vec2 size = effective_min_size();
-	width = (int)size.x;
-	height = (int)size.y;
 }
 
 

@@ -14,9 +14,14 @@ Image::Image(const string &_id, const string &t) : Control(_id) {
 }
 
 vec2 Image::get_content_min_size() const {
+	vec2 s = {8,8};
 	if (image)
-		return image->size();
-	return {8,8};
+		s = image->size();
+	if (min_width_user >= 0)
+		s.x = min_width_user - padding.x1 - padding.x2;
+	if (min_height_user >= 0)
+		s.y = min_height_user - padding.y1 - padding.y2;
+	return s;
 }
 
 void Image::set_string(const string& s) {

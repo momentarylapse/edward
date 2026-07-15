@@ -42,7 +42,6 @@ public:
 	void set_title(const string& title);
 	rect suggest_area(const rect& parent_area) const;
 
-	int width, height;
 	vec2 pos;
 	DialogFlags flags;
 	bool _destroy_requested = false;

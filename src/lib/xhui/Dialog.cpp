@@ -69,10 +69,10 @@ Dialog::Dialog(const string& _title, int _width, int _height, Panel* parent, Dia
 			if (!handle_event(event_id::Close, event_id::Close, true))
 				request_destroy();
 		});
-	width = _width;
-	height = _height;
+	min_width_user = (float)_width;
+	min_height_user = (float)_height;
 	pos = {0, 0};
-	area = {0, (float)width, 0, (float)height};
+	area = {0, min_width_user, 0, min_height_user};
 	float wp = Theme::_default.window_padding;
 	padding = rect(wp, wp, wp, wp);
 
@@ -158,7 +158,7 @@ void Dialog::set_title(const string& title) {
 
 rect Dialog::suggest_area(const rect& parent_area) const {
 	const vec2 m = parent_area.center();
-	const vec2 size = vec2((float)width, (float)height);
+	const vec2 size = effective_min_size();
 	if (flags & DialogFlags::FixedPosition)
 		return {pos, pos + size};
 	return {m - size/2, m + size/2};

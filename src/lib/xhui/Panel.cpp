@@ -481,8 +481,8 @@ void Panel::from_resource(const Resource& res) {
 
 		if (auto dlg = as_dialog(this)) {
 			if (width + height > 0) {
-				dlg->width = width;
-				dlg->height = height;
+				dlg->min_width_user = (float)width;
+				dlg->min_height_user = (float)height;
 			}
 			dlg->set_title(get_language(res.id, res.id));
 		} else if (auto win = as_window(this)) {
