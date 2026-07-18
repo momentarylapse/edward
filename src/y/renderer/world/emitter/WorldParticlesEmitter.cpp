@@ -33,31 +33,10 @@ WorldParticlesEmitter::WorldParticlesEmitter(yrenderer::Context* ctx, Camera* _c
 	fx_material->pass0.z_test = true;
 	fx_material->pass0.z_write = false;
 
-	fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
+	fx_vertex_buffers.add(new DynamicVertexBuffer("3f,4f,2f"));
 }
 
-void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
-	if (shadow_pass)
-		return;
-	profiler::begin(channel);
-	ctx->gpu_timestamp_begin(params, channel);
-
-	auto shader = rvd.get_shader(fx_material.get(), 0, "fx", "");
-
-	auto& rd = rvd.start(params, mat4::ID, shader, fx_material.get(), 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
-
-	// particles
-	auto r = mat4::rotation(cam->owner->ang);
-	int index = 0;
-
-	auto get_vb = [this, &index]() {
-		if (index < fx_vertex_buffers.num)
-			return fx_vertex_buffers[index ++];
-		index ++;
-		fx_vertex_buffers.add(new VertexBuffer("3f,4f,2f"));
-		return fx_vertex_buffers.back();
-	};
-
+void WorldParticlesEmitter::draw_legacy_groups(const RenderParams& params, RenderViewData& rvd, Shader* shader, const mat4& r) {
 	base::map<Texture*, Array<LegacyParticle*>> legacy_groups;
 
 	auto& legacy_particles = ecs::EntityManager::global->get_component_list_family<LegacyParticle>();
@@ -71,6 +50,8 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 	}
 
 	for (const auto& [texture, particles]: legacy_groups) {
+		auto vb = get_vb();
+		auto& rd = rvd.start(params, mat4::ID, shader, fx_material.get(), 0, PrimitiveTopology::TRIANGLES, vb);
 
 		Array<VertexFx> v;
 		v.__reserve(particles.num * 6);
@@ -109,17 +90,19 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 					v.add({m * vec3(-1,-1,0), p->col, p->source.x1, p->source.y2});
 				}
 			}
-		auto vb = get_vb();
 		vb->update(v);
 
 		rd.set_texture(BINDING_TEX0, texture);
 		rd.draw_triangles(params, vb);
 	}
+}
 
-
-	// new particles
+void WorldParticlesEmitter::draw_particle_groups(const RenderParams& params, RenderViewData& rvd, Shader* shader, const mat4 &r) {
 	auto& particle_groups = ecs::EntityManager::global->get_component_list_family<ParticleGroup>();
 	for (auto g: particle_groups) {
+		if (g->particles.num == 0)
+			continue;
+		auto& rd = rvd.start(params, mat4::ID, shader, fx_material.get(), 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
 		auto source = g->source;
 		Array<const Particle*> particles_sorted;
 		for (const auto& p: g->particles)
@@ -130,25 +113,31 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 		});
 		Array<VertexFx> v;
 		for (const auto p: particles_sorted) {
-				auto m = mat4::translation(p->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
-				v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
-				v.add({m * vec3( 1, 1,0), p->col, source.x2, source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
-				v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
-				v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
-				v.add({m * vec3(-1,-1,0), p->col, source.x1, source.y2});
-			}
+			auto m = mat4::translation(p->pos) * r * mat4::scale(p->radius, p->radius, p->radius);
+			v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
+			v.add({m * vec3( 1, 1,0), p->col, source.x2, source.y1});
+			v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
+			v.add({m * vec3(-1, 1,0), p->col, source.x1, source.y1});
+			v.add({m * vec3( 1,-1,0), p->col, source.x2, source.y2});
+			v.add({m * vec3(-1,-1,0), p->col, source.x1, source.y2});
+		}
 		auto vb = get_vb();
 		vb->update(v);
 
 		rd.set_texture(BINDING_TEX0, g->texture.get());
 		rd.draw_triangles(params, vb);
 	}
+}
+
+void WorldParticlesEmitter::draw_beam_groups(const yrenderer::RenderParams &params, yrenderer::RenderViewData &rvd, ygfx::Shader *shader, const mat4 &r) {
+
+	auto& particle_groups = ecs::EntityManager::global->get_component_list_family<ParticleGroup>();
 
 	// beams
 	for (auto g: particle_groups) {
 		if (g->beams.num == 0)
 			continue;
+		auto& rd = rvd.start(params, mat4::ID, shader, fx_material.get(), 0, PrimitiveTopology::TRIANGLES, fx_vertex_buffers[0]);
 
 		auto source = g->source;
 		Array<VertexFx> v;
@@ -182,6 +171,31 @@ void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd
 		rd.set_texture(BINDING_TEX0, g->texture.get());
 		rd.draw_triangles(params, vb);
 	}
+}
+
+VertexBuffer *WorldParticlesEmitter::get_vb() {
+	if (current_vb < fx_vertex_buffers.num)
+		return fx_vertex_buffers[current_vb ++];
+	current_vb ++;
+	fx_vertex_buffers.add(new DynamicVertexBuffer("3f,4f,2f"));
+	return fx_vertex_buffers.back();
+}
+
+void WorldParticlesEmitter::emit(const RenderParams& params, RenderViewData& rvd, bool shadow_pass) {
+	if (shadow_pass)
+		return;
+	profiler::begin(channel);
+	ctx->gpu_timestamp_begin(params, channel);
+
+	auto shader = rvd.get_shader(fx_material.get(), 0, "fx", "");
+
+	// particles
+	auto r = mat4::rotation(cam->owner->ang);
+	current_vb = 0;
+
+	draw_legacy_groups(params, rvd, shader, r);
+	draw_particle_groups(params, rvd, shader, r);
+	draw_beam_groups(params, rvd, shader, r);
 
 	ctx->gpu_timestamp_end(params, channel);
 	profiler::end(channel);

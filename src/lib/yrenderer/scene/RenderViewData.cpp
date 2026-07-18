@@ -100,6 +100,7 @@ void RenderData::set_material_x(const SceneView& scene_view, const Material* mat
 
 	auto& pass = material->pass(pass_no);
 	nix::set_z(pass.z_write, pass.z_test);
+	nix::set_wire(pass.wire_mode);
 	if (pass.mode == TransparencyMode::FUNCTIONS)
 		nix::set_alpha(pass.source, pass.destination);
 	else if (pass.mode == TransparencyMode::COLOR_KEY_HARD)
@@ -135,17 +136,9 @@ void RenderData::draw_instanced(const RenderParams&, VertexBuffer* vb, int count
 	nix::draw_instanced_triangles(vb, count);
 }
 
-void RenderData::draw(const RenderParams& params, VertexBuffer* vb, PrimitiveTopology topology) {
-	if (topology == PrimitiveTopology::TRIANGLES)
-		nix::draw_triangles(vb);
-	else if (topology == PrimitiveTopology::POINTS)
-		nix::draw_points(vb);
-	else if (topology == PrimitiveTopology::LINES)
-		nix::draw_lines(vb, false);
-	else if (topology == PrimitiveTopology::LINE_STRIP)
-		nix::draw_lines(vb, true);
+void RenderData::draw(const RenderParams&, VertexBuffer* vb, PrimitiveTopology topology) {
+	nix::draw(topology, vb);
 }
-
 
 void RenderViewData::begin_draw() {
 	nix::bind_uniform_buffer(BINDING_LIGHT, ubo_light.get());

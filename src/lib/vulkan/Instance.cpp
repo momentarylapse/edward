@@ -221,6 +221,7 @@ VkSurfaceKHR Instance::create_glfw_surface(GLFWwindow* window) {
 }
 #endif
 
+#ifndef OS_WINDOWS
 VkSurfaceKHR Instance::create_headless_surface() {
 	VkHeadlessSurfaceCreateInfoEXT info{};
 	info.sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT;
@@ -230,6 +231,7 @@ VkSurfaceKHR Instance::create_headless_surface() {
 		throw Exception("failed to create headless surface!  " + result2str(r));
 	return surface;
 }
+#endif
 
 
 #define DECLARE_EXT(NAME) PFN_##NAME _##NAME = nullptr;
@@ -238,7 +240,7 @@ VkSurfaceKHR Instance::create_headless_surface() {
 		if (verbosity >= 2) \
 			msg_write(format(" %s: %s", #NAME, p2s((void*)_##NAME))); \
 		if (!_##NAME) \
-			throw Exception("CAN NOT LOAD RTX EXTENSIONS");
+			throw Exception("CAN NOT LOAD EXTENSION FUNCTION");
 
 DECLARE_EXT(vkCmdTraceRaysKHR);
 DECLARE_EXT(vkCmdBuildAccelerationStructuresKHR);

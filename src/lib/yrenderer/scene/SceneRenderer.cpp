@@ -74,6 +74,7 @@ void SceneRenderer::draw(const RenderParams& params) {
 			e->emit_transparent(params, rvd);*/
 
 #ifdef USING_OPENGL
+	nix::set_wire(false);
 	nix::set_front(nix::Orientation::CW);
 #endif
 

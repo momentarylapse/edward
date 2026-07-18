@@ -1,6 +1,8 @@
 # created by xmake
 
 cmake_minimum_required(VERSION 3.21)
+cmake_policy(SET CMP0091 NEW)
+
 project(edward)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -161,6 +163,12 @@ list(APPEND COMPILE_DEFINITIONS HAS_LIB_FREETYPE2=1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 list(APPEND DEPS Threads::Threads)
+
+
+find_library(MATH_LIBRARY m)
+if(MATH_LIBRARY)
+	list(APPEND DEPS ${MATH_LIBRARY})
+endif()
 
 
 #=======================================================================================

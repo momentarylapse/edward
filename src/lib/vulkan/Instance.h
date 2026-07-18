@@ -30,7 +30,9 @@ namespace vulkan {
 #ifdef HAS_LIB_GLFW
 		Surface create_glfw_surface(GLFWwindow* window);
 #endif
+#ifndef OS_WINDOWS
 		Surface create_headless_surface();
+#endif
 
 		void setup_debug_messenger();
 		void _ensure_rtx_extensions();

@@ -30,6 +30,13 @@ public:
 	explicit WorldParticlesEmitter(yrenderer::Context* ctx, Camera* cam);
 	void emit(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, bool shadow_pass) override;
 
+	void draw_legacy_groups(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, ygfx::Shader* shader, const mat4& r);
+	void draw_particle_groups(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, ygfx::Shader* shader, const mat4& r);
+	void draw_beam_groups(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, ygfx::Shader* shader, const mat4& r);
+
+	int current_vb = 0;
+	ygfx::VertexBuffer* get_vb();
+
 	Camera* cam;
 
 //	shared<Shader> shader_fx;

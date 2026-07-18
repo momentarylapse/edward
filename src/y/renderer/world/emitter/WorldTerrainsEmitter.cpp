@@ -36,7 +36,7 @@ void WorldTerrainsEmitter::emit(const yrenderer::RenderParams& params, yrenderer
 		}
 		if (t->texture_height)
 			rd.set_texture(4, t->texture_height.get());
-		rd.draw_triangles(params, t->vertex_buffer.get());
+		rd.draw(params, t->vertex_buffer.get(), t->topology);
 	};
 
 	auto& terrains2 = ecs::EntityManager::global->get_component_list<TerrainRef>();
