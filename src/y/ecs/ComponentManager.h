@@ -13,7 +13,7 @@
 #include <functional>
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 class Any;
 

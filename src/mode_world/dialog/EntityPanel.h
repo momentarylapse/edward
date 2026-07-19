@@ -8,7 +8,7 @@
 #include <lib/obs/Observable.h>
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 struct WorldEntity;

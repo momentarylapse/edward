@@ -11,7 +11,7 @@
 #include <lib/os/path.h>
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 class Session;

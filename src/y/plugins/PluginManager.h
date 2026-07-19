@@ -16,7 +16,7 @@ namespace ecs {
 	struct InstanceDataVariable;
 }
 namespace kaba {
-	class Class;
+	struct Class;
 	class IExporter;
 }
 class ResourceManager;

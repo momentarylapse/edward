@@ -9,7 +9,7 @@
 
 class DataWorld;
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 class ComponentContentsPanel : public obs::Node<xhui::Panel> {

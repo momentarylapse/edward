@@ -13,7 +13,7 @@
 class Session;
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 class InstanceEditor : public xhui::Panel {

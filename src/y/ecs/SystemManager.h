@@ -8,7 +8,7 @@
 
 class Path;
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 namespace ecs {

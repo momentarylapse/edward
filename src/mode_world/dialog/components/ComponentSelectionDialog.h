@@ -10,7 +10,7 @@
 
 class Session;
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 class ComponentSelectionDialog : public xhui::Dialog {

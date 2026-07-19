@@ -141,52 +141,10 @@ public:
 		return nullptr;
 	}
 	vulkan::Surface _create_headless_surface() {
+#ifndef OS_WINDOWS
 		KABA_EXCEPTION_WRAPPER(return create_headless_surface());
+#endif
 		return nullptr;
-	}
-};
-
-class VulkanVertexBuffer : public vulkan::VertexBuffer {
-public:
-	void __init__(const string &format) {
-		new(this) vulkan::VertexBuffer(format);
-	}
-	void __delete__() {
-		this->~VulkanVertexBuffer();
-	}
-};
-
-class VulkanGraphicsPipeline : public vulkan::GraphicsPipeline {
-public:
-	void __init__(vulkan::Shader *shader, vulkan::RenderPass *render_pass, int subpass, const string &topology, const string &format) {
-		new(this) vulkan::GraphicsPipeline(shader, render_pass, subpass, vulkan::parse_topology(topology), format);
-	}
-	void __delete__() {
-		this->~VulkanGraphicsPipeline();
-	}
-};
-
-class VulkanComputePipeline : public vulkan::ComputePipeline {
-public:
-	void __init__(vulkan::Shader *shaders) {
-		new(this) vulkan::ComputePipeline(shaders);
-	}
-};
-
-class VulkanRayPipeline : public vulkan::RayPipeline {
-public:
-	void __init__(const string &dset_layouts, const Array<vulkan::Shader*> &shaders, int recursion_depth) {
-		new (this) vulkan::RayPipeline(dset_layouts, shaders, recursion_depth);
-	}
-};
-
-class VulkanRenderPass : public vulkan::RenderPass {
-public:
-	void __init__(const Array<string> &formats, const Array<string> &options) {
-		new(this) vulkan::RenderPass(formats, options);
-	}
-	void __delete__() {
-		this->~VulkanRenderPass();
 	}
 };
 
@@ -211,42 +169,6 @@ public:
 		KABA_EXCEPTION_WRAPPER(return create(device, width, height, gamma_correction));
 		return nullptr;
 	}
-};
-
-class VulkanFence : public vulkan::Fence {
-public:
-	void __init__(vulkan::Device *device) {
-		new(this) vulkan::Fence(device);
-	}
-	void __delete__() {
-		this->~VulkanFence();
-	}
-};
-
-class VulkanSemaphore : public vulkan::Semaphore {
-public:
-	void __init__(vulkan::Device *device) {
-		new(this) vulkan::Semaphore(device);
-	}
-	void __delete__() {
-		this->~VulkanSemaphore();
-	}
-};
-
-
-class VulkanShader : public vulkan::Shader {
-public:
-	void __init__() {
-		new(this) vulkan::Shader();
-	}
-	void __delete__() {
-		this->~VulkanShader();
-	}
-};
-
-class VulkanVertex : public vulkan::Vertex1 {
-public:
-	void __assign__(const VulkanVertex &o) { *this = o; }
 };
 
 

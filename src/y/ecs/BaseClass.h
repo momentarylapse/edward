@@ -12,7 +12,7 @@
 #include <lib/any/any.h>
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 
 namespace ecs {

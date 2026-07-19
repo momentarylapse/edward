@@ -12,7 +12,7 @@
 #include "BaseClass.h"
 
 namespace kaba {
-	class Class;
+	struct Class;
 }
 struct CollisionData;
 

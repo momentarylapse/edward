@@ -14,12 +14,12 @@ namespace Asm {
 namespace kaba
 {
 
-class Serializer;
+struct Serializer;
 class Module;
-class SyntaxTree;
-class Function;
-class Node;
-class Block;
+struct SyntaxTree;
+struct Function;
+struct Node;
+struct Block;
 
 
 struct LoopData {

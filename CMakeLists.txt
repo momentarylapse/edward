@@ -160,6 +160,7 @@ find_package(Freetype REQUIRED)
 list(APPEND DEPS Freetype::Freetype)
 list(APPEND COMPILE_DEFINITIONS HAS_LIB_FREETYPE2=1)
 
+
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 list(APPEND DEPS Threads::Threads)
@@ -227,14 +228,19 @@ add_executable(edward
 	src/lib/kaba/lib/lib_threads.cpp
 	src/lib/kaba/lib/lib_time.cpp
 	src/lib/kaba/lib/list.cpp
+	src/lib/kaba/parser/concretifier/Concretifier.cpp
+	src/lib/kaba/parser/concretifier/pipe.cpp
+	src/lib/kaba/parser/concretifier/special_function.cpp
+	src/lib/kaba/parser/concretifier/statement.cpp
+	src/lib/kaba/parser/concretifier/statement_for.cpp
+	src/lib/kaba/parser/concretifier/type_matching.cpp
 	src/lib/kaba/parser/AbstractParser.cpp
-	src/lib/kaba/parser/Concretifier.cpp
 	src/lib/kaba/parser/import.cpp
 	src/lib/kaba/parser/lexical.cpp
 	src/lib/kaba/parser/macros.cpp
 	src/lib/kaba/parser/Parser.cpp
+	src/lib/kaba/parser/preprocessor.cpp
 	src/lib/kaba/parser/Transformer.cpp
-	src/lib/kaba/parser/type_matching.cpp
 	src/lib/kaba/syntax/Block.cpp
 	src/lib/kaba/syntax/Class.cpp
 	src/lib/kaba/syntax/Constant.cpp
@@ -242,7 +248,6 @@ add_executable(edward
 	src/lib/kaba/syntax/Identifier.cpp
 	src/lib/kaba/syntax/Node.cpp
 	src/lib/kaba/syntax/Operator.cpp
-	src/lib/kaba/syntax/preprocessor.cpp
 	src/lib/kaba/syntax/Statement.cpp
 	src/lib/kaba/syntax/SyntaxTree.cpp
 	src/lib/kaba/syntax/Variable.cpp
