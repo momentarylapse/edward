@@ -20,8 +20,8 @@ SpinButton::SpinButton(const string& id, float _value) : Edit(id, "") {
 
 	value = _value;
 	text_needs_update = true;
-	_min = -1000000;
-	_max = 1000000;
+	_min = -999999;
+	_max = 999999;
 	step = 1.0f;
 	decimals = 0;
 }

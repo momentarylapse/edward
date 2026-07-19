@@ -30,6 +30,7 @@ ListView::ListView(const string &_id, const string &t) :
 	cell_grid->grid.spacing = 4;
 	cell_padding = {4, 4};
 	viewport.add_child(cell_grid, 0, 0);
+	viewport.size_mode_x = SizeMode::Fill;
 	viewport.size_mode_y = SizeMode::Fill;
 	viewport.ignore_hover = true;
 	padding = {5, 5, 5, 5};

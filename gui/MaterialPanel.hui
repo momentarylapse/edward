@@ -1,4 +1,4 @@
-Dialog material-panel "Material appearance" width=365 height=715 allow-root
+Dialog material-panel "Material appearance" allow-root
 	Grid ? "" vertical padding=7
 		Label header "Material properties" expandx center big bold
 		TabControl tab "Parameters\\Rendering\\Physics"

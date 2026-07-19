@@ -18,8 +18,8 @@ Expander::Expander(const string& id, const string& title) :
 	header.bold = true;
 	show_header = (title != "");
 	ignore_hover = true; // TODO interactive expand-button/header
-	size_mode_x = SizeMode::ForwardChild;
-	size_mode_y = SizeMode::ForwardChild;
+	size_mode_x = SizeMode::Fill;//ForwardChild;
+	size_mode_y = SizeMode::Shrink;//ForwardChild; // not sure... (-_-)'
 	state = State::Undecided;
 }
 
@@ -35,7 +35,6 @@ void Expander::expand(bool expanded) {
 		return;
 	if (state == State::Undecided) {
 		state = expanded ? State::Expanded : State::Compact;
-		animator.t = expanded ? 1 : 0;
 		return;
 	}
 
@@ -108,12 +107,12 @@ vec2 Expander::get_content_min_size() const {
 		s += header.effective_min_size();
 	if (child) {
 		vec2 cs = child->effective_min_size();
-		vec2 max_size = {max(s.x, cs.x), s.y + SPACING + cs.y};
+		vec2 expanded_min_size = {max(s.x, cs.x), s.y + SPACING + cs.y};
 		if (state == State::Expanded) {
-			s = max_size;
+			s = expanded_min_size;
 		} else if (state == State::Expanding or state == State::Shrinking) {
-			s.x = max_size.x;
-			s.y = s.y + animator.t * (max_size.y - s.y);
+			s.x = expanded_min_size.x;
+			s.y = s.y + animator.t * (expanded_min_size.y - s.y);
 		}
 	}
 	return s;

@@ -19,6 +19,8 @@ Viewport::Viewport(const string &_id) : Control(_id) {
 
 void Viewport::add_child(shared<Control> c, int x, int y) {
 	child = c;
+	if (child)
+		content_size = child->effective_min_size();
 	if (owner)
 		c->_register(owner);
 }
@@ -27,6 +29,7 @@ void Viewport::remove_child(Control* c) {
 	if (child.get() == c) {
 		c->_unregister();
 		child = nullptr;
+		content_size = {0, 0};
 	}
 }
 
@@ -60,7 +63,7 @@ void Viewport::_draw(Painter *p) {
 }
 
 vec2 Viewport::get_content_min_size() const {
-	vec2 s = {0, 0};
+	vec2 s = {20, 20};
 	if (child) {
 		vec2 cs = child->effective_min_size();
 		if (size_mode_x == SizeMode::ForwardChild)
@@ -74,11 +77,13 @@ vec2 Viewport::get_content_min_size() const {
 void Viewport::negotiate_content_area(const rect &available) {
 	if (child) {
 		rect content_area = {available.p00() - offset, available.p00() + content_size - offset};
-		if (size_mode_x == SizeMode::ForwardChild) {
+		if (size_mode_x == SizeMode::ForwardChild or content_size.x < available.width()) {
+			offset.x = 0;
 			content_area.x1 = available.x1;
 			content_area.x2 = available.x2;
 		}
-		if (size_mode_y == SizeMode::ForwardChild) {
+		if (size_mode_y == SizeMode::ForwardChild or content_size.y < available.height()) {
+			offset.y = 0;
 			content_area.y1 = available.y1;
 			content_area.y2 = available.y2;
 		}

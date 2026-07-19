@@ -47,8 +47,8 @@ public:
 };
 
 TabControl::TabControl(const string& id, const string& title) : Control(id) {
-	size_mode_x = SizeMode::Fill;
-	size_mode_y = SizeMode::Fill;
+	size_mode_x = SizeMode::ForwardChild;
+	size_mode_y = SizeMode::ForwardChild;
 	header = new TabControlHeader(id + ":header", title.explode("\\"), [this](int i) {
 		current_page = i;
 		emit_event(event_id::Changed, true);

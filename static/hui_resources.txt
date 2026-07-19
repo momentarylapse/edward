@@ -2162,7 +2162,7 @@ image=hui:about
 # Resource
 Dialog
 material-panel
-width=365,height=715,allowroot
+allowroot
 0
 0
 1
