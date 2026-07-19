@@ -7,6 +7,7 @@
 #include <y/world/Model.h>
 #include <y/helper/ResourceManager.h>
 #include <y/ecs/Entity.h>
+#include <lib/plugin/Instance.h>
 #include <storage/format/Format.h>
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>

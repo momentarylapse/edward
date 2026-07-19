@@ -6,7 +6,7 @@
 #include "../../data/DataWorld.h"
 #include <y/world/components/Link.h>
 #include <stuff/PluginManager.h>
-#include <ecs/Entity.h>
+#include <y/ecs/Entity.h>
 
 LinkPanel::LinkPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
 	from_source(R"foodelim(

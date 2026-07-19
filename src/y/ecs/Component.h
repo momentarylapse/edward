@@ -14,13 +14,15 @@
 namespace kaba {
 	struct Class;
 }
+namespace plugin {
+	struct InstanceDataVariable;
+	struct InstanceData;
+}
 struct CollisionData;
 
 namespace ecs {
 
 struct Entity;
-struct InstanceDataVariable;
-struct InstanceData;
 
 struct Component : VirtualBase {
 	Component();
@@ -31,7 +33,7 @@ struct Component : VirtualBase {
 
 	virtual void on_collide(const CollisionData& col) {}
 
-	void set_variables(const Array<InstanceDataVariable>& variables);
+	void set_variables(const Array<plugin::InstanceDataVariable>& variables);
 
 	Entity* owner;
 	const kaba::Class* component_type;
@@ -56,7 +58,7 @@ struct EgoMarker : ecs::Component {
 };
 
 struct Template {
-	Array<ecs::InstanceData> components;
+	Array<plugin::InstanceData> components;
 };
 
 struct TemplateRef : ecs::Component {

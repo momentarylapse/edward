@@ -13,6 +13,10 @@
 
 struct mat4;
 
+namespace kaba {
+	struct Class;
+}
+
 namespace ecs {
 
 struct Component;

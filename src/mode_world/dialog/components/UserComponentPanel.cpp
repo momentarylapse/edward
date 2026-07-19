@@ -20,7 +20,7 @@ Dialog user-component-panel ''
 )foodelim");
 	type = _type;
 
-	editor = new InstanceEditor(data->session, type, [this] (const ecs::InstanceData& desc) {
+	editor = new InstanceEditor(data->session, type, [this] (const plugin::InstanceData& desc) {
 		if (auto e = data->entity(index)) {
 			editing = true;
 			data->entity_edit_component(e, type, desc);

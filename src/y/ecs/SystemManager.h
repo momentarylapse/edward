@@ -10,12 +10,14 @@ class Path;
 namespace kaba {
 	struct Class;
 }
+namespace plugin {
+	struct InstanceDataVariable;
+}
 
 namespace ecs {
 
 class EntityManager;
 class System;
-struct InstanceDataVariable;
 
 class SystemManager {
 public:
@@ -23,7 +25,7 @@ public:
 
 	static void reset();
 
-	static void create(const Path& filename, const string& name, const Array<InstanceDataVariable>& variables);
+	static void create(const Path& filename, const string& name, const Array<plugin::InstanceDataVariable>& variables);
 	static System* _get_generic(const kaba::Class* _class);
 	template<class T>
 	static T* get() {

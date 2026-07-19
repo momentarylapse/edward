@@ -12,6 +12,7 @@
 #include "../plugins/PluginManager.h"
 #include <lib/doc/xml.h>
 #include <lib/yrenderer/scene/Light.h>
+#include <lib/plugin/PluginManager.h>
 #include <lib/os/file.h>
 #include <lib/any/conversion.h>
 
@@ -41,7 +42,7 @@ bool LevelData::load(const Path& filename) {
 					}
 				}
 			} else if (e.tag == "physics") {
-				ecs::InstanceData physics{"Physics"};
+				plugin::InstanceData physics{"Physics"};
 
 				physics.set("enabled", e.value("enabled")._bool());
 				auto mode = PhysicsMode::FULL_EXTERNAL;
@@ -60,17 +61,17 @@ bool LevelData::load(const Path& filename) {
 				fog.distance = 1.0f / e.value("density")._float();
 				fog._color = s2c(e.value("color"));
 			} else if (e.tag == "script" or e.tag == "system") {
-				ecs::InstanceData s;
+				plugin::InstanceData s;
 				s.filename = e.value("file");
 				s.class_name = e.value("class");
 
 				// deprecated
 				const string var = e.value("var");
 				if (var.num > 0)
-					s.variables = parse_variables(var);
+					s.variables = plugin::parse_variables_old(var);
 
 				for (auto &ee: e.elements) {
-					ecs::InstanceDataVariable v;
+					plugin::InstanceDataVariable v;
 					v.name = ee.value("name");//.lower().replace("_", "");
 					v.value = Any::parse(ee.value("value"));
 					s.variables.add(v);
@@ -80,17 +81,17 @@ bool LevelData::load(const Path& filename) {
 		}
 	}
 
-	auto read_components = [] (Array<ecs::InstanceData>& components, xml::Element &e) {
+	auto read_components = [] (Array<plugin::InstanceData>& components, xml::Element &e) {
 		for (const auto &ee: e.elements)
 			if (ee.tag == "component") {
-				ecs::InstanceData sd;
+				plugin::InstanceData sd;
 				sd.filename = ee.value("script");
 				sd.class_name = ee.value("class");
 
 				// deprecated...
 				const string var = ee.value("var");
 				if (var.num > 0)
-					sd.variables = PluginManager::parse_variables(var);
+					sd.variables = plugin::parse_variables_old(var);
 
 				for (const auto& a: ee.attributes)
 					if (a.key != "script" and a.key != "class" and a.key != "var")
@@ -106,7 +107,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ecs::InstanceData c = {"Camera"};
+				plugin::InstanceData c = {"Camera"};
 				c.set("fov", e.value("fov", f2s(pi/4, 3))._float());
 				c.set("min_depth", e.value("minDepth", "1")._float());
 				c.set("max_depth", e.value("maxDepth", "10000")._float());
@@ -119,7 +120,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ecs::InstanceData l = {"Light"};
+				plugin::InstanceData l = {"Light"};
 				l.set("harshness", e.value("harshness")._float());
 				l.set("color", e.value("color"));
 				l.set("power", e.value("power", "1.0")._float());
@@ -148,7 +149,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ecs::InstanceData t = {"TerrainRef"};
+				plugin::InstanceData t = {"TerrainRef"};
 				t.set("terrain", e.value("file"));
 				t.set("material", e.value("material"));
 				o.components.add(t);
@@ -159,7 +160,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ecs::InstanceData t = {"TemplateRef"};
+				plugin::InstanceData t = {"TemplateRef"};
 				t.set("template", e.value("file"));
 				o.components.add(t);
 				if (e.value("role") == "ego")
@@ -178,7 +179,7 @@ bool LevelData::load(const Path& filename) {
 				Entity o;
 				o.pos = s2v(e.value("pos"));
 				o.ang = quaternion::rotation(s2v(e.value("ang")));
-				ecs::InstanceData l = {"Link"};
+				plugin::InstanceData l = {"Link"};
 				auto type = LinkType::SOCKET;
 				if (e.value("type") == "hinge")
 					type = LinkType::HINGE;
@@ -343,7 +344,7 @@ void LevelData::save(const Path &filename) {
 #endif
 }
 
-Array<ecs::InstanceData> LevelData::auto_terrain_components() {
+Array<plugin::InstanceData> LevelData::auto_terrain_components() {
 	return {{"TerrainCollider", "", {{}}},
 		{"RigidBody", "", {{"dynamic", false}}}};
 }

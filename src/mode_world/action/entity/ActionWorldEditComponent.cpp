@@ -29,7 +29,7 @@ void ActionWorldEditBaseEntity::undo(history::Data* d) {
 }
 
 
-ActionWorldEditComponent::ActionWorldEditComponent(int _index, const kaba::Class* _type, const ecs::InstanceData& c) {
+ActionWorldEditComponent::ActionWorldEditComponent(int _index, const kaba::Class* _type, const plugin::InstanceData& c) {
 	index = _index;
 	type = _type;
 	component = c;
@@ -50,7 +50,7 @@ void ActionWorldEditComponent::undo(history::Data* d) {
 }
 
 
-ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const Array<ecs::InstanceDataVariable>& _variables) {
+ActionWorldAddComponent::ActionWorldAddComponent(int _index, const kaba::Class* _type, const Array<plugin::InstanceDataVariable>& _variables) {
 	index = _index;
 	type = _type;
 	variables = _variables;
@@ -72,7 +72,7 @@ void ActionWorldAddComponent::undo(history::Data* d) {
 }
 
 
-/*ActionWorldAddUserComponent::ActionWorldAddUserComponent(int _index, const ecs::InstanceData& c) {
+/*ActionWorldAddUserComponent::ActionWorldAddUserComponent(int _index, const plugin::InstanceData& c) {
 	index = _index;
 	component = c;
 }

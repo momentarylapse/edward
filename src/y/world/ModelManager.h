@@ -18,7 +18,7 @@ class Path;
 struct RigidBody;
 struct PhysicalMesh;
 struct Skeleton;
-namespace ecs {
+namespace plugin {
 	struct InstanceData;
 }
 class ResourceManager;
@@ -34,7 +34,7 @@ struct ModelTemplate : Sharable<base::Empty> {
 	shared<PhysicalMesh> physical_mesh;
 	shared<MetaMove> meta_move;
 	Skeleton *skeleton;
-	Array<ecs::InstanceData> components;
+	Array<plugin::InstanceData> components;
 
 
 	explicit ModelTemplate(Model *m);

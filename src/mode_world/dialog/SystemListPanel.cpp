@@ -15,8 +15,8 @@
 #include <view/helper/InstanceEditor.h>
 #include <world/systems/Physics.h>
 #include <stuff/PluginManager.h>
-
-#include "lib/kaba/syntax/Class.h"
+#include <lib/kaba/syntax/Class.h>
+#include <lib/plugin/PluginManager.h>
 
 
 class SystemPanel : public obs::Node<xhui::Panel> {
@@ -71,7 +71,7 @@ Dialog system 'System'
 		type = data->session->plugin_manager->get_class(s);
 		if (!type)
 			return;
-		editor = new InstanceEditor(data->session, type, [this] (const ecs::InstanceData& desc) {
+		editor = new InstanceEditor(data->session, type, [this] (const plugin::InstanceData& desc) {
 			properties_dialog->temp = data->meta_data;
 			properties_dialog->temp.systems[index] = desc;
 			editing = true;
@@ -80,7 +80,7 @@ Dialog system 'System'
 		});
 		embed("variables", 0, 0, editor.get());
 		temp_instance = type->create_instance();
-		data->session->plugin_manager->set_variables(temp_instance, type, s.variables);
+		plugin::assign_variables(temp_instance, type, s.variables);
 		editor->build(temp_instance);
 
 		update_ui();
@@ -89,7 +89,7 @@ Dialog system 'System'
 		auto& s = data->meta_data.systems[index];
 		set_string("class", s.class_name);
 		set_string("filename", str(s.filename));
-		data->session->plugin_manager->set_variables(temp_instance, type, s.variables);
+		plugin::assign_variables(temp_instance, type, s.variables);
 		editor->update_ui(temp_instance);
 	}
 	void set_selected(bool selected) {

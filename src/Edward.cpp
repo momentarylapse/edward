@@ -135,7 +135,7 @@ void templatify(const Path &filename) {
 
 	    Template t;
 		{
-		    ecs::InstanceData c;
+		    plugin::InstanceData c;
 		    c.class_name = "ModelRef";
 		    //c.set("model", "", str(_filename.basename()));
 			c.set("model", str(_filename.relative_to(session->project_dir | "Objects")));
@@ -147,7 +147,7 @@ void templatify(const Path &filename) {
 		}
 	    if (data->meta_data.passive_physics) {
 	    	auto T = data->meta_data.inertia_tensor;
-	        ecs::InstanceData c;
+	        plugin::InstanceData c;
 	        c.class_name = "RigidBody";
 	        c.set("dynamic", data->meta_data.active_physics);
 	        c.set("g_factor", 1.0);

@@ -6,6 +6,7 @@
  */
 
 #include "ActionWorldEditData.h"
+#include <lib/plugin/Instance.h>
 
 ActionWorldEditData::ActionWorldEditData(const DataWorld::MetaData &_data) {
 	data = _data;

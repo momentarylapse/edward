@@ -15,6 +15,7 @@
 #include <EngineData.h>
 #include <lib/math/complex.h>
 #include <lib/kaba/kaba.h>
+#include <lib/plugin/Instance.h>
 #include <lib/config.h>
 #include "../helper/ResourceManager.h"
 #if __has_include("../plugins/PluginManager.h")
@@ -182,7 +183,7 @@ public:
 		me->prop.radius = f->read_float();
 
 		// physics
-		ecs::InstanceData sb;
+		plugin::InstanceData sb;
 		sb.class_name = "RigidBody";
 		sb.set("mass", f->read_float());
 		mat3 theta;
@@ -585,7 +586,7 @@ public:
 
 		n = f->read_int();
 		for (int i=0; i<n; i++) {
-			ecs::InstanceDataVariable v;
+			plugin::InstanceDataVariable v;
 			v.name = f->read_str().lower().replace("_", "");
 			v.value = f->read_str();
 		}

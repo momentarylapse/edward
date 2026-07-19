@@ -6,10 +6,10 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/yrenderer/MaterialManager.h>
 #include <lib/yrenderer/Context.h>
+#include <lib/plugin/Instance.h>
 #include <world/ModelManager.h>
 #include <world/Terrain.h>
-
-#include "lib/os/file.h"
+#include <lib/os/file.h>
 
 #ifdef USING_VULKAN
 namespace vulkan {
@@ -43,7 +43,7 @@ public:
 			return nullptr;
 		auto t = new Template;
 		templates.set(filename, t);
-		ecs::InstanceData* current = nullptr;
+		plugin::InstanceData* current = nullptr;
 		const auto s = os::fs::read_text(filename);
 		for (const auto& l: s.explode("\n")) {
 			if (l.num == 0)

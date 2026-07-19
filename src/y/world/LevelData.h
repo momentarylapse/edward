@@ -24,7 +24,7 @@ namespace yrenderer {
 	enum class LightType;
 }
 class Terrain;
-namespace ecs {
+namespace plugin {
 	struct InstanceData;
 }
 struct Light;
@@ -48,13 +48,13 @@ struct LevelData {
 	bool load(const Path &filename);
 	void save(const Path &filename);
 
-	static Array<ecs::InstanceData> auto_terrain_components();
+	static Array<plugin::InstanceData> auto_terrain_components();
 
 	struct Entity {
 		string name;
 		vec3 pos;
 		quaternion ang;
-		Array<ecs::InstanceData> components;
+		Array<plugin::InstanceData> components;
 	};
 
 	Path world_filename;
@@ -62,7 +62,7 @@ struct LevelData {
 	Array<vec3> skybox_ang;
 	color background_color;
 	Array<Entity> entities;
-	Array<ecs::InstanceData> systems;
+	Array<plugin::InstanceData> systems;
 
 	Fog fog;
 };

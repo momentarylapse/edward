@@ -8,6 +8,7 @@
 #include "PluginManager.h"
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
+#include <lib/plugin/PluginManager.h>
 #include <view/EdwardWindow.h>
 #include <Session.h>
 #include <view/Mode.h>
@@ -412,15 +413,15 @@ void *PluginManager::Plugin::create_instance(const string &parent) const {
 	return plugin_manager->create_instance(filename, parent);
 }
 
-Array<ecs::InstanceDataVariable> load_variables(const kaba::Class* c, const void* instance = nullptr) {
-	Array<ecs::InstanceDataVariable> variables;
+Array<plugin::InstanceDataVariable> load_variables(const kaba::Class* c, const void* instance = nullptr) {
+	Array<plugin::InstanceDataVariable> variables;
 	for (auto cc: weak(c->constants))
 		if (cc->type.get() == kaba::common_types.string and cc->name == "PARAMETERS") {
 			auto params = cc->as_string().explode(",");
 			for (auto& v: c->elements)
 				if (sa_contains(params, v.name)) {
 					if (instance)
-						variables.add({v.name, ::PluginManager::whatever_to_any((const char*)instance + v.offset, v.type)});
+						variables.add({v.name, plugin::whatever_to_any((const char*)instance + v.offset, v.type)});
 					else
 						variables.add({v.name, {}});
 				}
@@ -446,13 +447,13 @@ Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_ba
 	return r;
 }
 
-ecs::InstanceData PluginManager::describe_class(const kaba::Class* type, const void* instance) {
+plugin::InstanceData PluginManager::describe_class(const kaba::Class* type, const void* instance) {
 	auto variables = load_variables(type, instance);
 	return {type->name, type->owner->module->filename.relative_to(session->storage->root_dir_kind[FD_SCRIPT]), variables};
 }
 
 
-void PluginManager::update_class(ecs::InstanceData& _c) {
+void PluginManager::update_class(plugin::InstanceData& _c) {
 	try {
 		auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
 		for (auto c: s->classes())
@@ -472,11 +473,7 @@ void PluginManager::update_class(ecs::InstanceData& _c) {
 	}
 }
 
-void PluginManager::set_variables(void *p, const kaba::Class *type, const Array<ecs::InstanceDataVariable> &variables) {
-	::PluginManager::assign_variables(p, type, variables);
-}
-
-const kaba::Class *PluginManager::get_class(const ecs::InstanceData &desc) const {
+const kaba::Class *PluginManager::get_class(const plugin::InstanceData &desc) const {
 	for (const auto c: component_classes)
 		if (c->name == desc.class_name)
 			return c;

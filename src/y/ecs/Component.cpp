@@ -7,7 +7,7 @@
 
 #include "Component.h"
 #include <lib/base/base.h>
-#include "../plugins/PluginManager.h"
+#include <lib/plugin/PluginManager.h>
 
 const kaba::Class* NameTag::_class = nullptr;
 const kaba::Class* EgoMarker::_class = nullptr;
@@ -23,8 +23,8 @@ Component::Component() {
 
 Component::~Component() = default;
 
-void Component::set_variables(const Array<InstanceDataVariable>& variables) {
-	PluginManager::assign_variables(this, component_type, variables);
+void Component::set_variables(const Array<plugin::InstanceDataVariable>& variables) {
+	plugin::assign_variables(this, component_type, variables);
 }
 
 }

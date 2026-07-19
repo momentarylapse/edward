@@ -7,6 +7,7 @@
 
 
 #include <lib/history/Action.h>
+#include <lib/plugin/Instance.h>
 #include "../../data/DataWorld.h"
 
 class ActionWorldEditBaseEntity : public history::Action {
@@ -25,7 +26,7 @@ private:
 
 class ActionWorldEditComponent : public history::Action {
 public:
-	explicit ActionWorldEditComponent(int index, const kaba::Class* type, const ecs::InstanceData& c);
+	explicit ActionWorldEditComponent(int index, const kaba::Class* type, const plugin::InstanceData& c);
 	string name() const override { return "WorldEditComponent"; }
 
 	void *execute(history::Data* d) override;
@@ -34,12 +35,12 @@ public:
 private:
 	int index;
 	const kaba::Class* type;
-	ecs::InstanceData component;
+	plugin::InstanceData component;
 };
 
 class ActionWorldAddComponent : public history::Action {
 public:
-	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables);
+	explicit ActionWorldAddComponent(int index, const kaba::Class* type, const Array<plugin::InstanceDataVariable>& variables);
 	string name() const override { return "WorldAddComponent"; }
 
 	void* execute(history::Data* d) override;
@@ -48,13 +49,13 @@ public:
 private:
 	int index;
 	const kaba::Class* type;
-	Array<ecs::InstanceDataVariable> variables;
+	Array<plugin::InstanceDataVariable> variables;
 	ecs::Component* component = nullptr;
 };
 
 /*class ActionWorldAddUserComponent : public history::Action {
 public:
-	explicit ActionWorldAddUserComponent(int index, const ecs::InstanceData& c);
+	explicit ActionWorldAddUserComponent(int index, const plugin::InstanceData& c);
 	string name() const override { return "WorldAddUserComponent"; }
 
 	void* execute(history::Data* d) override;
@@ -62,7 +63,7 @@ public:
 
 private:
 	int index;
-	ecs::InstanceData component;
+	plugin::InstanceData component;
 };*/
 
 class ActionWorldRemoveComponent : public history::Action {
@@ -76,7 +77,7 @@ public:
 private:
 	int index;
 	const kaba::Class* type;
-	ecs::InstanceData component;
+	plugin::InstanceData component;
 };
 
 class ActionWorldRemoveUnknownComponent : public history::Action {
@@ -89,7 +90,7 @@ public:
 
 private:
 	int index, cindex;
-	ecs::InstanceData component;
+	plugin::InstanceData component;
 };
 
 

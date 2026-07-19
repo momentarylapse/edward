@@ -58,10 +58,7 @@ World::World() {
 	entity_manager = new ecs::EntityManager;
 #ifdef _X_ALLOW_X_
 	entity_manager->component_manager->f_create = [] (const kaba::Class* type) {
-		return (ecs::Component*)PluginManager::create_instance(type, Array<ecs::InstanceDataVariable>{});
-	};
-	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, ecs::Component* c, const Array<ecs::InstanceDataVariable>& vars) {
-		PluginManager::assign_variables(c, type, vars);
+		return (ecs::Component*)PluginManager::create_instance(type, Array<plugin::InstanceDataVariable>{});
 	};
 #endif
 
@@ -96,7 +93,7 @@ void World::load_soon(const Path &filename) {
 	next_filename = filename;
 }
 
-Array<ecs::InstanceData> sort_components(const Array<ecs::InstanceData>& components) {
+Array<plugin::InstanceData> sort_components(const Array<plugin::InstanceData>& components) {
 	auto r = components;
 	for (int i=0; i<r.num; i++)
 		for (int k=i+1; k<r.num; k++) {
@@ -108,7 +105,7 @@ Array<ecs::InstanceData> sort_components(const Array<ecs::InstanceData>& compone
 	return r;
 }
 
-void add_user_components(ecs::EntityManager* em, ecs::Entity *ent, const Array<ecs::InstanceData>& components) {
+void add_user_components(ecs::EntityManager* em, ecs::Entity *ent, const Array<plugin::InstanceData>& components) {
 	for (auto &cc: sort_components(components)) {
 		msg_write("add component " + cc.class_name);
 		auto type = PluginManager::find_class(cc.filename, cc.class_name);

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <y/ecs/BaseClass.h>
+#include <lib/plugin/Instance.h>
 #include <lib/xhui/Panel.h>
 #include <functional>
 
@@ -20,8 +20,8 @@ class InstanceEditor : public xhui::Panel {
 public:
 	Session* session;
 	const kaba::Class* type;
-	ecs::InstanceData description;
-	using Func = std::function<void(const ecs::InstanceData&)>;
+	plugin::InstanceData description;
+	using Func = std::function<void(const plugin::InstanceData&)>;
 	Func f_on_edit;
 
 	InstanceEditor(Session* _session, const kaba::Class* _type, const Func& _f_on_edit);

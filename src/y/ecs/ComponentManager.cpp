@@ -14,6 +14,7 @@
 #include <lib/kaba/syntax/Class.h>
 #include <lib/kaba/syntax/Function.h>
 #include <lib/os/msg.h>
+#include <lib/plugin/PluginManager.h>
 
 
 namespace ecs {
@@ -116,8 +117,7 @@ Component *ComponentManager::create_component(const kaba::Class *type, const Par
 		return nullptr;
 	auto c = f_create(type);
 	c->component_type = type;
-	if (f_apply)
-		f_apply(type, c, var);
+	plugin::assign_variables(c, type, var);
 	_register(c);
 	return c;
 }

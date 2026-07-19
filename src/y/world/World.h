@@ -35,7 +35,7 @@ class Terrain;
 struct TerrainRef;
 struct RigidBody;
 struct MultiInstance;
-namespace ecs {
+namespace plugin {
 	struct Entity;
 	class EntityManager;
 }

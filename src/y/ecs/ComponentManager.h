@@ -15,6 +15,9 @@
 namespace kaba {
 	struct Class;
 }
+namespace plugin {
+	struct InstanceDataVariable;
+}
 class Any;
 
 
@@ -23,14 +26,13 @@ namespace ecs {
 struct Entity;
 struct Component;
 struct ComponentListX;
-struct InstanceDataVariable;
 
 
 class ComponentManager {
 public:
 	using List = Array<Component*>;
 	//using Params = base::map<string, Any>;
-	using Params = Array<InstanceDataVariable>;
+	using Params = Array<plugin::InstanceDataVariable>;
 
 	ComponentManager();
 	~ComponentManager();
@@ -71,7 +73,6 @@ public:
 	int ch_component = -1;
 
 	std::function<Component*(const kaba::Class*)> f_create;
-	std::function<void(const kaba::Class*, Component*, const Params&)> f_apply;
 	//std::function<const kaba::Class*(const string&)> f_parse_type;
 };
 

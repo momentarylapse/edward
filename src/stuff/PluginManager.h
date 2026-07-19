@@ -9,16 +9,13 @@
 
 #include <lib/base/base.h>
 #include <lib/os/path.h>
+#include <lib/plugin/Instance.h>
 
 namespace kaba {
 	struct Class;
 }
 
 class Session;
-namespace ecs {
-	struct InstanceData;
-	struct InstanceDataVariable;
-}
 
 namespace edward {
 
@@ -56,16 +53,15 @@ public:
 
 	void* create_instance(const Path &filename, const string &parent);
 	Array<const kaba::Class*> enumerate_classes(const string& full_base_class);
-	//Array<ecs::InstanceData> enumerate_classes(const string& full_base_class);
+	//Array<plugin::InstanceData> enumerate_classes(const string& full_base_class);
 
-	ecs::InstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
-	void update_class(ecs::InstanceData& c);
-	void set_variables(void* p, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables);
+	plugin::InstanceData describe_class(const kaba::Class* type, const void* instance = nullptr);
+	void update_class(plugin::InstanceData& c);
 
 	Array<const kaba::Class*> component_classes;
 	Array<const kaba::Class*> system_classes;
 
-	const kaba::Class* get_class(const ecs::InstanceData& desc) const;
+	const kaba::Class* get_class(const plugin::InstanceData& desc) const;
 };
 
 }

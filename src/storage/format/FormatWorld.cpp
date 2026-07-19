@@ -62,7 +62,7 @@ static color s2c(const string &s) {
 }
 
 // script vars
-string vars2str(const Array<ecs::InstanceDataVariable>& vars) {
+string vars2str(const Array<plugin::InstanceDataVariable>& vars) {
 	string s;
 	for (auto &v: vars) {
 		if (v.value == "")
@@ -74,13 +74,13 @@ string vars2str(const Array<ecs::InstanceDataVariable>& vars) {
 	return s;
 }
 
-Array<ecs::InstanceDataVariable> str2vars(const string& s) {
-	Array<ecs::InstanceDataVariable> vars;
+Array<plugin::InstanceDataVariable> str2vars(const string& s) {
+	Array<plugin::InstanceDataVariable> vars;
 	for (auto &x: s.explode(",")) {
 		auto xx = x.explode(":");
 		if (xx.num != 2)
 			continue;
-		ecs::InstanceDataVariable v;
+		plugin::InstanceDataVariable v;
 		v.name = xx[0].trim();
 		v.value = xx[1].trim();
 		vars.add(v);
@@ -244,7 +244,7 @@ void FormatWorld::_load(const Path &filename, DataWorld *data, bool deep) {
 /*void read_components(WorldEntity& o, const xml::Element& e) {
 	for (auto &ee: e.elements)
 		if (ee.tag == "component") {
-			ecs::InstanceData sd;
+			plugin::InstanceData sd;
 			sd.filename = ee.value("script", "");
 			sd.class_name = ee.value("class", "");
 			if (ee.value("var") != "")
@@ -334,7 +334,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 	}
 
 
-	auto save_component = [] (const ecs::InstanceData& c) {
+	auto save_component = [] (const plugin::InstanceData& c) {
 		auto ee = xml::Element("component");
 		if (!c.is_internal())
 			ee.add_attribute("script", str(c.filename));
@@ -344,7 +344,7 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 		return ee;
 	};
 
-	auto add_components = [save_component] (xml::Element& e, const Array<ecs::InstanceData>& components) {
+	auto add_components = [save_component] (xml::Element& e, const Array<plugin::InstanceData>& components) {
 		for (auto &c: components) {
 			e.add(save_component(c));
 		}

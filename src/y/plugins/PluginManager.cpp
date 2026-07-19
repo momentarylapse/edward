@@ -6,6 +6,8 @@
  */
 
 #include "PluginManager.h"
+#include "lib/plugin/PluginManager.h"
+
 #include <lib/kaba/kaba.h>
 #include <lib/kaba/lib/extern.h>
 #include "../audio/SoundSource.h"
@@ -81,7 +83,17 @@ using namespace ygfx;
 
 ResourceManager* default_resource_manager = nullptr;
 
+	Any whatever_to_any_special(const void* p, const kaba::Class* c);
+	bool whatever_from_any_special(void* p, const kaba::Class* type, const Any& value);
+
+void init_basic() {
+	plugin::f_whatever_to_any_special = whatever_to_any_special;
+	plugin::f_whatever_from_any_special = whatever_from_any_special;
+}
+
 void init() {
+	init_basic();
+
 	const auto script_dir = kaba::config.directory;
 	kaba::default_context->register_package_init("yengine", script_dir | "yengine", &export_kaba_package_yengine);
 	kaba::default_context->register_package_init("net", script_dir | "net", &export_package_net);
@@ -151,17 +163,6 @@ void import_kaba() {
 	//msg_write(MeshCollider::_class->parent->parent->name);
 }
 
-Array<ecs::InstanceDataVariable> parse_variables(const string &var) {
-	Array<ecs::InstanceDataVariable> r;
-	auto xx = var.explode(",");
-	for (auto &x: xx) {
-		auto y = x.explode(":");
-		auto name = y[0].trim().lower().replace("_", "");
-			r.add({name, Any::parse(y[1])});
-	}
-	return r;
-}
-
 vec3 s2v(const string &s) {
 	auto x = s.explode(" ");
 	if (x.num < 3)
@@ -183,25 +184,7 @@ mat3 s2mat3(const string &s) {
 	return m;
 }
 
-Any whatever_to_any(const void* p, const kaba::Class* c) {
-	if (!p)
-		return {};
-	if (c == kaba::common_types.string)
-		return *(const string*)p;
-	if (c == kaba::common_types.path)
-		return str(*(const Path*)p);
-	if (c == kaba::common_types.f32)
-		return *(const float*)p;
-	if (c == kaba::common_types.i32 or c->is_enum())
-		return *(const int*)p;
-	if (c == kaba::common_types._bool)
-		return *(const bool*)p;
-	if (c == kaba::common_types.vec3)
-		return vec3_to_any(*(const vec3*)p);
-	if (c == kaba::common_types.color)
-		return color_to_any(*(const color*)p);
-	if (c == kaba::common_types.mat3)
-		return mat3_to_any(*(const mat3*)p);
+Any whatever_to_any_special(const void* p, const kaba::Class* c) {
 	if ((c->name == "Material*" or c->name == "Material&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const yrenderer::Material**)p));
 	if (c->name == "Terrain*" and default_resource_manager)
@@ -210,58 +193,24 @@ Any whatever_to_any(const void* p, const kaba::Class* c) {
 		return str(default_resource_manager->filename(*(const Model**)p));
 	if ((c->name == "Template*" or c->name == "Template&") and default_resource_manager)
 		return str(default_resource_manager->filename(*(const Template**)p));
-	if (c->is_list()) {
-		Any r = Any::EmptyList;
-		auto arr = (DynamicArray*)p;
-		for (int i=0; i<arr->num; i++)
-			r.add(whatever_to_any(arr->simple_element(i), c->param[0]));
-		return r;
-	}
 	return {};
 }
 
-void whatever_from_any(void* p, const kaba::Class* type, const Any& value) {
-	if (type == kaba::common_types.string)
-		*(string*)p = str(value);
-	if (type == kaba::common_types.path)
-		*(Path*)p = str(value);
-	if (type == kaba::common_types.f32)
-		*(float*)p = value.to_f32();
-	if (type == kaba::common_types.i32 or type->is_enum())
-		*(int*)p = value.to_i32();
-	if (type == kaba::common_types._bool)
-		*(bool*)p = value.to_bool();
-	if (type == kaba::common_types.vec3)
-		*(vec3*)p = any_to_vec3(value);
-	if (type == kaba::common_types.color)
-		*(color*)p = any_to_color(value);
-	if (type == kaba::common_types.mat3)
-		*(mat3*)p = any_to_mat3(value);
-	if ((type->name == "Material*" or type->name == "Material&") and default_resource_manager)
+bool whatever_from_any_special(void* p, const kaba::Class* type, const Any& value) {
+	if ((type->name == "Material*" or type->name == "Material&") and default_resource_manager) {
 		*(yrenderer::Material**)p = default_resource_manager->load_material(str(value));
-	if (type->name == "Terrain*" and default_resource_manager)
+		return true;
+	} else if (type->name == "Terrain*" and default_resource_manager) {
 		*(Terrain**)p = default_resource_manager->load_terrain(str(value));
-	if (type->name == "Model*" and default_resource_manager)
+		return true;
+	} else if (type->name == "Model*" and default_resource_manager) {
 		*(Model**)p = default_resource_manager->load_model(str(value));
-	if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager)
+		return true;
+	} else if ((type->name == "Template*" or type->name == "Template&") and default_resource_manager) {
 		*(Template**)p = default_resource_manager->load_template(str(value));
-	if (type->is_list() and value.is_list()) {
-		if (!type->param[0]->can_memcpy())
-			return;
-		auto arr = (DynamicArray*)p;
-		arr->simple_resize(value.length());
-		for (int i=0; i<value.length(); i++)
-			whatever_from_any(arr->simple_element(i), type->param[0], value[i]);
+		return true;
 	}
-}
-
-void assign_variables(void* p, const kaba::Class* c, const Array<ecs::InstanceDataVariable>& variables) {
-	for (const auto& v: variables)
-		for (const auto& e: c->elements)
-			if (v.name == e.name) {
-				//msg_write("  " + e.type->long_name() + " " + e.name + " = " + v.value);
-				whatever_from_any((char*)p + e.offset, e.type, v.value);
-			}
+	return false;
 }
 
 const kaba::Class *find_class_derived(const Path &filename, const string &base_class) {
@@ -333,11 +282,11 @@ const kaba::Class *find_class(const Path &filename, const string &name) {
 }
 
 void *create_instance(const kaba::Class *c, const string &variables) {
-	return create_instance(c, parse_variables(variables));
+	return create_instance(c, plugin::parse_variables_old(variables));
 }
 
 // yes, we could skip the special cases... but then we need to export virtual functions properly...
-void* create_instance(const kaba::Class *c, const Array<ecs::InstanceDataVariable> &variables) {
+void* create_instance(const kaba::Class *c, const Array<plugin::InstanceDataVariable> &variables) {
 	//msg_write(format("INSTANCE  %s:   %s", filename, base_class));
 	msg_write(format("creating instance  %s", c->long_name()));
 	auto instantiate = [c] () -> void* {
@@ -384,7 +333,7 @@ void* create_instance(const kaba::Class *c, const Array<ecs::InstanceDataVariabl
 		return c->create_instance();
 	};
 	auto p = instantiate();
-	assign_variables(p, c, variables);
+	plugin::assign_variables(p, c, variables);
 	return p;
 }
 

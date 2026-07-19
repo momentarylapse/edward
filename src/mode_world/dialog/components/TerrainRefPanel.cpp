@@ -13,6 +13,7 @@
 #include <ecs/Entity.h>
 #include <y/helper/ResourceManager.h>
 #include <lib/yrenderer/MaterialManager.h>
+#include <lib/plugin/Instance.h>
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>
 

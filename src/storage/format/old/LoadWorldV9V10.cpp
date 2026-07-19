@@ -15,8 +15,8 @@
 #include <lib/os/formatter.h>
 #include <lib/os/msg.h>
 #include <lib/yrenderer/scene/Light.h>
-
-#include "lib/any/conversion.h"
+#include <lib/plugin/Instance.h>
+#include <lib/any/conversion.h>
 
 
 void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
@@ -34,7 +34,7 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 		int n = f->read_int();
 		for (int i=0;i<n;i++){
 			LevelData::Entity o;
-			ecs::InstanceData t = {"TerrainRef"};
+			plugin::InstanceData t = {"TerrainRef"};
 			t.set("terrain", f->read_str());
 			//t.set("material", ...);
 			f->read_vector(&o.pos);
@@ -45,7 +45,7 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 		}
 		// Gravitation
 		f->read_comment();
-		ecs::InstanceData physics = {"Physics"};
+		plugin::InstanceData physics = {"Physics"};
 		vec3 gravity;
 		gravity.x = f->read_float();
 		gravity.y = f->read_float();
@@ -88,7 +88,7 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 		n = f->read_int();
 		for (int i=0; i<n; i++) {
 			LevelData::Entity o;
-			ecs::InstanceData t = {"TemplateRef"};
+			plugin::InstanceData t = {"TemplateRef"};
 			t.set("template", f->read_str());
 			f->read_str(); // name
 			o.pos.x = f->read_float();
@@ -108,11 +108,11 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 		f->read_comment();
 		n = f->read_int();
 		for (int i=0;i<n;i++){
-			ecs::InstanceData s;
+			plugin::InstanceData s;
 			s.filename = f->read_str();
 			int nv = f->read_int();
 			for (int j=0; j<nv; j++){
-				ecs::InstanceDataVariable var;
+				plugin::InstanceDataVariable var;
 				var.name = f->read_str();
 				var.value = Any::parse(f->read_str());
 				s.variables.add(var);
@@ -128,7 +128,7 @@ void FormatWorld::_load_old(LegacyFile& lf, LevelData& ld) {
 
 
 			LevelData::Entity sun;
-			ecs::InstanceData l = {"Light"};
+			plugin::InstanceData l = {"Light"};
 			l.set("type", (int)yrenderer::LightType::DIRECTIONAL);
 			l.set("theta", -1.0);
 			l.set("power", 1.0);

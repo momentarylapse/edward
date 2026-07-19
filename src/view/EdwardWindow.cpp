@@ -177,6 +177,7 @@ Dialog x x padding=0
 		} catch(Exception& e) {
 			msg_error(e.message());
 		}
+		PluginManager::init_basic();
 		PluginManager::default_resource_manager = session->resource_manager;
 
 		engine.file_errors_are_critical = false;

@@ -7,6 +7,7 @@
 #include <lib/base/base.h>
 #include <lib/base/pointer.h>
 #include <lib/obs/Observable.h>
+#include <lib/plugin/Instance.h>
 #include "ComponentManager.h"
 
 struct vec3;

@@ -6,9 +6,6 @@
  */
 
 #include "DataWorld.h"
-
-#include <sys/stat.h>
-
 #include "WorldTerrain.h"
 #include <lib/any/conversion.h>
 #include <lib/kaba/syntax/Class.h>
@@ -18,7 +15,6 @@
 #include <world/components/Collider.h>
 #include <world/components/Skeleton.h>
 #include <world/components/RigidBody.h>
-
 #include "view/DocumentSession.h"
 #include "../../Session.h"
 #include "../../storage/Storage.h"
@@ -30,6 +26,7 @@
 #include "../action/ActionWorldPaste.h"
 #include <lib/os/msg.h>
 #include <lib/base/iter.h>
+#include <lib/plugin/PluginManager.h>
 #include <mode_world/action/entity/ActionWorldAddEntity.h>
 #include <mode_world/terrain/action/ActionWorldEditTerrainMetaData.h>
 #include "../action/ActionWorldDeleteSelection.h"
@@ -39,11 +36,11 @@
 
 const kaba::Class* EdwardTag::_class = nullptr;
 
-ecs::InstanceData& EdwardTag::get(const string& class_name) {
+plugin::InstanceData& EdwardTag::get(const string& class_name) {
 	for (auto& c: unknown_components)
 		if (c.class_name == class_name)
 			return c;
-	static ecs::InstanceData dummy;
+	static plugin::InstanceData dummy;
 	dummy.class_name = "";
 	return dummy;
 }
@@ -85,9 +82,6 @@ DataWorld::DataWorld(DocumentSession* _doc) :
 		msg_write(type->name);
 		return nullptr;
 	};
-	entity_manager->component_manager->f_apply = [this] (const kaba::Class* type, ecs::Component* c, const Array<ecs::InstanceDataVariable>& var) {
-		session->plugin_manager->set_variables(c, type, var);
-	};
 	reset();
 }
 
@@ -105,7 +99,7 @@ void DataWorld::MetaData::reset() {
 	background_color = color(1, 0.2f, 0.4f, 0.6f).srgb_to_linear();
 
 	systems.clear();
-	ecs::InstanceData physics{"Physics"};
+	plugin::InstanceData physics{"Physics"};
 	physics.set("enabled", true);
 	physics.set("gravity", vec3_to_any(vec3(0, -981, 0)));
 	physics.set("mode", (int)PhysicsMode::FULL_EXTERNAL);
@@ -254,12 +248,12 @@ void DataWorld::edit_terrain_meta_data(Terrain* t, const vec3& pattern, const ve
 }
 
 
-ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables) {
+ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<plugin::InstanceDataVariable>& variables) {
 	return static_cast<ecs::Component*>(execute(new ActionWorldAddComponent(entity_manager->entity_index(e), type, variables)));
 }
 
 ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& _variables) {
-	Array<ecs::InstanceDataVariable> variables;
+	Array<plugin::InstanceDataVariable> variables;
 	for (const auto& [k, v]: _variables)
 		variables.add({k, v});
 	return entity_add_component_generic(e, type, variables);
@@ -267,14 +261,14 @@ ecs::Component* DataWorld::entity_add_component_generic(ecs::Entity* e, const ka
 void DataWorld::entity_remove_component(ecs::Entity* e, const kaba::Class* type) {
 	execute(new ActionWorldRemoveComponent(entity_manager->entity_index(e), type));
 }
-void DataWorld::entity_edit_component(ecs::Entity* e, const kaba::Class* type, const ecs::InstanceData& c) {
+void DataWorld::entity_edit_component(ecs::Entity* e, const kaba::Class* type, const plugin::InstanceData& c) {
 	execute(new ActionWorldEditComponent(entity_manager->entity_index(e), type, c));
 }
 
 void DataWorld::entity_remove_unknown_component(ecs::Entity* e, int cindex) {
 	execute(new ActionWorldRemoveUnknownComponent(entity_manager->entity_index(e), cindex));
 }
-void DataWorld::entity_edit_unknown_component(ecs::Entity* e, int cindex, const ecs::InstanceData& c) {
+void DataWorld::entity_edit_unknown_component(ecs::Entity* e, int cindex, const plugin::InstanceData& c) {
 	//execute(new ActionWorldEditUnknownComponent(index, cindex, c));
 }
 
@@ -286,7 +280,7 @@ ecs::Entity *DataWorld::_create_entity(const vec3 &pos, const quaternion &ang) {
 
 
 
-void DataWorld::entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
+void DataWorld::entity_apply_component(ecs::Entity *e, const plugin::InstanceData& cc) {
 	if (const auto c = session->plugin_manager->get_class(cc)) {
 		entity_add_component_generic(e, c, cc.variables);
 		return;
@@ -297,10 +291,10 @@ void DataWorld::entity_apply_component(ecs::Entity *e, const ecs::InstanceData& 
 	tag->unknown_components.add(cc);
 };
 
-void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData& cc) {
-	if (const auto c = session->plugin_manager->get_class(cc)) {
-		auto comp = entity_manager->_add_component_generic_(e, c);
-		session->plugin_manager->set_variables(comp, c, cc.variables);
+void DataWorld::_entity_apply_component(ecs::Entity *e, const plugin::InstanceData& cc) {
+	if (const auto type = session->plugin_manager->get_class(cc)) {
+		auto comp = entity_manager->_add_component_generic_(e, type);
+		plugin::assign_variables(comp, type, cc.variables);
 		return;
 	}
 
@@ -309,7 +303,7 @@ void DataWorld::_entity_apply_component(ecs::Entity *e, const ecs::InstanceData&
 	tag->unknown_components.add(cc);
 }
 
-void DataWorld::_entity_apply_components(ecs::Entity *e, const Array<ecs::InstanceData> &components) {
+void DataWorld::_entity_apply_components(ecs::Entity *e, const Array<plugin::InstanceData> &components) {
 	for (const auto& cc: components) {
 		_entity_apply_component(e, cc);
 	}

@@ -315,6 +315,8 @@ add_executable(edward
 	src/lib/os/stream.cpp
 	src/lib/os/terminal.cpp
 	src/lib/os/time.cpp
+	src/lib/plugin/Instance.cpp
+	src/lib/plugin/PluginManager.cpp
 	src/lib/polymesh/create/Ball.cpp
 	src/lib/polymesh/create/Cube.cpp
 	src/lib/polymesh/create/Cylinder.cpp

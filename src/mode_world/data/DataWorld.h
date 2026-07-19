@@ -46,17 +46,17 @@ struct LevelData;
 	WorldTerrain terrain;
 
 	//Entity* entity = nullptr;
-	Array<ecs::InstanceData> components;
+	Array<plugin::InstanceData> components;
 
-	ecs::InstanceData& get(const string& class_name);
+	plugin::InstanceData& get(const string& class_name);
 };*/
 
 struct EdwardTag : ecs::Component {
 	int entity_index; // auto updated by ModeWorld
 	Path _template;
 	bool request_auto_components = false;
-	Array<ecs::InstanceData> unknown_components;
-	ecs::InstanceData& get(const string& class_name);
+	Array<plugin::InstanceData> unknown_components;
+	plugin::InstanceData& get(const string& class_name);
 
 	static const kaba::Class* _class;
 };
@@ -67,7 +67,7 @@ public:
 	~DataWorld() override;
 
 	using ComponentParams = base::map<string, Any>;
-	//using ComponentParams = Array<ecs::InstanceDataVariable>;
+	//using ComponentParams = Array<plugin::InstanceDataVariable>;
 
 	obs::source out_entity_added{this, "entity-added"};
 	obs::source out_entity_removed{this, "entity-removed"};
@@ -110,7 +110,7 @@ public:
 		} fog;
 
 		// scripts
-		Array<ecs::InstanceData> systems;
+		Array<plugin::InstanceData> systems;
 
 		// music
 		Array<Path> music_files;
@@ -126,16 +126,16 @@ public:
 	void edit_entity(ecs::Entity* e, const vec3& pos, const quaternion& ang);
 	void edit_terrain_meta_data(Terrain* t, const vec3& pattern, const vec3 texture_scale[8]);
 	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const ComponentParams& variables);
-	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<ecs::InstanceDataVariable>& variables = {});
+	ecs::Component* entity_add_component_generic(ecs::Entity* e, const kaba::Class* type, const Array<plugin::InstanceDataVariable>& variables = {});
 	template<class T>
 	T* entity_add_component(ecs::Entity* e, const ComponentParams& variables = {}) {
 		return static_cast<T*>(entity_add_component_generic(e, T::_class, variables));
 	}
-	void entity_apply_component(ecs::Entity* e, const ecs::InstanceData& component);
+	void entity_apply_component(ecs::Entity* e, const plugin::InstanceData& component);
 	void entity_remove_component(ecs::Entity* e, const kaba::Class* type);
-	void entity_edit_component(ecs::Entity* e, const kaba::Class* type, const ecs::InstanceData& c);
+	void entity_edit_component(ecs::Entity* e, const kaba::Class* type, const plugin::InstanceData& c);
 	void entity_remove_unknown_component(ecs::Entity* e, int cindex);
-	void entity_edit_unknown_component(ecs::Entity* e, int cindex, const ecs::InstanceData& c);
+	void entity_edit_unknown_component(ecs::Entity* e, int cindex, const plugin::InstanceData& c);
 
 	void copy(LevelData& temp, const Selection& sel) const; // actually not an action
 	void paste(const LevelData& temp, Selection* selection = nullptr);
@@ -144,8 +144,8 @@ public:
 	// low level (no action)
 	//Entity* _create_entity(const LevelData::Entity& e);
 	ecs::Entity* _create_entity(const vec3& pos, const quaternion& ang);
-	void _entity_apply_components(ecs::Entity* e, const Array<ecs::InstanceData>& components);
-	void _entity_apply_component(ecs::Entity* e, const ecs::InstanceData& component);
+	void _entity_apply_components(ecs::Entity* e, const Array<plugin::InstanceData>& components);
+	void _entity_apply_component(ecs::Entity* e, const plugin::InstanceData& component);
 };
 
 #endif /* DATAWORLD_H_ */

@@ -42,7 +42,7 @@ void SystemManager::reset() {
 	system_by_type.clear();
 }
 
-void SystemManager::create(const Path& filename, const string& name, const Array<InstanceDataVariable> &variables) {
+void SystemManager::create(const Path& filename, const string& name, const Array<plugin::InstanceDataVariable> &variables) {
 	msg_write("add system: " + filename.str());
 	int n0 = entity_manager->entities.num;
 	const kaba::Class* type;

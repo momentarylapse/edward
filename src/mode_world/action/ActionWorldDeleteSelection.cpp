@@ -8,6 +8,7 @@
 #include "ActionWorldDeleteSelection.h"
 #include <lib/base/iter.h>
 #include <lib/base/sort.h>
+#include <lib/plugin/Instance.h>
 #include <ecs/EntityManager.h>
 
 ActionWorldDeleteSelection::ActionWorldDeleteSelection(DataWorld* w, const Selection& selection) {
