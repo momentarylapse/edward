@@ -371,7 +371,7 @@ shared<Node> AbstractParser::parse_abstract_set_builder() {
 }
 
 
-	shared<Node> AbstractParser::parse_abstract_list() {
+shared<Node> AbstractParser::parse_abstract_list() {
 	shared_array<Node> el;
 	if (!try_consume("]"))
 		while (true) {
@@ -558,8 +558,7 @@ shared<Node> AbstractParser::parse_abstract_operand_greedy(bool allow_tuples, in
 //  * for_var in for "Block"
 
 // Node structure
-//  p = [VAR, START, STOP, STEP]
-//  p = [REF_VAR, KEY, ARRAY]
+//  p = [REF_VAR, KEY, CONTAINER]
 shared<Node> AbstractParser::parse_abstract_for_header() {
 
 	// variable name
@@ -574,21 +573,19 @@ shared<Node> AbstractParser::parse_abstract_for_header() {
 		key = var;
 		var = parse_abstract_token();
 	}
+	flags_set(var->flags, flags);
 
 
 	expect_identifier(Identifier::In, "'in' expected after variable in 'for ...'");
-
-	auto container = parse_abstract_value_or_slice();
 
 	auto cmd_for = add_node_statement(StatementID::For, token0, common_types.unknown);
 	// [REF_VAR (token), KEY? (token), ARRAY, BLOCK]
 
 	cmd_for->set_param(0, var);
 	cmd_for->set_param(1, key);
-	cmd_for->set_param(2, container);
+	cmd_for->set_param(2, parse_abstract_value_or_slice()); // container
 	//cmd_for->set_uparam(3, loop_block);
 
-	flags_set(cmd_for->flags, flags);
 	return cmd_for;
 }
 
@@ -597,6 +594,16 @@ shared<Node> AbstractParser::parse_abstract_statement_for() {
 	int ind0 = Exp.cur_line->indent;
 
 	auto cmd_for = parse_abstract_for_header();
+	auto inner = cmd_for;
+
+	// nested loops? (for a in ..., b in ...)
+	while (Exp.cur == ",") {
+		auto f2 = parse_abstract_for_header();
+		auto block = add_node_block(nullptr, common_types.unknown);
+		block->add(f2);
+		inner->set_param(inner->params.num - 1, block);
+		inner = f2;
+	}
 
 	// ...block
 	expect_new_line_with_indent();
@@ -605,7 +612,7 @@ shared<Node> AbstractParser::parse_abstract_statement_for() {
 	auto loop_block = parse_abstract_block();
 	parser_loop_depth --;
 
-	cmd_for->set_param(cmd_for->params.num - 1, loop_block);
+	inner->set_param(inner->params.num - 1, loop_block);
 
 	// else?
 	int token_id = Exp.cur_token();

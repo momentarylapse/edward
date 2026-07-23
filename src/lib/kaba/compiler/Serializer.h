@@ -14,7 +14,7 @@ namespace Asm {
 namespace kaba
 {
 
-struct Serializer;
+class Serializer;
 class Module;
 struct SyntaxTree;
 struct Function;
