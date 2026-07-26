@@ -17,6 +17,12 @@ enum class FontFlags {
 FontFlags operator|(FontFlags a, FontFlags b);
 bool operator&(FontFlags a, FontFlags b);
 
+enum class CursorMovingMode {
+	Default,
+	Selecting,
+	ShowContext
+};
+
 class Edit : public Control {
 public:
 	Edit(const string& id, const string& title);
@@ -50,10 +56,11 @@ public:
 	// byte offset in text buffer
 	using Index = int;
 
-	void set_cursor_pos(Index index, bool selecting = false);
-	void scroll_into_view(Index index); // lazy request
-	void _scroll_into_view(Index index); // actual operation during draw
+	void set_cursor_pos(Index index, CursorMovingMode mode = CursorMovingMode::Default);
+	void scroll_into_view(Index index, bool with_context); // lazy request
+	void _scroll_into_view(Index index, bool with_context); // actual operation during draw
 	base::optional<Index> _scroll_into_view_request;
+	bool _scroll_into_view_with_context = false;
 
 	mutable float ui_scale = 1.0f;
 	bool multiline = false;

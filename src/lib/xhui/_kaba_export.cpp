@@ -116,7 +116,7 @@ public:
 
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.16");
+	e->package_info("xhui", "0.17");
 
 
 //	e->link_class_func("future[Color].__init__", &kaba::generic_init<kaba::KabaFuture<color>>);

@@ -300,7 +300,7 @@ bool CodeEditor::search_find(int pos0) {
 	int p1 = edit->text.find(pattern, pos0);
 	if (p1 > 0) {
 		edit->set_cursor_pos(p1);
-		edit->set_cursor_pos(p1 + pattern.num, true);
+		edit->set_cursor_pos(p1 + pattern.num, xhui::CursorMovingMode::Selecting);
 		return true;
 	}
 	return false;

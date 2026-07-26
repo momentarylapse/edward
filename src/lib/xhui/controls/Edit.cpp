@@ -99,7 +99,7 @@ vec2 Edit::get_content_min_size() const {
 }
 
 void Edit::on_left_button_down(const vec2& m) {
-	set_cursor_pos(xy_to_index(m), get_window()->is_key_pressed(KEY_SHIFT));
+	set_cursor_pos(xy_to_index(m), get_window()->is_key_pressed(KEY_SHIFT) ? CursorMovingMode::Selecting : CursorMovingMode::Default);
 	emit_event(event_id::LeftButtonDown, false);
 }
 
@@ -121,12 +121,12 @@ void Edit::on_left_double_click(const vec2 &m) {
 	if (m.x < x)
 		p0 --;
 	set_cursor_pos(find_word_start(p0+1));
-	set_cursor_pos(find_word_end(p0), true);
+	set_cursor_pos(find_word_end(p0), CursorMovingMode::Selecting);
 }
 
 void Edit::on_mouse_move(const vec2& m, const vec2& d) {
 	if (owner->get_window()->button(0)) {
-		set_cursor_pos(xy_to_index(m), true);
+		set_cursor_pos(xy_to_index(m), CursorMovingMode::Selecting);
 	}
 }
 
@@ -152,6 +152,7 @@ void Edit::on_key_down(int key) {
 
 	bool shift = (key & KEY_SHIFT);
 	int key_no_shift = key & ~KEY_SHIFT;
+	auto cursor_mode = shift ? CursorMovingMode::Selecting : CursorMovingMode::Default;
 
 #ifdef OS_MAC
 	constexpr int mod = KEY_SUPER;
@@ -181,30 +182,36 @@ void Edit::on_key_down(int key) {
 
 	if (key_no_shift == KEY_LEFT) {
 		if (cursor_pos != selection_start and !shift) {
-			set_cursor_pos(min(cursor_pos, selection_start), false);
+			set_cursor_pos(min(cursor_pos, selection_start));
 		} else {
-			set_cursor_pos(clamp(prior_index(cursor_pos), 0, text.num), shift);
+			set_cursor_pos(clamp(prior_index(cursor_pos), 0, text.num), cursor_mode);
 		}
 		prevent_event_propagation();
 	} else if (key_no_shift == KEY_RIGHT) {
 		if (cursor_pos != selection_start and !shift) {
-			set_cursor_pos(max(cursor_pos, selection_start), false);
+			set_cursor_pos(max(cursor_pos, selection_start));
 		} else {
-			set_cursor_pos(clamp(next_index(cursor_pos), 0, text.num), shift);
+			set_cursor_pos(clamp(next_index(cursor_pos), 0, text.num), cursor_mode);
 		}
 		prevent_event_propagation();
 	} else if (key_no_shift == key_line_begin) {
-		set_cursor_pos(smart_line_begin(), shift);
+		set_cursor_pos(smart_line_begin(), cursor_mode);
 		prevent_event_propagation();
 	} else if (key_no_shift == key_line_end) {
-		set_cursor_pos(cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line], shift);
+		set_cursor_pos(cache.line_first_index[cur_lp.line] + cache.line_num_characters[cur_lp.line], cursor_mode);
+		prevent_event_propagation();
+	} else if (key_no_shift == key_line_begin + KEY_CONTROL) {
+		set_cursor_pos(0, cursor_mode);
+		prevent_event_propagation();
+	} else if (key_no_shift == key_line_end + KEY_CONTROL) {
+		set_cursor_pos(text.num, cursor_mode);
 		prevent_event_propagation();
 	}
 
-	auto jump_lines = [this, cur_lp, shift] (int dlines) {
+	auto jump_lines = [this, cur_lp, cursor_mode] (int dlines) {
 		int line = cur_lp.line + dlines;
 		int col0 = _cursor_preferred_col;
-		set_cursor_pos(column_to_index(_cursor_preferred_col, line), shift);
+		set_cursor_pos(column_to_index(_cursor_preferred_col, line), cursor_mode);
 		_cursor_preferred_col = col0;
 	};
 	if (multiline) {
@@ -276,10 +283,10 @@ void Edit::on_key_down(int key) {
 		}
 		prevent_event_propagation();
 	} else if (key_no_shift == KEY_LEFT + mod_word) {
-		set_cursor_pos(find_word_start(cursor_pos-1), shift);
+		set_cursor_pos(find_word_start(cursor_pos-1), cursor_mode);
 		prevent_event_propagation();
 	} else if (key_no_shift == KEY_RIGHT + mod_word) {
-		set_cursor_pos(find_word_end(cursor_pos+1), shift);
+		set_cursor_pos(find_word_end(cursor_pos+1), cursor_mode);
 		prevent_event_propagation();
 	} else if (key == KEY_RETURN) {
 		if (multiline)
@@ -387,6 +394,15 @@ void Edit::draw_text(Painter* p) {
 			cache.line_y0[0] = area.center().y - line_height / 2;
 	}
 
+	// highlight current line?
+	if (multiline and enabled) {
+		const vec2 pos = index_to_xy(cursor_pos);
+		p->set_color(Theme::_default.text.with_alpha(0.05f));
+		if (color_space_shaders == ColorSpace::Linear)
+			p->set_color(Theme::_default.text.with_alpha(0.012f)); // FIXME find a more correct/intuitive way
+		p->draw_rect({area.x1, area.x2, pos.y, pos.y + cache.line_height[0]});
+	}
+
 	// selection
 	if (cursor_pos != selection_start) {
 		p->set_color(color(0.4f, 0.3f, 0.3f, 1.0f));
@@ -465,6 +481,7 @@ void Edit::draw_text(Painter* p) {
 	if (has_focus() and enabled) {
 		const vec2 pos = index_to_xy(cursor_pos);
 		p->set_line_width(2);
+		p->set_color(col0);
 		p->draw_line({pos.x+1, pos.y}, {pos.x+1, pos.y + cache.line_height[0]});
 	}
 
@@ -604,20 +621,21 @@ void Edit::auto_insert(const string& t) {
 	replace_range(selection_start, cursor_pos, t);
 }
 
-void Edit::set_cursor_pos(Index index, bool selecting) {
+void Edit::set_cursor_pos(Index index, CursorMovingMode mode) {
 	cursor_pos = index;
-	if (!selecting)
+	if (mode != CursorMovingMode::Selecting)
 		selection_start = index;
-	scroll_into_view(cursor_pos);
+	scroll_into_view(cursor_pos, mode == CursorMovingMode::ShowContext);
 	_cursor_preferred_col = index_to_column(cursor_pos);
 	request_redraw();
 }
 
-void Edit::scroll_into_view(Index index) {
+void Edit::scroll_into_view(Index index, bool with_context) {
 	_scroll_into_view_request = index;
+	_scroll_into_view_with_context = with_context;
 }
 
-void Edit::_scroll_into_view(Index index) {
+void Edit::_scroll_into_view(Index index, bool with_context) {
 	if (!face)
 		return;
 	const auto xy = index_to_xy(index);
@@ -625,10 +643,15 @@ void Edit::_scroll_into_view(Index index) {
 		viewport_offset.x -= (area.x1 + line_number_area_width - xy.x);
 	else if (xy.x > area.x2)
 		viewport_offset.x += (xy.x - area.x2);
-	if (xy.y < area.y1)
-		viewport_offset.y -= (area.y1 - xy.y);
-	else if (xy.y + font_size > area.y2)
-		viewport_offset.y += (xy.y - area.y2) + font_size * 2;
+	if (with_context) {
+		viewport_offset.y += (xy.y - area.center().y);
+	} else {
+		float dy = cache.line_height[0];
+		if (xy.y - dy < area.y1)
+			viewport_offset.y -= (area.y1 - xy.y) + dy;
+		else if (xy.y + dy * 2 > area.y2)
+			viewport_offset.y += (xy.y - area.y2) + dy * 2;
+	}
 	viewport_offset = vec2::max(vec2::min(viewport_offset, viewport_size()), vec2::ZERO);
 	_scroll_into_view_request = base::None;
 	run_later(0.01f, [this] {
@@ -745,7 +768,7 @@ void Edit::_draw(Painter *p) {
 	p->set_roundness(0);
 
 	if (_scroll_into_view_request)
-		_scroll_into_view(*_scroll_into_view_request);
+		_scroll_into_view(*_scroll_into_view_request, _scroll_into_view_with_context);
 }
 
 // TODO count utf8 chars
