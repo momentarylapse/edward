@@ -11,13 +11,8 @@
 #include "Buffer.h"
 #include "Device.h"
 #include <vulkan/vulkan.h>
-#include "helper.h"
-#include "../os/msg.h"
 
 namespace vulkan{
-
-
-Array<UniformBuffer*> ubo_wrappers;
 
 
 
@@ -34,11 +29,12 @@ Buffer::~Buffer() {
 
 void Buffer::create(VkDeviceSize _size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) {
 	size = max(_size, (VkDeviceSize)16);
-	VkBufferCreateInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-	info.size = size;
-	info.usage = usage;
-	info.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+	VkBufferCreateInfo info = {
+		.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO,
+		.size = size,
+		.usage = usage,
+		.sharingMode = VK_SHARING_MODE_EXCLUSIVE,
+	};
 
 	if (vkCreateBuffer(device->device, &info, nullptr, &buffer) != VK_SUCCESS)
 		throw Exception("failed to create buffer!");
@@ -46,15 +42,17 @@ void Buffer::create(VkDeviceSize _size, VkBufferUsageFlags usage, VkMemoryProper
 	VkMemoryRequirements mem_requirements;
 	vkGetBufferMemoryRequirements(device->device, buffer, &mem_requirements);
 
-	VkMemoryAllocateFlagsInfo flags{};
-	flags.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO;
-	flags.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR;
+	VkMemoryAllocateFlagsInfo flags{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_FLAGS_INFO,
+		.flags = VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT_KHR
+	};
 
-	VkMemoryAllocateInfo alloc_info{};
-	alloc_info.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-	alloc_info.pNext = &flags;
-	alloc_info.allocationSize = mem_requirements.size;
-	alloc_info.memoryTypeIndex = device->find_memory_type(mem_requirements, properties);
+	VkMemoryAllocateInfo alloc_info{
+		.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+		.pNext = &flags,
+		.allocationSize = mem_requirements.size,
+		.memoryTypeIndex = device->find_memory_type(mem_requirements, properties)
+	};
 
 	if (vkAllocateMemory(device->device, &alloc_info, nullptr, &memory) != VK_SUCCESS)
 		throw Exception("failed to allocate buffer memory!");
@@ -72,11 +70,11 @@ void Buffer::destroy() {
 	size = 0;
 }
 
-void *Buffer::map() {
+void* Buffer::map() {
 	return map_part(0, size);
 }
 
-void *Buffer::map_part(VkDeviceSize _offset, VkDeviceSize _size) {
+void* Buffer::map_part(VkDeviceSize _offset, VkDeviceSize _size) {
 	void *p;
 	if (_size < 8) // for size=0 unmap() might complain
 		_size = 8;
@@ -121,43 +119,11 @@ int64 Buffer::get_device_address() const {
 
 
 UniformBuffer::UniformBuffer(int _size) : Buffer(default_device) {
-	count = 0;
 	size = _size;
-	size_single = _size;
-	size_single_aligned = _size;
 	VkDeviceSize buffer_size = size;
 
 	auto usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
 	create(buffer_size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-}
-
-UniformBuffer::UniformBuffer(int _size, int _count) : Buffer(default_device) {
-	// "dynamic"
-	count = _count;
-	size_single = _size;
-	size_single_aligned = device->make_aligned(size_single);
-	size = size_single_aligned * count;
-	VkDeviceSize buffer_size = size;
-
-	if (size > 65536) {
-		msg_error(i2s((int)size));
-		int* p = nullptr;
-		*p = 13;
-	}
-
-	auto usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT | VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR | VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT;
-	create(buffer_size, usage, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-}
-
-UniformBuffer::~UniformBuffer() {
-}
-
-bool UniformBuffer::is_dynamic() {
-	return count > 0;
-}
-
-void UniformBuffer::update_single(void *source, int index) {
-	update_part(source, size_single_aligned * index, size_single);
 }
 
 

@@ -104,9 +104,6 @@ public:
 	void __init__(int size) {
 		new(this) vulkan::UniformBuffer(size);
 	}
-	void __init_multi__(int size, int count) {
-		new(this) vulkan::UniformBuffer(size, count);
-	}
 	void __delete__() {
 		this->~VulkanUniformBuffer();
 	}

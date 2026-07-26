@@ -22,8 +22,8 @@ namespace vulkan {
 		~Buffer();
 		void create(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 		void destroy();
-		void *map();
-		void *map_part(VkDeviceSize offset, VkDeviceSize size);
+		void* map();
+		void* map_part(VkDeviceSize offset, VkDeviceSize size);
 		void unmap();
 		void update(void* source);
 		void update_array(const DynamicArray& array, int offset = 0);
@@ -43,15 +43,6 @@ namespace vulkan {
 	class UniformBuffer : public Buffer {
 	public:
 		explicit UniformBuffer(int size);
-		UniformBuffer(int size, int count);
-		~UniformBuffer();
-
-		void update_single(void *source, int index);
-
-		bool is_dynamic();
-
-		int size_single;
-		int count, size_single_aligned;
 	};
 
 	class StorageBuffer : public Buffer {

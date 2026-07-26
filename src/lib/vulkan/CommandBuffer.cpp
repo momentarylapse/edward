@@ -25,14 +25,14 @@
 
 namespace vulkan{
 
-	//VkCommandPool command_pool;
-
 CommandPool::CommandPool(Device *_device) {
 	device = _device;
-	VkCommandPoolCreateInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-	info.queueFamilyIndex = device->indices.graphics_family.value();
-	info.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+	command_pool = VK_NULL_HANDLE;
+	VkCommandPoolCreateInfo info = {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO,
+		.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT,
+		.queueFamilyIndex = device->indices.graphics_family.value()
+	};
 
 	if (vkCreateCommandPool(device->device, &info, nullptr, &command_pool) != VK_SUCCESS)
 		throw Exception("failed to create command pool!");
@@ -42,17 +42,18 @@ CommandPool::~CommandPool() {
 	vkDestroyCommandPool(device->device, command_pool, nullptr);
 }
 
-CommandBuffer *CommandPool::create_command_buffer() {
+CommandBuffer* CommandPool::create_command_buffer() {
 	return new CommandBuffer(this);
 }
 
 
-CommandBuffer *begin_single_time_commands() {
+CommandBuffer* begin_single_time_commands() {
 	auto cb = new CommandBuffer(default_device->command_pool);
 
-	VkCommandBufferBeginInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	info.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+	VkCommandBufferBeginInfo info = {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT
+	};
 	vkBeginCommandBuffer(cb->buffer, &info);
 
 	return cb;
@@ -61,10 +62,11 @@ CommandBuffer *begin_single_time_commands() {
 void end_single_time_commands(CommandBuffer *cb) { //VkCommandBuffer command_buffer) {
 	vkEndCommandBuffer(cb->buffer);
 
-	VkSubmitInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-	info.commandBufferCount = 1;
-	info.pCommandBuffers = &cb->buffer;
+	VkSubmitInfo info = {
+		.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
+		.commandBufferCount = 1,
+		.pCommandBuffers = &cb->buffer
+	};
 
 	vkQueueSubmit(default_device->graphics_queue.queue, 1, &info, VK_NULL_HANDLE);
 	default_device->graphics_queue.wait_idle();
@@ -75,16 +77,19 @@ void end_single_time_commands(CommandBuffer *cb) { //VkCommandBuffer command_buf
 
 CommandBuffer::CommandBuffer(CommandPool *_pool) {
 	pool = _pool;
+	buffer = VK_NULL_HANDLE;
 	cur_bind_point = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	current_framebuffer = nullptr;
+	current_pipeline = nullptr;
 
-	VkCommandBufferAllocateInfo ai = {};
-	ai.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	ai.commandPool = pool->command_pool;
-	ai.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	ai.commandBufferCount = 1;
+	VkCommandBufferAllocateInfo info = {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
+		.commandPool = pool->command_pool,
+		.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
+		.commandBufferCount = 1
+	};
 
-	if (vkAllocateCommandBuffers(pool->device->device, &ai, &buffer) != VK_SUCCESS)
+	if (vkAllocateCommandBuffers(pool->device->device, &info, &buffer) != VK_SUCCESS)
 		throw Exception("failed to allocate command buffers!");
 }
 
@@ -156,9 +161,10 @@ void CommandBuffer::draw_instanced(VertexBuffer *vb, int num_instances) {
 }
 
 void CommandBuffer::begin() {
-	VkCommandBufferBeginInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	info.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+	VkCommandBufferBeginInfo info = {
+		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
+		.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT
+	};
 
 	if (vkBeginCommandBuffer(buffer, &info) != VK_SUCCESS)
 		throw Exception("failed to begin recording command buffer!");
@@ -176,18 +182,21 @@ void CommandBuffer::begin_render_pass(RenderPass *rp, FrameBuffer *fb) {
 		memcpy((void*)&cv.color, &c, sizeof(color));
 		clear_values.add(cv);
 	}
-	VkClearValue cv = {};
-	cv.depthStencil = {rp->clear_z, rp->clear_stencil};
+	VkClearValue cv = {
+		.depthStencil = {rp->clear_z, rp->clear_stencil}
+	};
 	clear_values.add(cv);
 
-	VkRenderPassBeginInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	info.renderPass = rp->render_pass;
-	info.framebuffer = fb->frame_buffer;
-	info.renderArea.offset = {0, 0};
-	info.renderArea.extent = {(unsigned)fb->width, (unsigned)fb->height};
-	info.clearValueCount = clear_values.num;
-	info.pClearValues = &clear_values[0];
+	VkRenderPassBeginInfo info = {
+		.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+		.renderPass = rp->render_pass,
+		.framebuffer = fb->frame_buffer,
+		.renderArea = {
+			.offset = {0, 0},
+			.extent = {(unsigned)fb->width, (unsigned)fb->height}},
+		.clearValueCount = (unsigned)clear_values.num,
+		.pClearValues = &clear_values[0]
+	};
 
 	vkCmdBeginRenderPass(buffer, &info, VK_SUBPASS_CONTENTS_INLINE);
 }
@@ -209,16 +218,19 @@ void CommandBuffer::clear(const rect& area, const Array<color> &col, base::optio
 		clear_attachments.add(ca);
 	}
 	if (z.has_value()) {
-		VkClearAttachment ca = {};
-		ca.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
-		ca.colorAttachment = current_framebuffer->attachments.num - 1;
-		ca.clearValue.depthStencil = {*z, 0};
+		VkClearAttachment ca = {
+			.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT,
+			.colorAttachment = (unsigned)(current_framebuffer->attachments.num - 1),
+			.clearValue = {
+				.depthStencil = {*z, 0}}
+		};
 		clear_attachments.add(ca);
 	}
-	VkClearRect clear_rect = {};
-	clear_rect.rect = rect_to_vk(area);
-	clear_rect.baseArrayLayer = 0;
-	clear_rect.layerCount = 1;
+	VkClearRect clear_rect = {
+		.rect = rect_to_vk(area),
+		.baseArrayLayer = 0,
+		.layerCount = 1
+	};
 
 	vkCmdClearAttachments(buffer,
 			clear_attachments.num, &clear_attachments[0],
@@ -265,20 +277,22 @@ void CommandBuffer::barrier(const Array<Texture*> &textures, int mode) {
 	Array<VkImageMemoryBarrier> barriers;
 	for (auto *t: textures) {
 		bool is_depth = t->image.is_depth_buffer();
-		VkImageSubresourceRange sr = {};
-		sr.aspectMask = t->image.aspect();
-		sr.baseArrayLayer = 0;
-		sr.baseMipLevel = 0;
-		sr.layerCount = 1;
-		sr.levelCount = 1;
-		VkImageMemoryBarrier b = {};
-		b.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		b.srcAccessMask = is_depth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		b.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-		b.oldLayout = is_depth ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		b.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		b.image = t->image.image;
-		b.subresourceRange = sr;
+		VkImageSubresourceRange sr = {
+			.aspectMask = t->image.aspect(),
+			.baseMipLevel = 0,
+			.levelCount = 1,
+			.baseArrayLayer = 0,
+			.layerCount = 1
+		};
+		VkImageMemoryBarrier b = {
+			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+			.srcAccessMask = is_depth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+			.dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+			.oldLayout = is_depth ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+			.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+			.image = t->image.image,
+			.subresourceRange = sr
+		};
 		barriers.add(b);
 	}
 
@@ -297,24 +311,26 @@ void CommandBuffer::barrier(const Array<Texture*> &textures, int mode) {
 
 
 void CommandBuffer::image_barrier(const Texture *t, AccessFlags src_access, AccessFlags dst_access, ImageLayout old_layout, ImageLayout new_layout) {
-	VkImageSubresourceRange sr = {};
-	sr.aspectMask = t->image.aspect();
-	sr.baseArrayLayer = 0;
-	sr.baseMipLevel = 0;
-	sr.layerCount = 1;
-	sr.levelCount = 1;
+	VkImageSubresourceRange range = {
+		.aspectMask = t->image.aspect(),
+		.baseMipLevel = 0,
+		.levelCount = 1,
+		.baseArrayLayer = 0,
+		.layerCount = 1
+	};
 
-	VkImageMemoryBarrier barrier;
-	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-	barrier.pNext = nullptr;
-	barrier.srcAccessMask = (VkAccessFlags)src_access;
-	barrier.dstAccessMask = (VkAccessFlags)dst_access;
-	barrier.oldLayout = (VkImageLayout)old_layout;
-	barrier.newLayout = (VkImageLayout)new_layout;
-	barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-	barrier.image = t->image.image;
-	barrier.subresourceRange = sr;
+	VkImageMemoryBarrier barrier{
+		.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+		.pNext = nullptr,
+		.srcAccessMask = (VkAccessFlags)src_access,
+		.dstAccessMask = (VkAccessFlags)dst_access,
+		.oldLayout = (VkImageLayout)old_layout,
+		.newLayout = (VkImageLayout)new_layout,
+		.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+		.image = t->image.image,
+		.subresourceRange = range
+	};
 
 	vkCmdPipelineBarrier(buffer,
 			VK_PIPELINE_STAGE_ALL_COMMANDS_BIT,
@@ -324,12 +340,13 @@ void CommandBuffer::image_barrier(const Texture *t, AccessFlags src_access, Acce
 }
 
 void CommandBuffer::copy_image(const Texture *source, const Texture *dest, const Array<int> &extend) {
-	VkImageCopy region;
-	region.srcSubresource = {(VkImageAspectFlags)source->image.aspect(), 0, 0, 1};
-	region.srcOffset = {extend[0], extend[1], 0};
-	region.dstSubresource = {(VkImageAspectFlags)dest->image.aspect(), 0, 0, 1};
-	region.dstOffset = {extend[4], extend[5], 0};
-	region.extent = {(unsigned)extend[2], (unsigned)extend[3], 1};
+	VkImageCopy region{
+		.srcSubresource = {(VkImageAspectFlags)source->image.aspect(), 0, 0, 1},
+		.srcOffset = {extend[0], extend[1], 0},
+		.dstSubresource = {(VkImageAspectFlags)dest->image.aspect(), 0, 0, 1},
+		.dstOffset = {extend[4], extend[5], 0},
+		.extent = {(unsigned)extend[2], (unsigned)extend[3], 1}
+	};
 	vkCmdCopyImage(buffer,
 			source->image.image,
 			VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
