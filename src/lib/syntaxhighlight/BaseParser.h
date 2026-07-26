@@ -64,6 +64,7 @@ public:
 
 
 	struct Label {
+		string category;
 		string name;
 		int line;
 		int level;

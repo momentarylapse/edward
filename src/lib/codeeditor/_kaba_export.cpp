@@ -30,6 +30,6 @@ void _export_package_codeeditor_internal(kaba::IExporter* e) {
 }
 
 void export_package_codeeditor(kaba::IExporter* e) {
-	e->package_info("codeeditor", "0.1");
+	e->package_info("codeeditor", "0.2");
 	_export_package_codeeditor_internal(e);
 }

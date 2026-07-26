@@ -13,6 +13,7 @@ void _export_package_syntaxhighlight_internal(kaba::IExporter* e) {
 	e->declare_class_element("Markup.type", &Markup::type);
 
 	e->declare_class_size("Parser.Label", sizeof(Parser::Label));
+	e->declare_class_element("Parser.Label.category", &Parser::Label::category);
 	e->declare_class_element("Parser.Label.name", &Parser::Label::name);
 	e->declare_class_element("Parser.Label.line", &Parser::Label::line);
 	e->declare_class_element("Parser.Label.level", &Parser::Label::level);
@@ -56,6 +57,6 @@ void _export_package_syntaxhighlight_internal(kaba::IExporter* e) {
 }
 
 void export_package_syntaxhighlight(kaba::IExporter* e) {
-	e->package_info("syntaxhighlight", "0.1");
+	e->package_info("syntaxhighlight", "0.2");
 	_export_package_syntaxhighlight_internal(e);
 }

@@ -149,7 +149,7 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 	Array<Label> labels;
 
 	auto ff = [] (const string& s) {
-		auto x = s.replace(" virtual ", " ").replace(" extern ", " ").replace(" mut ", " ").replace(" selfref ", " ").replace(" globalref ", " ").replace(" pure ", " ").replace(" override ", " ").replace(" static ", " ").replace(" as shared", "");
+		auto x = s.replace(" virtual ", " ").replace(" extern ", " ").replace(" mut ", " ").replace(" selfref ", " ").replace(" globalref ", " ").replace(" pure ", " ").replace(" override ", " ").replace(" static ", " ").replace(" as Sharable", "").replace(" as @noauto", "");
 		int p = x.find(" extends ");
 		if (p > 0)
 			return x.head(p);
@@ -170,8 +170,13 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 		if (l[2] == '\t')
 			level ++;
 		// meh :P
-		if (ll.head(5) == "class" or ll.head(6) == "struct" or ll.head(4) == "enum" or ll.head(5) == "trait" or ll.head(4) == "func") {
-			labels.add({ff(ll), line_no, level});
+		int p0 = ll.find(" ");
+		if (p0 < 0)
+			continue;
+		string cat = ll.head(p0);
+		if (cat == "class" or cat == "struct" or cat == "enum" or cat == "trait" or cat == "func" or cat == "macro") {
+			// sub(1)... we keep " " at the beginning for cleaner removal of " extern " etc
+			labels.add({cat, ff(ll.sub(p0)).sub(1), line_no, level});
 		}
 	}
 	return labels;

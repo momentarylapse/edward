@@ -141,7 +141,7 @@ Dialog coding-panel ''
 	event_x(id_structure, xhui::event_id::Select, [this] {
 		int n = get_int(id_structure);
 		if (n >= 0 and n < label_line_numbers.num)
-			edit->set_cursor_pos(edit->line_pos_to_index({label_line_numbers[n], 0}));
+			edit->set_cursor_pos(edit->line_pos_to_index({label_line_numbers[n], 0}), xhui::CursorMovingMode::ShowContext);
 		activate(id_edit);
 	});
 
@@ -178,7 +178,7 @@ void CodeEditor::update_structure() {
 		reset(id_structure);
 		label_line_numbers.clear();
 		for (const auto& l: p->find_labels(edit->text)) {
-			string title = l.name;
+			string title = l.category + " " + l.name;
 			title = title
 				.replace("class ", "<b><font color='red'>C</font></b>  ")
 				.replace("struct ", "<b><font color='red'>S</font></b>  ")
