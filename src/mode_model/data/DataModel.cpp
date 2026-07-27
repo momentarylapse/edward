@@ -49,9 +49,9 @@
 #include "../../action/model/animation/ActionModelAnimationDeleteFrame.h"
 #include "../../action/model/animation/ActionModelAnimationSetData.h"
 #include "../../action/model/animation/ActionModelAnimationSetFrameDuration.h"
-#include "../../action/model/animation/ActionModelAnimationSetBone.h"
-#include "../../action/model/skeleton/ActionModelAddBone.h"
-#include "../../action/model/skeleton/ActionModelAttachVerticesToBone.h"
+#include "../../action/model/animation/ActionModelAnimationSetBone.h"*/
+#include "../skeleton/action/ActionModelAddBone.h"
+/*#include "../../action/model/skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../action/model/skeleton/ActionModelDeleteBone.h"
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
 #include "../../action/model/skeleton/ActionModelReconnectBone.h"
@@ -467,10 +467,13 @@ void DataModel::reconnectBone(int index, int parent)
 
 void DataModel::setBoneModel(int index, const Path &filename)
 {	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model(filename)));	}
+#endif
 
-void DataModel::addBone(const vec3 &pos, int parent)
-{	execute(new ActionModelAddBone(pos, parent));	}
+void DataModel::add_bone(const vec3 &pos, int parent) {
+	execute(new ActionModelAddBone(pos, parent));
+}
 
+#if 0
 void DataModel::deleteBone(int index)
 {	execute(new ActionModelDeleteBone(index));	}
 

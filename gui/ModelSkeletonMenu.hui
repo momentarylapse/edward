@@ -49,7 +49,7 @@ Menu menu_skeleton "" disabled
 		Item skeleton_unlink "Unlink" image=hui:delete
 		Item delete "Delete" image=hui:delete
 		Separator
-		Item skeleton_new_point "New vertex" image=hui:new
+		Item add-bone "Add bone" image=hui:new
 		Item skeleton_link "Create link" image=hui:copy
 	Menu menu_model_view "View"
 		Menu menu_model_viewstage "Viewstage"

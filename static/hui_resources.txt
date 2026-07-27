@@ -8493,7 +8493,7 @@ Separator
 0
 0
 Item
-skeleton_new_point
+add-bone
 image=hui:new
 9
 0
@@ -15543,6 +15543,9 @@ New
 menu_nomode/world_open
 Open...
 
+menu_skeleton/add-bone
+Add bone
+
 menu_skeleton/administrate
 Administrate...
 
@@ -15692,9 +15695,6 @@ Import...
 
 menu_skeleton/skeleton_link
 Create link
-
-menu_skeleton/skeleton_new_point
-New vertex
 
 menu_skeleton/skeleton_no_model
 No model

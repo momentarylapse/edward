@@ -3,6 +3,7 @@
 //
 
 #include "ModeSkeleton.h"
+#include "ModeAddBone.h"
 #include "action/ActionModelMoveBones.h"
 #include "action/ActionModelDeleteBoneSelection.h"
 #include "../mesh/ModeMesh.h"
@@ -11,12 +12,14 @@
 #include <view/DrawingHelper.h>
 #include <view/multiview/MultiView.h>
 #include <view/multiview/MultiViewWindow.h>
+#include <view/multiview/ActionController.h>
 #include <view/EdwardWindow.h>
+#include <view/DocumentSession.h>
 #include <Session.h>
 #include <lib/base/iter.h>
-#include <lib/xhui/Resource.h>
 #include <lib/xhui/Theme.h>
 #include <lib/yrenderer/helper/LineHelper.h>
+#include <lib/xhui/Menu.h>
 
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
@@ -30,6 +33,44 @@ ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 
 ModeSkeleton::~ModeSkeleton() = default;
 
+
+class SkeletonOpButtons : public xhui::Panel {
+public:
+	explicit SkeletonOpButtons(MultiView* multi_view) : xhui::Panel("skeleton-op-buttons") {
+		from_source(R"foodelim(
+Dialog skeleton-op-buttons '' propagateevents
+	Grid ? '' spacing=20 vertical
+		Button mouse-action '' tooltip='Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
+		Button add-bone '+' tooltip='Add bone' height=50 width=50 padding=7 noexpandx ignorefocus
+)foodelim");
+
+		event("mouse-action", [this] {
+			auto m = new xhui::Menu;
+			m->add_item("mouse-action-move", "Move");
+			m->add_item("mouse-action-rotate", "Rotate");
+			m->add_item("mouse-action-scale", "Scale");
+			m->open_popup(this);
+		});
+		event("mouse-action-move", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::MOVE);
+			set_options("mouse-action", "image=rf-translate");
+			set_tooltip("mouse-action", "Left button action: move selection");
+		});
+		event("mouse-action-rotate", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::ROTATE);
+			set_options("mouse-action", "image=rf-rotate");
+			set_tooltip("mouse-action", "Left button action: rotate selection");
+		});
+		event("mouse-action-scale", [this, multi_view] {
+			auto ac = multi_view->action_controller.get();
+			ac->set_action_mode(MouseActionMode::SCALE);
+			set_options("mouse-action", "image=rf-scale");
+			set_tooltip("mouse-action", "Left button action: scale selection");
+		});
+	}
+};
 
 void ModeSkeleton::on_enter() {
 	parent->mode_mesh->set_presentation_mode(ModeMesh::PresentationMode::Polygons);
@@ -50,9 +91,17 @@ void ModeSkeleton::on_enter() {
 	multi_view->f_create_action = [this] {
 		return new ActionModelMoveBones(data, multi_view->selection);
 	};
+	set_overlay_panel(new SkeletonOpButtons(multi_view));
+}
+
+void ModeSkeleton::on_connect_events() {
+	doc->event("add-bone", [this] {
+		doc->set_mode(new ModeAddBone(this));
+	});
 }
 
 void ModeSkeleton::on_leave() {
+	set_overlay_panel(nullptr);
 }
 
 void ModeSkeleton::on_enter_rec() {

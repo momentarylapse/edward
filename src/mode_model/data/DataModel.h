@@ -208,6 +208,7 @@ public:
 	Array<ModelBone> bones;
 
 	// actions
+	void add_bone(const vec3 &pos, int parent);
 	/*void reconnectBone(int index, int parent);
 	void setBoneModel(int index, const Path &filename);
 	void addBone(const vec3 &pos, int parent);

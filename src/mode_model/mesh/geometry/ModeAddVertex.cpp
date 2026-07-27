@@ -45,7 +45,6 @@ void ModeAddVertex::on_left_button_down(const vec2& m) {
 		return;
 	const vec3 p = multi_view->cursor_pos_3d(m);
 	mode_mesh->data->add_vertex(p, {0,0,0,0}, {0,0,0,0}, NORMAL_MODE_HARD);
-	session->win->request_redraw();
 }
 
 

@@ -519,9 +519,11 @@ add_executable(edward
 	src/mode_model/mesh/uv/action/ActionModelUVMoveSelection.cpp
 	src/mode_model/mesh/uv/ModeMeshUV.cpp
 	src/mode_model/mesh/ModeMesh.cpp
+	src/mode_model/skeleton/action/ActionModelAddBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
 	src/mode_model/skeleton/action/ActionModelMoveBones.cpp
+	src/mode_model/skeleton/ModeAddBone.cpp
 	src/mode_model/skeleton/ModeSkeleton.cpp
 	src/mode_model/ModeModel.cpp
 	src/mode_project/data/AdminFile.cpp

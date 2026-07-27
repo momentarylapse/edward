@@ -25,6 +25,7 @@ public:
 
 	void on_enter_rec() override;
 	void on_leave_rec() override;
+	void on_connect_events() override;
 	void on_enter() override;
 	void on_leave() override;
 	void on_update_menu() override;
