@@ -21,6 +21,9 @@
 #include <lib/yrenderer/helper/LineHelper.h>
 #include <lib/xhui/Menu.h>
 
+#include "lib/os/msg.h"
+#include "storage/Storage.h"
+
 
 ModeSkeleton::ModeSkeleton(ModeModel* _parent) : SubMode(_parent) {
 	parent = _parent;
@@ -42,6 +45,7 @@ Dialog skeleton-op-buttons '' propagateevents
 	Grid ? '' spacing=20 vertical
 		Button mouse-action '' tooltip='Left button action: move selection' image=rf-translate height=50 width=50 padding=7 noexpandx ignorefocus
 		Button add-bone '+' tooltip='Add bone' height=50 width=50 padding=7 noexpandx ignorefocus
+		Button attach-model 'M' tooltip='Attach model' height=50 width=50 padding=7 noexpandx ignorefocus
 )foodelim");
 
 		event("mouse-action", [this] {
@@ -97,6 +101,26 @@ void ModeSkeleton::on_enter() {
 void ModeSkeleton::on_connect_events() {
 	doc->event("add-bone", [this] {
 		doc->set_mode(new ModeAddBone(this));
+	});
+	doc->event("attach-model", [this] {
+		const auto sel = multi_view->selection;
+		if (sel[MultiViewType::SKELETON_BONE].num == 0) {
+			session->error("no bones selected");
+			return;
+		}
+		session->storage->file_dialog(FD_MODEL, false, true).then([this, sel] (const ComplexPath& p) {
+			for (int i: sel[MultiViewType::SKELETON_BONE])
+				data->bone_attach_model(i, p.relative);
+		});
+	});
+	doc->event("no-model", [this] {
+		const auto sel = multi_view->selection;
+		if (sel[MultiViewType::SKELETON_BONE].num == 0) {
+			session->error("no bones selected");
+			return;
+		}
+		for (int i: sel[MultiViewType::SKELETON_BONE])
+			data->bone_attach_model(i, "");
 	});
 }
 
@@ -161,7 +185,14 @@ void ModeSkeleton::on_draw_win(const yrenderer::RenderParams& params, MultiViewW
 	parent->mode_mesh->draw_mesh(params, win, false);
 
 	auto lh = session->line_helper;
+	auto& rvd = win->rvd();
+	auto dh = win->multi_view->session->drawing_helper;
 	const auto& sel = multi_view->selection[MultiViewType::SKELETON_BONE];
+
+	for (const auto& b: data->bones)
+		if (b.model) {
+			dh->draw_mesh(params, rvd, mat4::translation(b.pos), b.model->mesh[0]->sub[0].vertex_buffer, b.model->materials[0]);
+		}
 
 	auto draw_bone = [win, lh] (const vec3& parent, const vec3& child, bool selected) {
 		Array<vec3> points;

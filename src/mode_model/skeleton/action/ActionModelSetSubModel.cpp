@@ -6,8 +6,8 @@
  */
 
 #include "ActionModelSetSubModel.h"
-#include "../../../data/model/DataModel.h"
-#include <assert.h>
+#include "../../data/DataModel.h"
+#include <cassert>
 
 ActionModelSetSubModel::ActionModelSetSubModel(int _index, const Path &_filename, Model *m) {
 	index = _index;
@@ -20,12 +20,12 @@ ActionModelSetSubModel::~ActionModelSetSubModel() {
 		delete model;
 }
 
-void* ActionModelSetSubModel::execute(Data* d) {
+void* ActionModelSetSubModel::execute(history::Data* d) {
 	DataModel *m = dynamic_cast<DataModel*>(d);
 	assert(index >= 0);
-	assert(index < m->bone.num);
+	assert(index < m->bones.num);
 
-	ModelBone &b = m->bone[index];
+	ModelBone &b = m->bones[index];
 
 	std::swap(b.model, model);
 	std::swap(b.model_file, filename);
@@ -33,6 +33,6 @@ void* ActionModelSetSubModel::execute(Data* d) {
 	return b.model;
 }
 
-void ActionModelSetSubModel::undo(Data* d) {
+void ActionModelSetSubModel::undo(history::Data* d) {
 	execute(d);
 }

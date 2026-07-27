@@ -43,8 +43,8 @@ Menu menu_skeleton "" disabled
 		Item skeleton_import "Import..." image=hui:open
 		Separator
 		Item skeleton_selection_sign "Selection" disabled
-		Item skeleton_add_model "Add model" image=hui:open
-		Item skeleton_no_model "No model" image=hui:delete
+		Item attach-model "Attach model..." image=hui:open
+		Item no-model "No model" image=hui:delete
 		Item skeleton_edit_bone "Vertices of bone" image=hui:edit
 		Item skeleton_unlink "Unlink" image=hui:delete
 		Item delete "Delete" image=hui:delete

@@ -8457,13 +8457,13 @@ disabled
 0
 0
 Item
-skeleton_add_model
+attach-model
 image=hui:open
 3
 0
 0
 Item
-skeleton_no_model
+no-model
 image=hui:delete
 4
 0
@@ -15549,6 +15549,9 @@ Add bone
 menu_skeleton/administrate
 Administrate...
 
+menu_skeleton/attach-model
+Attach model...
+
 menu_skeleton/delete
 Delete
 
@@ -15657,6 +15660,9 @@ Open...
 menu_skeleton/new
 New
 
+menu_skeleton/no-model
+No model
+
 menu_skeleton/open
 Open...
 
@@ -15684,9 +15690,6 @@ Report a bug
 menu_skeleton/settings
 Settings...
 
-menu_skeleton/skeleton_add_model
-Add model
-
 menu_skeleton/skeleton_edit_bone
 Vertices of bone
 
@@ -15695,9 +15698,6 @@ Import...
 
 menu_skeleton/skeleton_link
 Create link
-
-menu_skeleton/skeleton_no_model
-No model
 
 menu_skeleton/skeleton_selection_sign
 Selection

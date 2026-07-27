@@ -51,11 +51,11 @@
 #include "../../action/model/animation/ActionModelAnimationSetFrameDuration.h"
 #include "../../action/model/animation/ActionModelAnimationSetBone.h"*/
 #include "../skeleton/action/ActionModelAddBone.h"
+#include "../skeleton/action/ActionModelSetSubModel.h"
 /*#include "../../action/model/skeleton/ActionModelAttachVerticesToBone.h"
 #include "../../action/model/skeleton/ActionModelDeleteBone.h"
 #include "../../action/model/skeleton/ActionModelDeleteBoneSelection.h"
-#include "../../action/model/skeleton/ActionModelReconnectBone.h"
-#include "../../action/model/skeleton/ActionModelSetSubModel.h"*/
+#include "../../action/model/skeleton/ActionModelReconnectBone.h"*/
 #include "../mesh/geometry/action/ActionModelDeleteSelection.h"
 #include "../mesh/geometry/action/ActionModelPasteMesh.h"
 #include "../mesh/geometry/action/ActionModelEditMesh.h"
@@ -464,13 +464,14 @@ mat3 DataModel::generateInertiaTensor(float mass)
 #if 0
 void DataModel::reconnectBone(int index, int parent)
 {	execute(new ActionModelReconnectBone(index, parent));	}
-
-void DataModel::setBoneModel(int index, const Path &filename)
-{	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model(filename)));	}
 #endif
 
 void DataModel::add_bone(const vec3 &pos, int parent) {
 	execute(new ActionModelAddBone(pos, parent));
+}
+
+void DataModel::bone_attach_model(int index, const Path& filename) {
+	execute(new ActionModelSetSubModel(index, filename, session->resource_manager->load_model(filename)));
 }
 
 #if 0

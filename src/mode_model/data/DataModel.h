@@ -209,9 +209,8 @@ public:
 
 	// actions
 	void add_bone(const vec3 &pos, int parent);
+	void bone_attach_model(int index, const Path& filename);
 	/*void reconnectBone(int index, int parent);
-	void setBoneModel(int index, const Path &filename);
-	void addBone(const vec3 &pos, int parent);
 	void deleteBone(int index);
 	void deleteSelectedBones();
 	void boneAttachVertices(const Array<int> &vertices, const Array<ivec4> &bone, const Array<vec4> &weight);*/

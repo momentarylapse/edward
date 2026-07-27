@@ -523,6 +523,7 @@ add_executable(edward
 	src/mode_model/skeleton/action/ActionModelDeleteBone.cpp
 	src/mode_model/skeleton/action/ActionModelDeleteBoneSelection.cpp
 	src/mode_model/skeleton/action/ActionModelMoveBones.cpp
+	src/mode_model/skeleton/action/ActionModelSetSubModel.cpp
 	src/mode_model/skeleton/ModeAddBone.cpp
 	src/mode_model/skeleton/ModeSkeleton.cpp
 	src/mode_model/ModeModel.cpp
