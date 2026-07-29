@@ -3,15 +3,12 @@
 //
 
 #include "MenuPopup.h"
-
-#include <lib/base/set.h>
-
 #include "../controls/Button.h"
 #include "../controls/Grid.h"
 #include "../Menu.h"
 #include "../xhui.h"
 #include "../Theme.h"
-#include "../../base/iter.h"
+#include <lib/base/iter.h>
 
 namespace xhui {
 
@@ -31,8 +28,9 @@ MenuPopup::MenuPopup(const shared<Menu>& m, Panel* _parent, const rect& anchor, 
 	owner = parent; // can only call get_content_min_size() with an owner...
 	set_sub_menu(menu.get());
 	if (auto w = get_window()) {
-		pos.y = max(min(pos.y, w->area.y2 - min_height_user), w->area.y1);
-		pos.x = max(min(pos.x, w->area.x2 - min_width_user), w->area.x1);
+		const auto size = effective_min_size();
+		pos.x = max(min(pos.x, w->area.x2 - size.x), w->area.x1);
+		pos.y = max(min(pos.y, w->area.y2 - size.y), w->area.y1);
 	}
 	owner = nullptr;
 }
