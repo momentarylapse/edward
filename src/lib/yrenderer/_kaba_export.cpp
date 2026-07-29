@@ -339,6 +339,10 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 
 	{
 		ext->declare_class_size("RenderParams", sizeof(RenderParams));
+		ext->declare_class_element("RenderParams.desired_aspect_ratio", &RenderParams::desired_aspect_ratio);
+		ext->declare_class_element("RenderParams.target_is_window", &RenderParams::target_is_window);
+		ext->declare_class_element("RenderParams.frame_buffer", &RenderParams::frame_buffer);
+		ext->declare_class_element("RenderParams.area", &RenderParams::area);
 		ext->link_class_func("RenderParams.__assign__", &kaba::generic_assign<RenderParams>);
 	}
 
@@ -474,6 +478,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	{
 		ext->declare_class_size("RenderData", sizeof(RenderData));
 		ext->link_class_func("RenderData.draw_triangles", &RenderData::draw_triangles);
+		ext->link_class_func("RenderData.draw_instanced", &RenderData::draw_instanced);
+		ext->link_class_func("RenderData.draw", &RenderData::draw);
 	}
 
 	{
@@ -575,7 +581,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.15");
+	ext->package_info("yrenderer", "0.16");
 	_export_package_yrenderer_internal(ext);
 }
 

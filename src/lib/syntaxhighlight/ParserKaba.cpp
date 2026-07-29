@@ -174,7 +174,7 @@ Array<Parser::Label> ParserKaba::find_labels(const string& text) {
 		if (p0 < 0)
 			continue;
 		string cat = ll.head(p0);
-		if (cat == "class" or cat == "struct" or cat == "enum" or cat == "trait" or cat == "func" or cat == "macro") {
+		if (cat == "class" or cat == "struct" or cat == "namespace" or cat == "enum" or cat == "trait" or cat == "func" or cat == "macro") {
 			// sub(1)... we keep " " at the beginning for cleaner removal of " extern " etc
 			labels.add({cat, ff(ll.sub(p0)).sub(1), line_no, level});
 		}
