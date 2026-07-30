@@ -64,6 +64,7 @@ void SceneRenderer::draw(const RenderParams& params) {
 	bool flip_y = params.target_is_window;
 	nix::set_front(flip_y ? nix::Orientation::CW : nix::Orientation::CCW);
 	//cur_rvd.set_wire(wireframe);
+	nix::set_z(true, true);
 #endif
 
 	for (auto e: weak(emitters))

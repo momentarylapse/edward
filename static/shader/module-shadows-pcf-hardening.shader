@@ -74,19 +74,16 @@ vec3 _light_proj(Light l, vec3 p) {
 	proj.xyz /= proj.w;
 	proj.x = (proj.x +1)/2;
 	proj.y = (proj.y +1)/2;
-#ifdef vulkan
 	proj.y = 1 - proj.y;
-#endif
-	//proj.z = (proj.z +1)/2;
 	return proj.xyz;
 }
 
 float _shadow_factor(Light l, vec3 p) {
 	vec3 proj = _light_proj(l, p);
-	
+
 	if (proj.x > 0.01 && proj.x < 0.99 && proj.y > 0.01 && proj.y < 0.99 && proj.z < 1.0)
 		return 1.0 - _shadow_pcf(proj) * l.harshness;
-	
+
 	return 1.0;
 }
 

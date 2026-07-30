@@ -113,6 +113,10 @@ void RenderData::set_material_x(const SceneView& scene_view, const Material* mat
 	nix::bind_textures(weak(material->textures));
 	if (scene_view.cube_map)
 		nix::bind_texture(BINDING_CUBE, scene_view.cube_map.get());
+	if (scene_view.shadow_maps.num >= 1)
+		nix::bind_texture(BINDING_SHADOW0, scene_view.shadow_maps[0]);
+	if (scene_view.shadow_maps.num >= 2)
+		nix::bind_texture(BINDING_SHADOW1, scene_view.shadow_maps[1]);
 
 	shader->set_color_l(shader->location[Shader::LOCATION_MATERIAL_ALBEDO], material->albedo);
 	shader->set_float_l(shader->location[Shader::LOCATION_MATERIAL_ROUGHNESS], material->roughness);
