@@ -1,12 +1,16 @@
 #include "CodeEditor.h"
-#include <lib/syntaxhighlight/Theme.h>
 #include <lib/base/iter.h>
 #include <lib/syntaxhighlight/BaseParser.h>
+#include <lib/syntaxhighlight/AutoComplete.h>
+#include <lib/syntaxhighlight/Theme.h>
 #include <lib/os/file.h>
 #include <lib/xhui/Window.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/controls/MultilineEdit.h>
 #include <lib/xhui/controls/ListView.h>
+
+#include "lib/xhui/Menu.h"
+
 
 namespace codeedit {
 
@@ -64,25 +68,23 @@ Dialog coding-panel ''
 	});
 	event_x(id_edit, xhui::event_id::LeftButtonUp, [this] {
 		if (get_window()->is_key_pressed(xhui::KEY_CONTROL)) {
-			if (auto p = GetParser(filename)) {
-				p->prepare_symbols(edit->text, filename);
-				int p0 = edit->find_word_start(edit->cursor_pos);
-				int p1 = edit->find_word_end(edit->cursor_pos);
-				if (auto o = p->symbol_info(edit->text, p0, p1 - p0)) {
-					if (o->filename == filename) {
-						out_info(o->description);
-						edit->set_cursor_pos(o->position);
-					} else if (o->filename) {
-						out_info(o->description);
-						out_request_open_file({o->filename, o->position});
-					} else {
-						out_info("internal:  " + o->description);
-					}
+			parser->prepare_symbols(edit->text, filename);
+			int p0 = edit->find_word_start(edit->cursor_pos);
+			int p1 = edit->find_word_end(edit->cursor_pos);
+			if (auto o = parser->symbol_info(edit->text, p0, p1 - p0)) {
+				if (o->filename == filename) {
+					out_info(o->description);
+					edit->set_cursor_pos(o->position, xhui::CursorMovingMode::ShowContext);
+				} else if (o->filename) {
+					out_info(o->description);
+					out_request_open_file({o->filename, o->position});
 				} else {
-					out_error("unknown symbol");
+					out_info("internal:  " + o->description);
 				}
-
+			} else {
+				out_error("unknown symbol");
 			}
+
 		}
 	});
 #ifdef OS_MAC
@@ -98,6 +100,8 @@ Dialog coding-panel ''
 				search_start_replace();
 			} else if (w->state.key_code == xhui::KEY_B + mod) {
 				show_errors();
+			} else if (w->state.key_code == xhui::KEY_SPACE + mod) {
+				auto_suggest();
 			}
 		}
 	});
@@ -144,6 +148,10 @@ Dialog coding-panel ''
 			edit->set_cursor_pos(edit->line_pos_to_index({label_line_numbers[n], 0}), xhui::CursorMovingMode::ShowContext);
 		activate(id_edit);
 	});
+	for (int i=0; i<100; i++)
+		event(format("insert-suggestion-%d", i), [this, i] {
+			edit->auto_insert(auto_suggestions[i].sub(auto_suggestions_offset));
+		});
 
 	xhui::run_later(0.1f, [this] {
 		activate(id_edit);
@@ -152,45 +160,39 @@ Dialog coding-panel ''
 }
 
 void CodeEditor::update_highlight_current_line() {
-	if (auto p = GetParser(filename)) {
-		auto lp = edit->index_to_line_pos(edit->cursor_pos);
-		int i0 = line_start(lp.line);
-		int i1 = line_end(lp.line);
+	auto lp = edit->index_to_line_pos(edit->cursor_pos);
+	int i0 = line_start(lp.line);
+	int i1 = line_end(lp.line);
 
-		clear_markings(i0, i1);
-		p->prepare_symbols(edit->text, filename);
-		for (const auto& m: p->create_markup(edit->text.sub_ref(i0, i1), i0))
-			mark_word(m.start, m.end, m.type);
-	}
+	clear_markings(i0, i1);
+	parser->prepare_symbols(edit->text, filename);
+	for (const auto& m: parser->create_markup(edit->text.sub_ref(i0, i1), i0))
+		mark_word(m.start, m.end, m.type);
 }
 
 void CodeEditor::update_highlight_all() {
-	if (auto p = GetParser(filename)) {
-		clear_markings(0, edit->text.num);
-		p->prepare_symbols(edit->text, filename);
-		for (const auto& m: p->create_markup(edit->text, 0))
-			mark_word(m.start, m.end, m.type);
-	}
+	clear_markings(0, edit->text.num);
+	parser->prepare_symbols(edit->text, filename);
+	for (const auto& m: parser->create_markup(edit->text, 0))
+		mark_word(m.start, m.end, m.type);
 }
 
 void CodeEditor::update_structure() {
-	if (auto p = GetParser(filename)) {
-		reset(id_structure);
-		label_line_numbers.clear();
-		for (const auto& l: p->find_labels(edit->text)) {
-			string title = l.category + " " + l.name;
-			title = title
-				.replace("class ", "<b><font color='red'>C</font></b>  ")
-				.replace("struct ", "<b><font color='red'>S</font></b>  ")
-				.replace("trait ", "<b><font color='red'>T</font></b>  ")
-				.replace("enum ", "<b><font color='red'>E</font></b>  ")
-				.replace("func ", "<font color='green'><b>F</b></font>  ");
-			int p0 = title.find("(");
-			if (p0 >= 0)
-				title = title.sub(0, p0) + " <span alpha='50%'>" + title.sub(p0) + "</span>";
-			add_string(id_structure, string("        ").repeat(l.level) + title);
-			label_line_numbers.add(l.line);
-		}
+	reset(id_structure);
+	label_line_numbers.clear();
+	for (const auto& l: parser->find_labels(edit->text)) {
+		string title = l.category + " " + l.name;
+		title = title
+			.replace("class ", "<b><font color='red'>C</font></b>  ")
+			.replace("struct ", "<b><font color='red'>S</font></b>  ")
+			.replace("trait ", "<b><font color='red'>T</font></b>  ")
+			.replace("enum ", "<b><font color='red'>E</font></b>  ")
+			.replace("func ", "<font color='green'><b>F</b></font>  ");
+		int p0 = title.find("(");
+		if (p0 >= 0)
+			title = title.sub(0, p0) + " <span alpha='50%'>" + title.sub(p0) + "</span>";
+		add_string(id_structure, string("        ").repeat(l.level) + title);
+		label_line_numbers.add(l.line);
 	}
 }
 
@@ -198,6 +200,7 @@ void CodeEditor::update_structure() {
 void CodeEditor::load(const Path& _filename) {
 	filename = _filename;
 	edit->set_string(os::fs::read_text(filename));
+	parser = syntaxhighlight::create_parser(filename);
 	update_highlight_all();
 	update_structure();
 
@@ -261,7 +264,7 @@ CodeEditor::Index CodeEditor::line_end(int line_no) const {
 	return edit->cache.line_first_index[line_no] + edit->cache.line_num_characters[line_no];
 }
 
-void CodeEditor::mark_word(Index i0, Index i1, MarkupType type) {
+void CodeEditor::mark_word(Index i0, Index i1, syntaxhighlight::MarkupType type) {
 	const auto& c = syntaxhighlight::default_theme->context[(int)type];
 	edit->add_markup({i0, i1, c.bold ? xhui::FontFlags::Bold : xhui::FontFlags::None, c.fg});
 }
@@ -329,18 +332,33 @@ void CodeEditor::search_replace_next() {
 }
 
 void CodeEditor::show_errors() {
-	if (auto p = GetParser(filename)) {
-		auto errors = p->find_errors(edit->text);
-		if (errors.num > 0) {
-			auto& e = errors[0];
-			if (e.filename == filename)
-				edit->set_cursor_pos(e.position);
-			else
-				out_request_open_file({e.filename, e.position});
-			out_error(e.message);
-		} else {
-			out_info("no error");
+	auto errors = parser->find_errors(edit->text);
+	if (errors.num > 0) {
+		auto& e = errors[0];
+		if (e.filename == filename)
+			edit->set_cursor_pos(e.position);
+		else
+			out_request_open_file({e.filename, e.position});
+		out_error(e.message);
+	} else {
+		out_info("no error");
+	}
+}
+
+void CodeEditor::auto_suggest() {
+	auto x = parser->run_autocomplete(edit->text, filename, edit->cursor_pos);
+	if (x.suggestions.num == 0) {
+		out_error("no suggestions");
+	} else if (x.suggestions.num == 1) {
+		edit->auto_insert(x.suggestions[0].name.sub(x.offset));
+	} else {
+		auto m = new xhui::Menu;
+		for (const auto& [i, s]: enumerate(x.suggestions)) {
+			m->add_item(format("insert-suggestion-%d", i), s.name);
+			auto_suggestions.add(s.name);
 		}
+		auto_suggestions_offset = x.offset;
+		m->open_popup(this);
 	}
 }
 

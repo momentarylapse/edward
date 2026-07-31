@@ -10,6 +10,8 @@
 
 #include "BaseParser.h"
 
+namespace syntaxhighlight {
+
 class ParserShader : public Parser {
 public:
 	ParserShader();
@@ -17,5 +19,7 @@ public:
 	//Array<Label> FindLabels(SourceView *sv) override;
 	Array<Markup> create_markup(const string &text, int offset) override;
 };
+
+}
 
 #endif /* PARSERSHADER_H_ */

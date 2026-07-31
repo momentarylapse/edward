@@ -7,6 +7,8 @@
 
 #include "ParserPython.h"
 
+namespace syntaxhighlight {
+
 ParserPython::ParserPython() : Parser("Python") {
 	line_comment_begin = "#";
 	string_sub_begin = "{";
@@ -74,5 +76,7 @@ ParserPython::ParserPython() : Parser("Python") {
 
 Array<Markup> ParserPython::create_markup(const string &text, int offset) {
 	return create_markup_default(text, offset);
+}
+
 }
 

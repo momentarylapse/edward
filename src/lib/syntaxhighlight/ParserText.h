@@ -10,9 +10,13 @@
 
 #include "BaseParser.h"
 
+namespace syntaxhighlight {
+
 class ParserText: public Parser {
 public:
 	ParserText();
 };
+
+}
 
 #endif /* PARSERTEXT_H_ */

@@ -7,6 +7,8 @@
 
 #include "ParserC.h"
 
+namespace syntaxhighlight {
+
 ParserC::ParserC() : Parser("C/C++") {
 	macro_begin = "#";
 	line_comment_begin = "//";
@@ -56,4 +58,6 @@ ParserC::ParserC() : Parser("C/C++") {
 
 Array<Markup> ParserC::create_markup(const string &text, int offset) {
 	return create_markup_default(text, offset);
+}
+
 }

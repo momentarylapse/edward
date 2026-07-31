@@ -10,11 +10,15 @@
 
 #include "BaseParser.h"
 
+namespace syntaxhighlight {
+
 class ParserHui : public Parser {
 public:
 	ParserHui();
 
 	Array<Markup> create_markup(const string &text, int offset) override;
 };
+
+}
 
 #endif /* PARSERHUI_H_ */

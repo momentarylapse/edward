@@ -19,22 +19,23 @@
 
 #include "lib/os/msg.h"
 
+namespace syntaxhighlight {
 
 #define MAX_HIGHLIGHTING_SIZE	100000
 
 struct ParserAssociation {
-	Parser *parser = nullptr;
-	string extension;
+	Array<string> extensions;
 	string base_name;
+	std::function<Parser*()> f_create;
 	ParserAssociation() = default;
-	ParserAssociation(Parser *p, const string &ext, const string& _base_name = "") {
-		parser = p;
-		extension = ext;
+	ParserAssociation(const std::function<Parser*()>& f, const Array<string> &ext, const string& _base_name = "") {
+		f_create = f;
+		extensions = ext;
 		base_name = _base_name;
 	}
 	bool is_applicable(const Path& filename) const {
-		if (extension.num > 0)
-			return filename.extension() == extension;
+		if (extensions.num > 0)
+			return sa_contains(extensions, filename.extension());
 		if (base_name.num > 0)
 			return filename.basename() == base_name;
 		return false;
@@ -251,7 +252,7 @@ Array<Markup> Parser::create_markup_default(const string &text, int offset) {
 }
 
 
-autocomplete::Data Parser::run_autocomplete(const string &code, const Path &filename, int line, int pos) {
+AutoCompleteData Parser::run_autocomplete(const string &code, const Path &filename, int offset) {
 	return {};
 }
 base::optional<Parser::SymbolInfo> Parser::symbol_info(const string& text, int offset, int length) {
@@ -261,27 +262,23 @@ base::optional<Parser::SymbolInfo> Parser::symbol_info(const string& text, int o
 
 
 
-void InitParser() {
-	ParserAssociations.add(ParserAssociation(new ParserText, "*"));
-	ParserAssociations.add(ParserAssociation(new ParserKaba, "kaba"));
-	ParserAssociations.add(ParserAssociation(new ParserC, "c"));
-	ParserAssociations.add(ParserAssociation(new ParserC, "cpp"));
-	ParserAssociations.add(ParserAssociation(new ParserC, "h"));
-	ParserAssociations.add(ParserAssociation(new ParserC, "hpp"));
-	ParserAssociations.add(ParserAssociation(new ParserCmake, "", "CMakeLists.txt"));
-	ParserAssociations.add(ParserAssociation(new ParserCmake, "cmake"));
-	ParserAssociations.add(ParserAssociation(new ParserShader, "glsl"));
-	ParserAssociations.add(ParserAssociation(new ParserShader, "shader"));
-	ParserAssociations.add(ParserAssociation(new ParserPython, "py"));
-	ParserAssociations.add(ParserAssociation(new ParserHui, "hui"));
-	ParserAssociations.add(ParserAssociation(new ParserIni, "ini"));
-	ParserAssociations.add(ParserAssociation(new ParserIni, "conf"));
-	ParserAssociations.add(ParserAssociation(new ParserIni, "material"));
+void init_parser() {
+	ParserAssociations.add(ParserAssociation([] { return new ParserText; }, {"*"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserKaba; }, {"kaba"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserC; }, {"c", "cpp", "h", "hpp"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserCmake; }, {}, "CMakeLists.txt"));
+	ParserAssociations.add(ParserAssociation([] { return new ParserCmake; }, {"cmake"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserShader; }, {"glsl", "shader"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserPython; }, {"py"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserHui; }, {"hui"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserIni; }, {"ini", "conf", "material"}));
 }
 
-Parser *GetParser(const Path &filename) {
+xfer<Parser> create_parser(const Path& filename) {
 	for (auto &a: ParserAssociations)
 		if (a.is_applicable(filename))
-			return a.parser;
-	return ParserAssociations[0].parser;
+			return a.f_create();
+	return new ParserText();
+}
+
 }

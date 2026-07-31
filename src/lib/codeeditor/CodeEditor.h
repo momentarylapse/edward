@@ -5,11 +5,14 @@
 #include <lib/xhui/controls/MultilineEdit.h>
 #include <lib/xhui/Panel.h>
 
+
 namespace xhui {
 class MultilineEdit;
 }
-
-enum class MarkupType;
+namespace syntaxhighlight {
+	class Parser;
+	enum class MarkupType;
+}
 
 namespace codeedit {
 
@@ -46,7 +49,7 @@ public:
 	void set_cursor_pos(int pos);
 
 //	void mark_word(int line_no, int pos0, int num_uchars, int type, char* p0, char* p1);
-	void mark_word(Index i0, Index i1, MarkupType type);
+	void mark_word(Index i0, Index i1, syntaxhighlight::MarkupType type);
 	void clear_markings(Index i0, Index i1);
 
 	void update_highlight_current_line();
@@ -55,6 +58,7 @@ public:
 	void update_structure();
 
 	void show_errors();
+	void auto_suggest();
 
 	void search_start();
 	void search_start_replace();
@@ -67,6 +71,9 @@ public:
 	Path filename;
 	xhui::MultilineEdit* edit = nullptr;
 	string id_edit, id_structure;
+	owned<syntaxhighlight::Parser> parser;
+	Array<string> auto_suggestions;
+	int auto_suggestions_offset = 0;
 
 	Array<int> label_line_numbers;
 };

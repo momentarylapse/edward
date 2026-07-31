@@ -14,6 +14,8 @@
 #include "../kaba/kaba.h"
 #endif
 
+namespace syntaxhighlight {
+
 class ParserKaba : public Parser {
 public:
 	ParserKaba();
@@ -25,7 +27,7 @@ public:
 	void clear_symbols();
 	void prepare_symbols(const string &text, const Path& filename) override;
 
-	autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos) override;
+	AutoCompleteData run_autocomplete(const string &code, const Path &filename, int offset) override;
 	base::optional<SymbolInfo> symbol_info(const string& text, int offset, int length) override;
 
 	string current_code;
@@ -33,4 +35,6 @@ public:
 	shared<kaba::Module> module;
 	Array<Error> errors;
 };
+
+}
 

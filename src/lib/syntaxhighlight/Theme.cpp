@@ -82,6 +82,7 @@ namespace syntaxhighlight {
 		schema->context[(int)MarkupType::WORD] = Context{White, Black, false, false, false};
 		schema->context[(int)MarkupType::TYPE] = Context{color(1, 0.4f, 0.4f, 1), Black, false, true, false};
 		schema->context[(int)MarkupType::GLOBAL_VARIABLE] = Context{color(1, 1, 0.7f, 0.0f), Black, false, false, false};
+		schema->context[(int)MarkupType::LOCAL_VARIABLE] = Context{color(1, 0.6f, 0.6f, 1.0f), Black, false, false, false};
 		schema->context[(int)MarkupType::COMPILER_FUNCTION] = Context{color(1, 0.4f, 0.4f, 1), Black, false, false, false};
 		schema->context[(int)MarkupType::OPERATOR_FUNCTION] = Context{color(1, 0.4f, 0.7f, 0.6f), Black, false, false, false};
 		schema->context[(int)MarkupType::SPECIAL] = Context{color(1, 0.625f, 0, 0.625f), Black, false, true, false};
@@ -94,7 +95,7 @@ namespace syntaxhighlight {
 		default_theme = schema;
 		HighlightSchemas.add(schema);
 
-		InitParser();
+		init_parser();
 	}
 
 	Theme* get_theme(const string &name) {

@@ -7,6 +7,8 @@
 
 #include "ParserCmake.h"
 
+namespace syntaxhighlight {
+
 ParserCmake::ParserCmake() : Parser("Python") {
 	line_comment_begin = "#";
 	string_sub_begin = "${";
@@ -117,5 +119,7 @@ ParserCmake::ParserCmake() : Parser("Python") {
 
 Array<Markup> ParserCmake::create_markup(const string &text, int offset) {
 	return create_markup_default(text, offset);
+}
+
 }
 

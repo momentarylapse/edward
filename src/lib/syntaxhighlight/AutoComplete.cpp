@@ -7,15 +7,15 @@
 
 #include "AutoComplete.h"
 
-namespace autocomplete {
-void Data::add(const string &name, const string &context) {
+namespace syntaxhighlight {
+void AutoCompleteData::add(const string &name, const string &context) {
 	Item i;
 	i.name = name;
 	i.context = context;
 	suggestions.add(i);
 }
 
-void Data::append(const Data &d) {
+void AutoCompleteData::append(const AutoCompleteData &d) {
 	for (auto &s: d.suggestions)
 		suggestions.add(s);
 }

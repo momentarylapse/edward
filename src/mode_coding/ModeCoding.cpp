@@ -45,7 +45,7 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 		session->universal_edit(FD_SCRIPT, l.filename, false);
 		xhui::run_later(0.1f, [l, this] {
 			auto e =reinterpret_cast<ModeCoding*>(session->cur_doc->cur_mode)->editor->edit;
-			e->set_cursor_pos(l.offset);
+			e->set_cursor_pos(l.offset, xhui::CursorMovingMode::ShowContext);
 		});
 	});
 }

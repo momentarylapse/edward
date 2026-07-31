@@ -10,6 +10,8 @@
 
 #include "BaseParser.h"
 
+namespace syntaxhighlight {
+
 class ParserIni : public Parser {
 public:
 	ParserIni();
@@ -20,5 +22,7 @@ public:
 	Array<Markup> create_markup_header(const string& line, int offset);
 	Array<Markup> create_markup_key_value(const string& line, int offset);
 };
+
+}
 
 #endif /* SRC_PARSER_PARSERINI_H_ */

@@ -7,6 +7,8 @@
 
 #include "ParserIni.h"
 
+namespace syntaxhighlight {
+
 ParserIni::ParserIni() : Parser("Ini") {
 	macro_begin = "???";
 	line_comment_begin = "#";
@@ -83,5 +85,7 @@ Array<Markup> ParserIni::create_markup(const string &text, int offset) {
 		index0 += s.num + 1;
 	}
 	return markups;
+}
+
 }
 

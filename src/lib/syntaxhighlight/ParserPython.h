@@ -10,11 +10,15 @@
 
 #include "BaseParser.h"
 
+namespace syntaxhighlight {
+
 class ParserPython : public Parser {
 public:
 	ParserPython();
 
 	Array<Markup> create_markup(const string &text, int offset) override;
 };
+
+}
 
 #endif /* PARSERPYTHON_H_ */

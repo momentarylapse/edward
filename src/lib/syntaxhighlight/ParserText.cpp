@@ -7,6 +7,10 @@
 
 #include "ParserText.h"
 
+namespace syntaxhighlight {
+
 ParserText::ParserText() : Parser("Text") {
+}
+
 }
 

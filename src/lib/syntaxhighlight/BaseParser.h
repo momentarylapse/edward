@@ -10,11 +10,14 @@
 #include <lib/base/base.h>
 #include <lib/base/optional.h>
 #include <lib/os/path.h>
+#include <lib/base/pointer.h>
+
 
 class Path;
-namespace autocomplete {
-	struct Data;
-}
+
+namespace syntaxhighlight {
+
+struct AutoCompleteData;
 
 enum class MarkupType {
 	WORD,
@@ -23,6 +26,7 @@ enum class MarkupType {
 	OPERATOR_FUNCTION,
 	MODIFIER,
 	GLOBAL_VARIABLE,
+	LOCAL_VARIABLE,
 	TYPE,
 	LINE_COMMENT,
 	COMMENT_LEVEL_1,
@@ -41,10 +45,10 @@ struct Markup {
 	MarkupType type;
 };
 
-class Parser {
+class Parser : public VirtualBase {
 public:
 	explicit Parser(const string &name);
-	virtual ~Parser();
+	~Parser() override;
 
 	string name;
 	string macro_begin;
@@ -81,7 +85,7 @@ public:
 	virtual Array<Error> find_errors(const string& text);
 	virtual MarkupType word_type(const string &name);
 	virtual Array<Markup> create_markup(const string& text, int offset);
-	virtual autocomplete::Data run_autocomplete(const string &code, const Path &filename, int line, int pos);
+	virtual AutoCompleteData run_autocomplete(const string &code, const Path &filename, int offset);
 
 	Array<Markup> create_markup_default(const string& text, int offset);
 	struct SymbolInfo {
@@ -93,8 +97,9 @@ public:
 	virtual base::optional<SymbolInfo> symbol_info(const string& text, int offset, int length);
 };
 
-void InitParser();
-Parser *GetParser(const Path &filename);
+void init_parser();
+//Parser *GetParser(const Path &filename);
+xfer<Parser> create_parser(const Path& filename);
 
 
 enum {
@@ -113,4 +118,4 @@ inline int char_type(char c) {
 		return CHAR_LETTER;
 	return CHAR_SIGN;
 }
-
+}

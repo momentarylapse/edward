@@ -7,6 +7,8 @@
 
 #include "ParserShader.h"
 
+namespace syntaxhighlight {
+
 ParserShader::ParserShader() : Parser("Shader") {
 	macro_begin = "#";
 	line_comment_begin = "//";
@@ -251,5 +253,7 @@ ParserShader::ParserShader() : Parser("Shader") {
 
 Array<Markup> ParserShader::create_markup(const string &text, int offset) {
 	return create_markup_default(text, offset);
+}
+
 }
 

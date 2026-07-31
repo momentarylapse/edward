@@ -7,6 +7,8 @@
 
 #include "ParserHui.h"
 
+namespace syntaxhighlight {
+
 ParserHui::ParserHui() : Parser("Hui") {
 	macro_begin = "#";
 	line_comment_begin = "//";
@@ -163,4 +165,6 @@ ParserHui::ParserHui() : Parser("Hui") {
 
 Array<Markup> ParserHui::create_markup(const string &text, int offset) {
 	return create_markup_default(text, offset);
+}
+
 }
