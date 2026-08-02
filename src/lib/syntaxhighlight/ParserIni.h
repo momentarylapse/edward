@@ -17,6 +17,7 @@ public:
 	ParserIni();
 
 	Array<Markup> create_markup(const string &text, int offset) override;
+	Array<Label> find_labels(const string &text) override;
 
 
 	Array<Markup> create_markup_header(const string& line, int offset);

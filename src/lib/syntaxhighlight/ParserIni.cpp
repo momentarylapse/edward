@@ -6,6 +6,7 @@
  */
 
 #include "ParserIni.h"
+#include <lib/base/iter.h>
 
 namespace syntaxhighlight {
 
@@ -24,7 +25,7 @@ ParserIni::ParserIni() : Parser("Ini") {
 
 
 Array<Markup> ParserIni::create_markup_header(const string& line, int offset) {
-	return {{offset, offset + line.num, MarkupType::MACRO}};
+	return {{offset, offset + line.num, MarkupType::TYPE}};
 }
 
 bool is_numeric(const string& s) {
@@ -46,16 +47,27 @@ Array<Markup> ParserIni::create_markup_key_value(const string& line, int index0)
 		return {};
 
 	Array<Markup> markups;
-	markups.add({index0, index0 + i0, MarkupType::SPECIAL});
+	markups.add({index0, index0 + i0, MarkupType::LOCAL_VARIABLE});
 	string rest = line.sub_ref(i0 + 1, line.num);
+
+	//auto tokens = rest.parse_tokens("[],\"");
+
 	string value = rest.trim();
 	i0 += 1;
 	if (value.head(1) == "[" and value.tail(1) == "]") {
 		auto xx = value.sub_ref(1, value.num - 1).explode(",");
 		i0 += 1 + rest.find("[");
-		for (auto &x: xx) {
-			markups.add({index0 + i0, index0 + i0 + x.num, MarkupType::MODIFIER});
-			i0 += x.num + 1;
+		for (const auto& _x: xx) {
+			string x = _x.trim();
+			MarkupType type = MarkupType::MODIFIER;
+			if (x == "true" or x == "false")
+				type = MarkupType::GLOBAL_VARIABLE;
+			else if (is_numeric(x))
+				type = MarkupType::NUMBER;
+			else if (x.head(1) == "\"" and x.tail(1) == "\"")
+				type = MarkupType::STRING;
+			markups.add({index0 + i0, index0 + i0 + _x.num, type});
+			i0 += _x.num + 1;
 		}
 
 	} else {
@@ -87,5 +99,12 @@ Array<Markup> ParserIni::create_markup(const string &text, int offset) {
 	return markups;
 }
 
+Array<Parser::Label> ParserIni::find_labels(const string& text) {
+	Array<Label> labels;
+	for (const auto& [i, s]: enumerate(text.explode("\n")))
+		if (s.trim().head(1) == "[")
+			labels.add({"class", s.sub(1, -1), i, 0});
+	return labels;
+}
 }
 
