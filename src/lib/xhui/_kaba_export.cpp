@@ -17,6 +17,8 @@
 
 #include <lib/os/msg.h>
 
+#include "Application.h"
+
 
 #define KABA_EXPORT_HUI
 
@@ -402,6 +404,7 @@ void export_package_xhui(kaba::IExporter* e) {
 	e->link_func("open_document", &xhui::open_document);
 	e->link_func("make_gui_image", &xhui::set_image);
 #endif
+	e->link_func("set_property", &xhui::Application::set_property);
 
 	e->link_func("file_dialog", &xhui::FileSelectionDialog::ask);
 	e->link_func("color_dialog", &xhui::ColorSelectionDialog::ask);

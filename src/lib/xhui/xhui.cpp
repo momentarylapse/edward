@@ -58,6 +58,7 @@ KeyboardLayout detect_keyboard_layout() {
 void init(const Array<string> &arg, const string& app_name) {
 	os::app::detect(arg, app_name);
 	//msg_init();
+	Application::set_property("name", app_name); // tentative
 	glfwInit();
 
 #if HAS_LIB_GL

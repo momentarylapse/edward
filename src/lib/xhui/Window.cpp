@@ -30,6 +30,11 @@ Window::Window(const string &_title, int w, int h, Flags _flags) : Panel(":windo
 	memset(&state, 0, sizeof(state));
 	memset(&state_prev, 0, sizeof(state_prev));
 
+#ifdef GLFW_PLATFORM_WAYLAND
+	if (glfwGetPlatform() == GLFW_PLATFORM_WAYLAND)
+		glfwWindowHintString(GLFW_WAYLAND_APP_ID, Application::get_property("name").c_str());
+#endif
+
 	if (flags & Flags::OWN_DECORATION) {
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
 		glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
