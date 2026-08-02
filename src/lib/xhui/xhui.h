@@ -47,7 +47,13 @@ namespace clipboard {
 	string paste();
 }
 
-// key codes (physical keys)
+enum class KeyboardLayout {
+	QWERTY,
+	QWERTZ
+};
+extern KeyboardLayout keyboard_layout;
+
+// key codes (in user's layout... more or less)
 enum {
 	KEY_LCONTROL,
 	KEY_RCONTROL,

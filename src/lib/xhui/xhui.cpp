@@ -28,6 +28,8 @@ namespace xhui {
 	ColorSpace color_space_input = ColorSpace::SRGB;
 	string separator = "\\";
 
+	KeyboardLayout keyboard_layout = KeyboardLayout::QWERTY;
+
 
 	ygfx::FontManager* global_font_manager = nullptr;
 	ygfx::TextCache* global_text_cache = nullptr;
@@ -46,6 +48,13 @@ namespace xhui {
 
 	void create_default_images();
 
+KeyboardLayout detect_keyboard_layout() {
+	string z = glfwGetKeyName(GLFW_KEY_Z, 0);
+	if (z == "y")
+		return KeyboardLayout::QWERTZ;
+	return KeyboardLayout::QWERTY;
+}
+
 void init(const Array<string> &arg, const string& app_name) {
 	os::app::detect(arg, app_name);
 	//msg_init();
@@ -61,6 +70,8 @@ void init(const Array<string> &arg, const string& app_name) {
 	//glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
 
 	Theme::load_default();
+
+	keyboard_layout = detect_keyboard_layout();
 
 
 	const Array<string> font_names = {"Cantarell", "FreeSans", "OpenSans", "Helvetica", "NotoSans", "Verdana"};

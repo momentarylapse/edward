@@ -96,68 +96,75 @@ Window::~Window() {
 }*/
 
 int key_decode(int key) {
+	if (keyboard_layout == KeyboardLayout::QWERTZ) {
+		if (key == GLFW_KEY_Y)
+			return KEY_Z;
+		if (key == GLFW_KEY_Z)
+			return KEY_Y;
+	}
+
 	for (int i=0; i<10; i++)
 		if (key == GLFW_KEY_0 + i)
-			return xhui::KEY_0 + i;
+			return KEY_0 + i;
 	for (int i=0; i<26; i++)
 		if (key == GLFW_KEY_A + i)
-			return xhui::KEY_A + i;
+			return KEY_A + i;
 	for (int i=0; i<12; i++)
 		if (key == GLFW_KEY_F1 + i)
-			return xhui::KEY_F1 + i;
+			return KEY_F1 + i;
 	if (key == GLFW_KEY_MINUS)
-		return xhui::KEY_MINUS;
+		return KEY_MINUS;
 	if (key == GLFW_KEY_PERIOD)
-		return xhui::KEY_DOT;
+		return KEY_DOT;
 	if (key == GLFW_KEY_COMMA)
-		return xhui::KEY_COMMA;
+		return KEY_COMMA;
 
 	if (key == GLFW_KEY_ENTER)
-		return xhui::KEY_RETURN;
+		return KEY_RETURN;
 	if (key == GLFW_KEY_SPACE)
-		return xhui::KEY_SPACE;
+		return KEY_SPACE;
 	if (key == GLFW_KEY_BACKSPACE)
-		return xhui::KEY_BACKSPACE;
+		return KEY_BACKSPACE;
 	if (key == GLFW_KEY_ESCAPE)
-		return xhui::KEY_ESCAPE;
+		return KEY_ESCAPE;
 	if (key == GLFW_KEY_UP)
-		return xhui::KEY_UP;
+		return KEY_UP;
 	if (key == GLFW_KEY_DOWN)
-		return xhui::KEY_DOWN;
+		return KEY_DOWN;
 	if (key == GLFW_KEY_LEFT)
-		return xhui::KEY_LEFT;
+		return KEY_LEFT;
 	if (key == GLFW_KEY_RIGHT)
-		return xhui::KEY_RIGHT;
+		return KEY_RIGHT;
 	if (key == GLFW_KEY_LEFT_SHIFT)
-		return xhui::KEY_LSHIFT;
+		return KEY_LSHIFT;
 	if (key == GLFW_KEY_RIGHT_SHIFT)
-		return xhui::KEY_RSHIFT;
+		return KEY_RSHIFT;
 	if (key == GLFW_KEY_LEFT_CONTROL)
-		return xhui::KEY_LCONTROL;
+		return KEY_LCONTROL;
 	if (key == GLFW_KEY_RIGHT_CONTROL)
-		return xhui::KEY_RCONTROL;
+		return KEY_RCONTROL;
 	if (key == GLFW_KEY_LEFT_ALT)
-		return xhui::KEY_LALT;
+		return KEY_LALT;
 	if (key == GLFW_KEY_RIGHT_ALT)
-		return xhui::KEY_RALT;
+		return KEY_RALT;
 	/*if (key == GLFW_KEY_LEFT_SUPER)
-		return xhui::KEY_LSUPER;
+		return KEY_LSUPER;
 	if (key == GLFW_KEY_RIGHT_SUPER)
-		return xhui::KEY_RSUPER;*/
+		return KEY_RSUPER;*/
 	if (key == GLFW_KEY_PAGE_UP)
-		return xhui::KEY_PAGE_UP;
+		return KEY_PAGE_UP;
 	if (key == GLFW_KEY_PAGE_DOWN)
-		return xhui::KEY_PAGE_DOWN;
+		return KEY_PAGE_DOWN;
 	if (key == GLFW_KEY_HOME)
-		return xhui::KEY_HOME;
+		return KEY_HOME;
 	if (key == GLFW_KEY_END)
-		return xhui::KEY_END;
+		return KEY_END;
 	if (key == GLFW_KEY_DELETE)
-		return xhui::KEY_DELETE;
+		return KEY_DELETE;
 	if (key == GLFW_KEY_INSERT)
-		return xhui::KEY_INSERT;
+		return KEY_INSERT;
 	if (key == GLFW_KEY_TAB)
-		return xhui::KEY_TAB;
+		return KEY_TAB;
 	return -1;
 }
 

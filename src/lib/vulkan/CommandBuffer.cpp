@@ -278,7 +278,7 @@ void CommandBuffer::barrier(const Array<Texture*> &textures, int mode) {
 	for (auto *t: textures) {
 		bool is_depth = t->image.is_depth_buffer();
 		VkImageSubresourceRange sr = {
-			.aspectMask = t->image.aspect(),
+			.aspectMask = (VkImageAspectFlags)t->image.aspect(),
 			.baseMipLevel = 0,
 			.levelCount = 1,
 			.baseArrayLayer = 0,
@@ -286,8 +286,8 @@ void CommandBuffer::barrier(const Array<Texture*> &textures, int mode) {
 		};
 		VkImageMemoryBarrier b = {
 			.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-			.srcAccessMask = is_depth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-			.dstAccessMask = VK_ACCESS_SHADER_READ_BIT,
+			.srcAccessMask = VkAccessFlags(is_depth ? VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT),
+			.dstAccessMask = VkAccessFlags(VK_ACCESS_SHADER_READ_BIT),
 			.oldLayout = is_depth ? VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
 			.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
 			.image = t->image.image,
@@ -312,7 +312,7 @@ void CommandBuffer::barrier(const Array<Texture*> &textures, int mode) {
 
 void CommandBuffer::image_barrier(const Texture *t, AccessFlags src_access, AccessFlags dst_access, ImageLayout old_layout, ImageLayout new_layout) {
 	VkImageSubresourceRange range = {
-		.aspectMask = t->image.aspect(),
+		.aspectMask = VkImageAspectFlags(t->image.aspect()),
 		.baseMipLevel = 0,
 		.levelCount = 1,
 		.baseArrayLayer = 0,
