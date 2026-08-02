@@ -19,6 +19,7 @@ namespace codeedit {
 class CodeEditor : public obs::Node<xhui::Panel> {
 public:
 	explicit CodeEditor();
+	~CodeEditor() override;
 
 	struct Location {
 		Path filename;
@@ -74,6 +75,7 @@ public:
 	owned<syntaxhighlight::Parser> parser;
 	Array<string> auto_suggestions;
 	int auto_suggestions_offset = 0;
+	int id_runner = -1;
 
 	Array<int> label_line_numbers;
 };

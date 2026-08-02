@@ -264,7 +264,9 @@ base::optional<Parser::SymbolInfo> Parser::symbol_info(const string& text, int o
 
 void init_parser() {
 	ParserAssociations.add(ParserAssociation([] { return new ParserText; }, {"*"}));
+#ifdef SYNTAX_HIGHLIGHT_KABA
 	ParserAssociations.add(ParserAssociation([] { return new ParserKaba; }, {"kaba"}));
+#endif
 	ParserAssociations.add(ParserAssociation([] { return new ParserC; }, {"c", "cpp", "h", "hpp"}));
 	ParserAssociations.add(ParserAssociation([] { return new ParserCmake; }, {}, "CMakeLists.txt"));
 	ParserAssociations.add(ParserAssociation([] { return new ParserCmake; }, {"cmake"}));

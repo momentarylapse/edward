@@ -6,39 +6,35 @@
  */
 
 #include "ParserKaba.h"
+#ifdef SYNTAX_HIGHLIGHT_KABA
 #include "AutoComplete.h"
-//#ifdef SYNTAX_HIGHLIGHT_KABA ...
+#include <lib/base/sort.h>
+#include <lib/base/iter.h>
 #include <lib/kaba/kaba.h>
 #include <lib/kaba/parser/Parser.h>
-#include <lib/base/iter.h>
 #include <lib/os/file.h>
-#include <stdio.h>
+#include <lib/os/msg.h>
 
-#include "lib/base/sort.h"
-#include "lib/os/msg.h"
+#include "lib/base/algo.h"
+
 
 using namespace kaba;
 
-	const kaba::Class *simplify_type(const kaba::Class *c) {
-		if (c->is_some_pointer_not_null())
-			return c->param[0];
-		return c;
-	}
-
-	const kaba::Class *node_namespace(shared<kaba::Node> n) {
-		if (n->kind == NodeKind::Class)
-			return n->as_class();
-		return simplify_type(n->type);
-	}
 
 namespace syntaxhighlight {
 
-static bool verbose = false;
+//static bool verbose = false;
 
-bool allowed(const string &s) {
-	if (s == "filename" or s == "config")
-		return false;
-	return true;
+const kaba::Class *simplify_type(const kaba::Class *c) {
+	if (c->is_some_pointer_not_null())
+		return c->param[0];
+	return c;
+}
+
+const kaba::Class *node_namespace(shared<kaba::Node> n) {
+	if (n->kind == NodeKind::Class)
+		return n->as_class();
+	return simplify_type(n->type);
 }
 
 ParserKaba::ParserKaba() : Parser("Kaba") {
@@ -70,12 +66,85 @@ int text_line_column_to_offset(const string& text, int line, int col) {
 	return offset;
 }
 
+CodeContext get_class_block_map(Module* m, const Class* c) {
+	CodeContext bm{m, c, nullptr, nullptr, -1, -1};
+	bm.start = m->tree->parser->Exp.token_logical_line(c->token_id)->offset;
+	int last_token = c->token_id;
+	for (const auto& e: c->elements) {
+		if (c->parent and base::find_index_if(c->parent->elements, [e] (const ClassElement& ee) { return ee.name == e.name; }) >= 0)
+			continue;
+		last_token = max(last_token, e.token_id);
+	}
+	for (auto f: weak(c->functions)) {
+		if (f->owner() == m->tree) // ignore inherited
+			last_token = max(last_token, f->token_id);
+	}
+	for (auto cc: weak(c->constants))
+		if (cc->owner == m->tree)
+			last_token = max(last_token, cc->token_id);
+	auto l = m->tree->parser->Exp.token_logical_line(last_token);
+	bm.end = l->offset + l->length;
+	return bm;
+}
+
+void get_block_block_map(Module* m, Function* f, shared<Node> b, Array<CodeContext>& map) {
+	CodeContext bm{m, f->name_space, f, b->as_block(), -1, -1};
+	int first_token = 9999999;
+	int last_token = -1;
+		kaba::Transformer::transform_block(b.get(), [m, f, b, &first_token, &last_token, &map] (shared<Node> n) {
+			if (n->token_id >= 0)
+				first_token = min(first_token, n->token_id);
+			last_token = max(last_token, n->token_id);
+			if (n->kind == NodeKind::Block and n.get() != b.get()) {
+				get_block_block_map(m, f, n, map);
+			}
+			return n;
+		});
+	if (first_token >= last_token)
+		return;
+	bm.start = m->tree->parser->Exp.token_logical_line(first_token)->offset;
+	bm.end = m->tree->parser->Exp.token_offset(last_token) + m->tree->parser->Exp.get_token(last_token).num;
+	map.add(bm);
+}
+
+Array<CodeContext> get_block_map(Module* m) {
+	Array<CodeContext> map;
+
+	//m->tree->root_node
+
+	for (auto c: m->classes()) {
+		map.add(get_class_block_map(m, c));
+		for (auto cc: weak(c->classes))
+			map.add(get_class_block_map(m, cc));
+	}
+
+	for (auto f: m->tree->functions)
+		if (f->owner() == m->tree and !f->auto_declared) {
+			CodeContext bm{m, f->name_space, f, f->block, -1, -1};
+			bm.start = m->tree->parser->Exp.token_offset(f->token_id);
+			int last_token = f->token_id;
+			if (f->abstract_node)
+				kaba::Transformer::transform_node(f->abstract_node.get(), [&last_token] (shared<Node> n) {
+					last_token = max(last_token, n->token_id);
+					return n;
+				});
+			bm.end = m->tree->parser->Exp.token_offset(last_token) + m->tree->parser->Exp.get_token(last_token).num;
+
+			if (f->block_node) {
+				get_block_block_map(m, f, f->block_node, map);
+			}
+			map.add(bm);
+		}
+	return map;
+}
+
 void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 	if (text == current_code)
 		return;
 
 	current_code = text;
 	errors.clear();
+	block_map.clear();
 
 	try {
 		//msg_write(kaba::config.directory.str());
@@ -86,6 +155,8 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 
 		module = new_module;
 		context = new_context;
+
+		block_map = get_block_map(module.get());
 
 	} catch (kaba::Exception &e) {
 		auto ee = &e;
@@ -149,36 +220,42 @@ Array<Parser::Error> ParserKaba::find_errors(const string &text) {
 	return errors;
 }
 
-struct CodeContext {
-	Module* module = nullptr;
-	const kaba::Class* c = nullptr;
-	kaba::Function* f = nullptr;
-	kaba::Block* b = nullptr;
-};
-
-CodeContext guess_context(kaba::Module* m, int offset) {
-	if (!m)
+CodeContext ParserKaba::guess_context(int offset) {
+	if (!module)
 		return {};
 
 	CodeContext x;
-	x.module = m;
+	x.module = module.get();
+	x.c = module->base_class();
+	x.start = 0;
+	x.end = 9999999;
 
-	for (auto c: m->classes()) {
-		int c_off = m->tree->parser->Exp.token_offset(c->token_id);
-		if (c_off >= 0 and c_off <= offset) {
-			x.c = c;
-		}
-	}
+	for (const auto& bm: block_map)
+		if (bm.start <= offset and bm.end >= offset)
+			if (bm.end - bm.start < x.end - x.start) // prefer smallest (= inner most)
+				x = bm;
 
-	for (auto f: m->tree->functions) {
-		int f_off = m->tree->parser->Exp.token_offset(f->token_id);
-		if (!f->is_extern() and !f->is_template() and !f->auto_declared and f_off >= 0 and f_off <= offset) {
-			x.c = f->name_space;
-			x.f = f;
-			x.b = f->block;
-		}
-	}
 	return x;
+}
+
+MarkupType node_to_markup(shared<Node> n) {
+	if (n->kind == kaba::NodeKind::Module or n->kind == kaba::NodeKind::Class)
+		return MarkupType::TYPE;
+	if (n->kind == kaba::NodeKind::Function)
+		return MarkupType::COMPILER_FUNCTION;
+	if (n->kind == kaba::NodeKind::Constant)
+		return MarkupType::GLOBAL_VARIABLE;
+	if (n->kind == kaba::NodeKind::VarGlobal)
+		return MarkupType::GLOBAL_VARIABLE;
+	if (n->kind == kaba::NodeKind::VarLocal)
+		return MarkupType::LOCAL_VARIABLE;
+	if (n->kind == kaba::NodeKind::ClassElement)
+		return MarkupType::LOCAL_VARIABLE;
+	if (n->kind == kaba::NodeKind::AddressShift or n->kind == kaba::NodeKind::DereferenceAddressShift)
+		// member variable (self.x)
+		return MarkupType::LOCAL_VARIABLE;
+//	n->show();
+	return MarkupType::WORD;
 }
 
 Array<Markup> ParserKaba::create_markup(const string &text, int offset) {
@@ -193,26 +270,23 @@ Array<Markup> ParserKaba::create_markup(const string &text, int offset) {
 
 		string temp;
 		if (m.end - m.start < 64)
-			temp = text.sub_ref(m.start, m.end);
+			temp = text.sub_ref(m.start - offset, m.end - offset);
 
 		if (temp == ".")
 			continue;
+
+		if constexpr (false) {
+			auto xx = guess_context(m.start);
+			m.type = (MarkupType)((xx.start + 4) % (int)MarkupType::NUM_TYPES);
+			continue;
+		}
 
 		if (m.type == MarkupType::WORD) {
 
 			if (parent_node) {
 				auto e = module->tree->get_element_of(parent_node, temp, -1);
 				if (e.num >= 1) {
-					if (e[0]->kind == kaba::NodeKind::Class)
-						m.type = MarkupType::TYPE;
-					else if (e[0]->kind == kaba::NodeKind::Function)
-						m.type = MarkupType::COMPILER_FUNCTION;
-					else if (e[0]->kind == kaba::NodeKind::Constant)
-						m.type = MarkupType::GLOBAL_VARIABLE;
-					else if (e[0]->kind == kaba::NodeKind::AddressShift or e[0]->kind == kaba::NodeKind::DereferenceAddressShift)
-						m.type = MarkupType::LOCAL_VARIABLE;
-//					else
-//						e[0]->show();
+					m.type = node_to_markup(e[0]);
 					parent_node = e[0];
 				} else {
 					msg_write(temp);
@@ -221,28 +295,12 @@ Array<Markup> ParserKaba::create_markup(const string &text, int offset) {
 				}
 
 			} else {
-				auto x = guess_context(module.get(), m.start);
-				//		m.type = (MarkupType)(((int_p)x.f >> 8) % (int)MarkupType::NUM_TYPES);
-				if (x.c) {
-					auto e = module->tree->get_existence(temp, x.b, x.c, -1);
-					if (e.num >= 1) {
-						if (e[0]->kind == kaba::NodeKind::Module or e[0]->kind == kaba::NodeKind::Class)
-							m.type = MarkupType::TYPE;
-						else if (e[0]->kind == kaba::NodeKind::Function)
-							m.type = MarkupType::COMPILER_FUNCTION;
-						else if (e[0]->kind == kaba::NodeKind::Constant)
-							m.type = MarkupType::GLOBAL_VARIABLE;
-						else if (e[0]->kind == kaba::NodeKind::VarGlobal)
-							m.type = MarkupType::GLOBAL_VARIABLE;
-						else if (e[0]->kind == kaba::NodeKind::VarLocal)
-							m.type = MarkupType::LOCAL_VARIABLE;
-						else if (e[0]->kind == kaba::NodeKind::AddressShift)
-							// member variable (self.x)
-							m.type = MarkupType::LOCAL_VARIABLE;
-//						else
-//							e[0]->show();
-						parent_node = e[0];
-					}
+				auto x = guess_context(m.start);
+				//m.type = (MarkupType)(((int_p)x.f >> 8) % (int)MarkupType::NUM_TYPES);
+				auto e = module->tree->get_existence(temp, x.b, x.c, -1);
+				if (e.num >= 1) {
+					m.type = node_to_markup(e[0]);
+					parent_node = e[0];
 				}
 			}
 		} else {
@@ -393,7 +451,7 @@ AutoCompleteData ParserKaba::run_autocomplete(const string& code, const Path& fi
 	auto terms = parse_simple_backwards(code, offset);
 	//msg_write(str(terms));
 
-	auto c = guess_context(module.get(), offset);
+	auto c = guess_context(offset);
 	if (terms.num >= 3) {
 		if (shared<Node> node = parse_node(c, terms.sub_ref(0, -2)))
 			return xsort(suggest_child(c, node.get(), terms.back()));
@@ -453,11 +511,14 @@ base::optional<Parser::SymbolInfo> node_info(const CodeContext& ci, kaba::Node* 
 	} else if (n->kind == kaba::NodeKind::VarLocal) {
 		auto v = n->as_local();
 		return xxx(ci.module, v->token_id, format("variable  %s: %s", v->name, v->type->long_name()));
-	} else if (n->kind == kaba::NodeKind::AddressShift) {
-		auto t0 = n->params[0]->type;
+	} else if (n->kind == kaba::NodeKind::AddressShift or n->kind == kaba::NodeKind::DereferenceAddressShift) {
+		auto t0 = simplify_type(n->params[0]->type);
 		if (auto i = find_class_element(t0, (int)n->link_no))
 			return xxx(i->module, i->token_id, format("element  %s: %s", i->name, i->type->long_name()));
 		return xxx(t0->owner->module, t0->token_id, format("element  %s: %s", "???", n->type->long_name()));
+	} else if (n->kind == kaba::NodeKind::ClassElement) {
+		auto e = (ClassElement*)(int_p)n->link_no;
+		return xxx(ci.module, e->token_id, format("element  %s: %s", e->name, e->type->long_name()));
 	} else if (n->kind == kaba::NodeKind::Statement) {
 		return xxx(nullptr, -1, "statement");
 	}
@@ -470,7 +531,7 @@ base::optional<Parser::SymbolInfo> ParserKaba::symbol_info(const string& text, i
 
 	auto terms = parse_simple_backwards(text, offset + length);
 	//msg_write(str(terms));
-	auto c = guess_context(module.get(), offset);
+	auto c = guess_context(offset);
 	if (auto node = parse_node(c, terms))
 		return node_info(c, node.get());
 
@@ -478,3 +539,4 @@ base::optional<Parser::SymbolInfo> ParserKaba::symbol_info(const string& text, i
 }
 
 }
+#endif

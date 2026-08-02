@@ -9,6 +9,7 @@
 #include <lib/xhui/controls/MultilineEdit.h>
 #include <lib/xhui/controls/ListView.h>
 
+#include "lib/os/msg.h"
 #include "lib/xhui/Menu.h"
 
 
@@ -53,16 +54,12 @@ Dialog coding-panel ''
 		return xhui::create_control("Label", "!markup,paddingy=2", id);
 	};
 
-	static int xcounter = 0;
 	event_x(id_edit, xhui::event_id::Changed, [this] {
-		xcounter ++;
 		update_highlight_current_line();
-		xhui::run_later(2.0f, [this] {
-			xcounter --;
-			if (xcounter == 0) {
-				update_highlight_all();
-				update_structure();
-			}
+		xhui::cancel_runner(id_runner);
+		id_runner = xhui::run_later(2.0f, [this] {
+			update_highlight_all();
+			update_structure();
 		});
 		out_changed();
 	});
@@ -159,15 +156,20 @@ Dialog coding-panel ''
 	});
 }
 
+CodeEditor::~CodeEditor() {
+	xhui::cancel_runner(id_runner);
+}
+
 void CodeEditor::update_highlight_current_line() {
 	auto lp = edit->index_to_line_pos(edit->cursor_pos);
 	int i0 = line_start(lp.line);
 	int i1 = line_end(lp.line);
 
 	clear_markings(i0, i1);
-	parser->prepare_symbols(edit->text, filename);
-	for (const auto& m: parser->create_markup(edit->text.sub_ref(i0, i1), i0))
+	//parser->prepare_symbols(edit->text, filename);
+	for (const auto& m: parser->create_markup(edit->text.sub_ref(i0, i1), i0)) {
 		mark_word(m.start, m.end, m.type);
+	}
 }
 
 void CodeEditor::update_highlight_all() {
