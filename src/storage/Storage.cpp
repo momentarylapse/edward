@@ -318,6 +318,12 @@ base::future<ComplexPath> Storage::file_dialog_x(const Array<int> &kind, int pre
 	for (auto k: kind) {
 		add_kind(fd_name(k), format("%s (*.%s)", fd_name(k), fd_ext(k)), ext2filter(fd_ext(k)));
 	}
+	if (kind.num > 1)
+		title = "file";
+	if (save)
+		title = "Save " + title;
+	else
+		title = "Open " + title;
 
 
 	auto on_select_base = [this, kind, force_in_root_dir, promise] (const Path &path) mutable {

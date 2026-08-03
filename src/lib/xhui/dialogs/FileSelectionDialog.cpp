@@ -52,6 +52,7 @@ Dialog xxx ''
 			Button ok 'Open' width=70 disabled default
 )foodelim");
 	}
+	set_title(title);
 
 	selector = (FileSelector*)get_control("files");
 	for (const auto& o: params)

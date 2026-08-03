@@ -12,20 +12,22 @@ namespace xhui {
 
 class Label;
 class FileListView;
+class DirectoryBar;
 
 class FileSelector : public Grid {
 public:
 	explicit FileSelector(const string& id);
 	void link_events();
 
+	DirectoryBar* directory_bar;
 	FileListView* list;
-	Label* directory_label;
 	Path root;
 
 	string get_string() override;
 
 	void set_filter(const string& filter);
 	void set_directory(const Path& dir);
+	void update_directory_header();
 	Path get_selected_filename() const;
 	Path current_directory() const;
 	void set_option(const string& key, const string& value) override;
