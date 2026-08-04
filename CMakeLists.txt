@@ -347,6 +347,7 @@ add_executable(edward
 	src/lib/syntaxhighlight/ParserHui.cpp
 	src/lib/syntaxhighlight/ParserIni.cpp
 	src/lib/syntaxhighlight/ParserKaba.cpp
+	src/lib/syntaxhighlight/ParserMarkdown.cpp
 	src/lib/syntaxhighlight/ParserPython.cpp
 	src/lib/syntaxhighlight/ParserShader.cpp
 	src/lib/syntaxhighlight/ParserText.cpp

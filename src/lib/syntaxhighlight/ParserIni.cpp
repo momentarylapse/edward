@@ -17,12 +17,6 @@ ParserIni::ParserIni() : Parser("Ini") {
 	multi_comment_end = "*/";
 }
 
-#define next_char()	p=g_utf8_next_char(p);pos++
-#define set_mark()	sv->mark_word(l, pos0, pos, in_type, p0, p);p0=p;pos0=pos
-#define begin_token(t) (string(p, t.num) == t)
-#define skip_token_almost(t) p+=(t.num-1);pos+=(t.num-1)
-#define skip_token(t) p+=t.num;pos+=t.num
-
 
 Array<Markup> ParserIni::create_markup_header(const string& line, int offset) {
 	return {{offset, offset + line.num, MarkupType::TYPE}};

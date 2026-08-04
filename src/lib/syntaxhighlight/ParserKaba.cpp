@@ -118,8 +118,16 @@ Array<CodeContext> get_block_map(Module* m) {
 			map.add(get_class_block_map(m, cc));
 	}
 
+	auto is_templated_class = [] (const Class* t) {
+		static const Array<string> evil = {"[", "{", "&", "*", "?"};
+		for (const auto& e: evil)
+			if (t->name.find(e) >= 0)
+				return true;
+		return false;
+	};
+
 	for (auto f: m->tree->functions)
-		if (f->owner() == m->tree and !f->auto_declared) {
+		if (f->owner() == m->tree and !f->auto_declared and !is_templated_class(f->name_space)) {
 			CodeContext bm{m, f->name_space, f, f->block, -1, -1};
 			bm.start = m->tree->parser->Exp.token_offset(f->token_id);
 			int last_token = f->token_id;
