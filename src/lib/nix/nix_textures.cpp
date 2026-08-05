@@ -135,8 +135,8 @@ VolumeTexture::VolumeTexture(int w, int h, int _nz, const string &_format) : Tex
 
 	glCreateTextures(GL_TEXTURE_3D, 1, &texture);
 	glTextureStorage3D(texture, 1, internal_format, width, height, depth);
-	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTextureParameteri(texture, GL_TEXTURE_WRAP_R, GL_REPEAT);
@@ -389,20 +389,25 @@ TextureMultiSample::TextureMultiSample(int w, int h, int _samples, const string 
 	//glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
-ImageTexture::ImageTexture(int _width, int _height, const string &_format) {
-	msg_write(format("creating image texture [%d x %d: %s] ", _width, _height, _format));
+StorageTexture::StorageTexture(int _width, int _height, int _depth, const string &_format) {
+	msg_write(format("creating storage texture [%d x %d x %d: %s] ", _width, _height, _depth, _format));
 	filename = "-image-";
 	width = _width;
 	height = _height;
-	type = Type::IMAGE;
+	depth = _depth;
+	type = (depth == 1) ? Type::DEFAULT : Type::VOLUME;
 	internal_format = parse_format(_format);
 
-	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
-	glTextureStorage2D(texture, 1, internal_format, width, height);
-	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glCreateTextures((depth == 1) ? GL_TEXTURE_2D : GL_TEXTURE_3D, 1, &texture);
+	if (depth == 1)
+		glTextureStorage2D(texture, 1, internal_format, width, height);
+	else
+		glTextureStorage3D(texture, 1, internal_format, width, height, depth);
+	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTextureParameteri(texture, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(texture, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTextureParameteri(texture, GL_TEXTURE_WRAP_R, GL_REPEAT);
 }
 
 

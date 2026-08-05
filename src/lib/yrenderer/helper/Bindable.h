@@ -33,7 +33,7 @@ struct BindingData {
 
 	void bind_texture(int index, ygfx::Texture* texture);
 	void bind_textures(int index0, const Array<ygfx::Texture*>& textures);
-	void bind_image(int index, ygfx::ImageTexture* image);
+	void bind_image(int index, ygfx::Texture* image);
 	void bind_uniform_buffer(int index, ygfx::Buffer* buffer);
 	void bind_storage_buffer(int index, ygfx::Buffer* buffer);
 
@@ -60,7 +60,7 @@ void apply_shader_data(const RenderParams& params, ygfx::Shader* s, const Any& s
 	void bind_textures(int index0, const Array<ygfx::Texture*>& textures) { \
 		bindings.bind_textures(index0, textures); \
 	} \
-	void bind_image(int index, ygfx::ImageTexture* image) { \
+	void bind_image(int index, ygfx::Texture* image) { \
 		bindings.bind_image(index, image); \
 	} \
 	void bind_uniform_buffer(int index, ygfx::Buffer* buffer) { \

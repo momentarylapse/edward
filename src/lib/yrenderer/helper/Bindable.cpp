@@ -112,7 +112,7 @@ void BindingData::bind_textures(int index0, const Array<Texture*>& textures) {
 		bind_texture(index0 + i, t);
 }
 
-void BindingData::bind_image(int index, ImageTexture *texture) {
+void BindingData::bind_image(int index, Texture *texture) {
 #ifdef USING_OPENGL
 	bindings.add({index, Binding::Type::Image, texture});
 #endif
@@ -148,7 +148,7 @@ void BindingData::apply(Shader* shader, const RenderParams& params) {
 		if (b.type == Binding::Type::Texture)
 			nix::bind_texture(b.index, static_cast<Texture*>(b.p));
 		else if (b.type == Binding::Type::Image)
-			nix::bind_image(b.index, static_cast<nix::ImageTexture*>(b.p), 0, 0, true);
+			nix::bind_image(b.index, static_cast<nix::Texture*>(b.p), 0, 0, true);
 		else if (b.type == Binding::Type::UniformBuffer)
 			nix::bind_uniform_buffer(b.index, static_cast<nix::UniformBuffer*>(b.p));
 		else if (b.type == Binding::Type::StorageBuffer)

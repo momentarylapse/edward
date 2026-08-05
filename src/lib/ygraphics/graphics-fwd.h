@@ -63,7 +63,7 @@ namespace ygfx {
 	using DepthBuffer = vulkan::DepthBuffer;
 	using CubeMap = vulkan::CubeMap;
 	using VolumeTexture = vulkan::VolumeTexture;
-	using ImageTexture = vulkan::StorageTexture;
+	using StorageTexture = vulkan::StorageTexture;
 	using TextureMultiSample = vulkan::TextureMultiSample;
 	using Buffer = vulkan::Buffer;
 	using UniformBuffer = vulkan::UniformBuffer;
@@ -101,7 +101,7 @@ namespace nix {
 	class DepthBuffer;
 	class CubeMap;
 	class VolumeTexture;
-	class ImageTexture;
+	class StorageTexture;
 	class TextureMultiSample;
 	class Buffer;
 	class UniformBuffer;
@@ -124,7 +124,7 @@ namespace ygfx {
 	using DepthBuffer = nix::DepthBuffer;
 	using CubeMap = nix::CubeMap;
 	using VolumeTexture = nix::VolumeTexture;
-	using ImageTexture = nix::ImageTexture;
+	using StorageTexture = nix::StorageTexture;
 	using TextureMultiSample = nix::TextureMultiSample;
 	using Buffer = nix::Buffer;
 	using UniformBuffer = nix::UniformBuffer;

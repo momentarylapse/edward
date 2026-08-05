@@ -131,7 +131,12 @@ Model* __load_model(const Path& filename) {
 }
 
 shared<Shader> __load_shader(const Path& filename) {
-	return engine.resource_manager->shader_manager->load_shader(filename);
+	try {
+		return engine.resource_manager->shader_manager->load_shader(filename);
+	} catch (Exception& e) {
+		msg_error(e.message());
+		return nullptr;
+	}
 }
 
 xfer<Shader> __create_shader(const string& source) {
