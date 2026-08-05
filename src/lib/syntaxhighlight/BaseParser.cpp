@@ -15,6 +15,7 @@
 #include "ParserHui.h"
 #include "ParserIni.h"
 #include "ParserMarkdown.h"
+#include "ParserXml.h"
 #include "AutoComplete.h"
 #include <lib/os/path.h>
 
@@ -276,6 +277,7 @@ void init_parser() {
 	ParserAssociations.add(ParserAssociation([] { return new ParserHui; }, {"hui"}));
 	ParserAssociations.add(ParserAssociation([] { return new ParserIni; }, {"ini", "conf", "material"}));
 	ParserAssociations.add(ParserAssociation([] { return new ParserMarkdown; }, {"md"}));
+	ParserAssociations.add(ParserAssociation([] { return new ParserXml; }, {"xml", "html", "htm", "artemis"}));
 }
 
 xfer<Parser> create_parser(const Path& filename) {

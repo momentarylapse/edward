@@ -351,6 +351,7 @@ add_executable(edward
 	src/lib/syntaxhighlight/ParserPython.cpp
 	src/lib/syntaxhighlight/ParserShader.cpp
 	src/lib/syntaxhighlight/ParserText.cpp
+	src/lib/syntaxhighlight/ParserXml.cpp
 	src/lib/syntaxhighlight/Theme.cpp
 	src/lib/threads/_kaba_export.cpp
 	src/lib/threads/Mutex.cpp
