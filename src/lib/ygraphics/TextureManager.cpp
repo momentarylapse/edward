@@ -66,8 +66,8 @@ base::result<shared<Texture>> TextureManager::load_texture(const Path& filename_
 
 	msg_write("loading texture: " + str(filename_absolute_with_flags));
 
-	auto im = ownify(Image::load(filename_absolute));
-	if (!im) {
+	auto im = Image::load(filename_absolute);
+	if (im.has_error()) {
 		msg_error("failed to load texture image!");
 		return tex_white;
 	}

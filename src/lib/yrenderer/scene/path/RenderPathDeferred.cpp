@@ -44,8 +44,8 @@ RenderPathDeferred::RenderPathDeferred(Context* ctx, int width, int height, int 
 		gbuffer_renderer->clear_colors = {color(-1, 0,1,0)};
 
 
-		shader_manager->load_shader_module("forward/module-surface.shader");
-		shader_manager->load_shader_module("deferred/module-surface.shader");
+		REQUIRED(shader_manager->load_shader_module("forward/module-surface.shader"));
+		REQUIRED(shader_manager->load_shader_module("deferred/module-surface.shader"));
 
 		auto shader_gbuffer_out = REQUIRED(shader_manager->load_shader("deferred/out.shader"));
 		//	if (!shader_gbuffer_out->link_uniform_block("SSAO", 13))

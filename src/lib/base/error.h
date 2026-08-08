@@ -13,6 +13,9 @@
 namespace base {
 	struct Error {
 		string msg;
+		Error() = default;
+		Error(const string& s) { msg = s; }
+		string str() const { return msg; }
 	};
 
 	inline constexpr size_t _size_max(size_t a, size_t b) {
@@ -28,7 +31,7 @@ namespace base {
 		}
 		result(const E& e) : result() {
 			_switch_type(2);
-			error() = e;
+			_error() = e;
 		}
 		result(const T& v) : result() {
 			_switch_type(1);
@@ -76,7 +79,7 @@ namespace base {
 			if (type == 1)
 				value() = o.value();
 			else if (type == 2)
-				error() = o.error();
+				_error() = o.error();
 		}
 		/*void operator=(result<T, E> &&o) {  TODO
 		}*/
@@ -116,12 +119,12 @@ namespace base {
 				return f(value());
 			return error();
 		}
-		E& error() const {
+		const E& error() const {
 			//if (type != 2)
 			//	throw Exception("no error");
 			return *(E*)&_value;
 		}
-		E& error() {
+		E& _error() {
 			//if (type != 2)
 			//	throw Exception("no error");
 			return *(E*)&_value;
@@ -145,6 +148,11 @@ namespace base {
 				new(_value) E();
 		}
 	};
+
+	using result_void = result<int>; // TODO result<void>
+	inline result_void result_success() {
+		return 0;
+	}
 }
 
 template<class T, class E>
@@ -152,7 +160,7 @@ string str(const base::result<T, E>& e) {
 	if (e.has_value())
 		return str(e.value());
 	if (e.has_error())
-		return str("ERROR: " + e.error());
+		return "ERROR: " + str(e.error());
 	return "nil";
 }
 

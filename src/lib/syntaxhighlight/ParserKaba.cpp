@@ -87,24 +87,41 @@ CodeContext get_class_block_map(Module* m, const Class* c) {
 	return bm;
 }
 
-void get_block_block_map(Module* m, Function* f, shared<Node> b, Array<CodeContext>& map) {
-	CodeContext bm{m, f->name_space, f, b->as_block(), -1, -1};
-	int first_token = 9999999;
-	int last_token = -1;
-		kaba::Transformer::transform_block(b.get(), [m, f, b, &first_token, &last_token, &map] (shared<Node> n) {
-			if (n->token_id >= 0)
-				first_token = min(first_token, n->token_id);
-			last_token = max(last_token, n->token_id);
-			if (n->kind == NodeKind::Block and n.get() != b.get()) {
-				get_block_block_map(m, f, n, map);
-			}
-			return n;
-		});
-	if (first_token >= last_token)
-		return;
-	bm.start = m->tree->parser->Exp.token_logical_line(first_token)->offset;
-	bm.end = m->tree->parser->Exp.token_offset(last_token) + m->tree->parser->Exp.get_token(last_token).num;
-	map.add(bm);
+Array<CodeContext> get_block_block_map(Module* m, Function* f, shared<Node> b) {
+	struct Range { int first, last; };
+	base::map<Block*, Range> block_tokens;
+	auto mark = [&block_tokens] (Block* b, int token_id) {
+		if (block_tokens.contains(b))
+			block_tokens[b] = {min(block_tokens[b].first, token_id), max(block_tokens[b].last, token_id)};
+		else
+			block_tokens.set(b, {token_id, token_id});
+	};
+
+	// mark (direct) coverage of all blocks
+	kaba::Transformer::transformb_block(b.get(), [mark] (shared<Node> n, Block* bb) {
+		if (bb and n->token_id >= 0)
+			mark(bb, n->token_id);
+		return n;
+	});
+
+	// make parent cover children
+	for (const auto [bb, range]: block_tokens) {
+		auto bbb = bb;
+		while (bbb->parent) {
+			block_tokens[bbb->parent] = {min(block_tokens[bbb->parent].first, range.first), max(block_tokens[bbb->parent].last, range.last)};
+			bbb = bbb->parent;
+		}
+	}
+
+	// tokens -> offsets
+	Array<CodeContext> map;
+	for (const auto& [bb, range]: block_tokens) {
+		int first = m->tree->parser->Exp.token_logical_line(range.first)->offset;
+		int last = m->tree->parser->Exp.token_offset(range.last) + m->tree->parser->Exp.get_token(range.last).num;
+		CodeContext bm{m, f->name_space, f, bb, first, last};
+		map.add(bm);
+	}
+	return map;
 }
 
 Array<CodeContext> get_block_map(Module* m) {
@@ -138,9 +155,8 @@ Array<CodeContext> get_block_map(Module* m) {
 				});
 			bm.end = m->tree->parser->Exp.token_offset(last_token) + m->tree->parser->Exp.get_token(last_token).num;
 
-			if (f->block_node) {
-				get_block_block_map(m, f, f->block_node, map);
-			}
+			if (f->block_node)
+				map.append(get_block_block_map(m, f, f->block_node));
 			map.add(bm);
 		}
 	return map;
@@ -152,37 +168,34 @@ void ParserKaba::prepare_symbols(const string &text, const Path& filename) {
 
 	current_code = text;
 	errors.clear();
-	block_map.clear();
 
-	try {
-		//msg_write(kaba::config.directory.str());
-		auto new_context = kaba::default_context->create_new_context();
-		auto new_module = new_context->create_module_for_source(text, filename, true);
+	//msg_write(kaba::config.directory.str());
+	auto new_context = kaba::default_context->create_new_context();
+	auto new_module = new_context->create_module_for_source(text, filename, CompilerFlags::JustParse);
+	if (new_module) {
 
 		clear_symbols();
 
-		module = new_module;
+		module = *new_module;
 		context = new_context;
 
 		block_map = get_block_map(module.get());
 
-	} catch (kaba::Exception &e) {
-		auto ee = &e;
-		while (ee->parent)
-			ee = ee->parent.get();
+	} else {
 
-		int offset = 0;
-		if (ee == &e) {
-			offset = text_line_column_to_offset(text, ee->line, ee->column);
-		} else {
-			try {
-				offset = text_line_column_to_offset(os::fs::read_text(ee->filename), ee->line, ee->column);
-			} catch (...) {}
+		// read errors
+		for (const auto& e: new_context->get_errors()) {
+			const auto& l = e.locations.back();
+			int offset = 0;
+			if (e.locations.num == 1) {
+				offset = text_line_column_to_offset(text, l.line, l.column);
+			} else {
+				try {
+					offset = text_line_column_to_offset(os::fs::read_text(l.filename), l.line, l.column);
+				} catch (...) {}
+			}
+			errors.add({l.filename, e.message, offset});
 		}
-		errors.add({ee->filename, ee->message(), offset});
-	} catch (::Exception &e) {
-		errors.add({"", e.message(), 0});
-		//msg_error(e.message());
 	}
 }
 

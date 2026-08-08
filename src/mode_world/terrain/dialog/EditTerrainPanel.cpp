@@ -56,12 +56,12 @@ Dialog edit-terrain-panel ''
 		mode_terrain->session->storage->file_dialog(FD_TEXTURE, false, false).then([this] (const ComplexPath& path) {
 			FloatDialog::ask(this, "Maximum height", 10.0f).then([this, path] (float scale) {
 				auto t = mode_terrain->terrain();
-				auto im = Image::load(path.complete);
-				for (int i=0; i<t->num_x; i++)
-					for (int j=0; j<t->num_z; j++)
-						t->height[i * (t->num_z+1) + j] = im->get_pixel(i % im->width, j % im->height).brightness() * scale;
-				t->update(-1, -1, -1, -1, TerrainUpdateAll);
-				delete im;
+				if (auto im = Image::load(path.complete)) {
+					for (int i=0; i<t->num_x; i++)
+						for (int j=0; j<t->num_z; j++)
+							t->height[i * (t->num_z+1) + j] = im->get_pixel(i % im->width, j % im->height).brightness() * scale;
+					t->update(-1, -1, -1, -1, TerrainUpdateAll);
+				}
 			});
 		});
 	});

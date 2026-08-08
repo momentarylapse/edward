@@ -64,7 +64,7 @@ DrawingHelperData* Context::_create_auxiliary_stuff() {
 void Context::make_current() {
 }
 
-Shader *Context::create_shader(const string &source) const {
+base::result<Shader*> Context::create_shader(const string &source) const {
 	return ctx->create_shader(source);
 }
 

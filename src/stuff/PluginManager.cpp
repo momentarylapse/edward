@@ -80,7 +80,7 @@ void PluginManager::execute(const Path& filename) {
 	cur_session = session;
 	//kaba::config.directory = "";
 	try {
-		auto s = session->kaba_ctx->load_module(filename, false);
+		auto s = session->kaba_ctx->_load_module_throw(filename, false);
 		typedef void func_t();
 		if (auto f = (func_t*)s->match_function("main", "void", {}))
 			f();
@@ -399,7 +399,7 @@ void PluginManager::find_plugins() {
 
 void *PluginManager::create_instance(const Path &filename, const string &parent) {
 	//kaba::config.directory = "";
-	auto s = session->kaba_ctx->load_module(filename, false);
+	auto s = session->kaba_ctx->_load_module_throw(filename, false);
 	for (auto c: s->classes()){
 		if (c->is_derived_from_s(parent)) {
 			return c->create_instance();
@@ -436,7 +436,7 @@ Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_ba
 	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
 	for (auto &f: files) {
 		try {
-			auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | f, false);//, true);
+			auto s = session->kaba_ctx->_load_module_throw(session->storage->root_dir_kind[FD_SCRIPT] | f, false);//, true);
 			for (auto c: s->classes())
 				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
 					r.add(c);
@@ -455,7 +455,7 @@ plugin::InstanceData PluginManager::describe_class(const kaba::Class* type, cons
 
 void PluginManager::update_class(plugin::InstanceData& _c) {
 	try {
-		auto s = session->kaba_ctx->load_module(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
+		auto s = session->kaba_ctx->_load_module_throw(session->storage->root_dir_kind[FD_SCRIPT] | _c.filename, true);
 		for (auto c: s->classes())
 			if (c->name == _c.class_name) {
 				auto variables = load_variables(c);

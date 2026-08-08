@@ -35,12 +35,6 @@ Path guess_absolute_path(const Path &filename, const Array<Path>& dirs) {
 			return d | filename;
 
 	return Path::EMPTY;
-	/*if (engine.ignore_missing_files) {
-		msg_error("missing shader: " + filename.str());
-		return Shader::load("");
-	}
-	throw Exception("missing shader: " + filename.str());
-	return filename;*/
 }
 
 
@@ -64,7 +58,11 @@ base::result<shared<Shader>> ShaderManager::__load_shader(const Path& path, cons
 		return shared{s};
 	});
 #else
-	return ctx->ctx->load_shader(path);
+	try {
+		return shared{ctx->ctx->load_shader(path)};
+	} catch (Exception& e) {
+		return base::Error(e.message());
+	}
 #endif
 }
 
@@ -76,7 +74,11 @@ base::result<shared<Shader>> ShaderManager::__create_shader(const string& source
 		return shared{s};
 	});
 #else
-	return ctx->ctx->create_shader(source);
+	try {
+		return shared{ctx->ctx->create_shader(source)};
+	} catch (Exception& e) {
+		return base::Error(e.message());
+	}
 #endif
 }
 
@@ -202,14 +204,15 @@ base::result<shared<Shader>> ShaderManager::create_shader(const string &source) 
 	return __create_shader(source, "", -1);
 }
 
-void ShaderManager::load_shader_module(const Path& path) {
+base::result_void ShaderManager::load_shader_module(const Path& path) {
 	Path fn = guess_absolute_path(path, shader_dirs);
 	if (fn) {
 		if (shader_modules.find(fn) >= 0)
-			return;
+			return base::result_success();
 		shader_modules.add(fn);
 	}
-	load_shader(path);
+	RESULT_PROPAGATE_ERROR(s, load_shader(path), xx1);
+	return base::result_success();
 }
 
 

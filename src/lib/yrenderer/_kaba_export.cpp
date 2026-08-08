@@ -181,19 +181,6 @@ void shader_set_floats(Shader *s, const string &name, float *f, int num) {
 #endif
 }
 
-class ContextWrapper : public yrenderer::Context {
-public:
-	shared<Texture> _load_texture(const Path& path) {
-		return REQUIRED(load_texture(path));
-	}
-	shared<Shader> _create_shader(const string& code) {
-		return REQUIRED(create_shader(code));
-	}
-	shared<Shader> _load_shader(const Path& path) {
-		return REQUIRED(load_shader(path));
-	}
-};
-
 KABA_LINK_GROUP_END
 
 
@@ -567,9 +554,9 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->link_class_func("Context.create_managers", &yrenderer::Context::create_managers);
 	ext->link_class_func("Context.load_material", &yrenderer::Context::load_material);
 	ext->link_class_func("Context.create_internal_material", &yrenderer::Context::create_internal_material);
-	ext->link_class_func("Context.load_texture", &ContextWrapper::_load_texture);
-	ext->link_class_func("Context.load_shader", &ContextWrapper::_load_shader);
-	ext->link_class_func("Context.create_shader", &ContextWrapper::_create_shader);
+	ext->link_class_func("Context.load_texture", &yrenderer::Context::load_texture);
+	ext->link_class_func("Context.load_shader", &yrenderer::Context::load_shader);
+	ext->link_class_func("Context.create_shader", &yrenderer::Context::create_shader);
 	ext->link_class_func("Context.load_shader_module", &yrenderer::Context::load_shader_module);
 	ext->link_class_func("Context.load_surface_shader", &yrenderer::Context::load_surface_shader);
 
@@ -580,7 +567,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.18");
+	ext->package_info("yrenderer", "0.19");
 	_export_package_yrenderer_internal(ext);
 }
 

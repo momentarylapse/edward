@@ -180,8 +180,8 @@ void Texture::reload() {
 
 	string extension = filename.extension();
 	auto image = Image::load(filename);
-	this->write(*image);
-	delete image;
+	if (image.has_value())
+		this->write(*image);
 }
 
 void Texture::set_options(const string &options) const {
@@ -225,9 +225,6 @@ void Texture::write(const Image& image) {
 }
 
 void Texture::write_with_color_space(const Image& image, ColorSpace color_space) {
-	if (image.error)
-		return;
-
 	if (type == Type::NONE)
 		_create_2d(image.width, image.height, color_space == ColorSpace::SRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8);
 
@@ -491,8 +488,6 @@ void CubeMap::fill_side(int side, Texture *source) {
 
 void CubeMap::write_side(int side, const Image &image) {
 	//_override(GL_TEXTURE_CUBE_MAP, NixCubeMapTarget[side], image);
-	if (image.error)
-		return;
 	if (width != image.width or height != image.height)
 		return;
 

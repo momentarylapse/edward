@@ -82,7 +82,7 @@ shared<Node> AutoImplementer::node_raise_no_value() {
 	cmd_new->set_param(0, cmd_call_ex);
 	cmd_new->type = common_types.exception_xfer;
 
-	auto cmd_raise = add_node_call(tree->required_func_global("raise"), -1);
+	auto cmd_raise = add_node_call(tree->required_func_global("@raise_legacy"), -1);
 	cmd_raise->set_param(0, cmd_new);
 	return cmd_raise;
 }
@@ -364,6 +364,8 @@ void AutoImplementerInternal::implement_functions(const Class *t) {
 		_implement_functions_for_callable_bind(t);
 	} else if (t->is_optional()) {
 		_implement_functions_for_optional(t);
+	} else if (t->from_template == common_types.result_t) {
+		_implement_functions_for_result(t);
 	} else if (t->is_product()) {
 		_implement_functions_for_product(t);
 	} else {
@@ -386,7 +388,12 @@ void AutoImplementer::implement_from_code(Function *f, const string &code) {
 	f->block_node->link_no = (int_p)f->block;
 	//f->block_node->show();
 
-	parser->con.concretify_function_body(f);
+	try {
+		parser->con.concretify_function_body(f);
+	} catch (Exception& e) {
+		msg_write(f->signature());
+		throw;
+	}
 	//f->block_node->show();
 }
 }

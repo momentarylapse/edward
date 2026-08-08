@@ -213,10 +213,10 @@ xfer<Texture> Texture::load(const Path &filename) {
 void Texture::_load(const Path &filename) {
 	if (!default_device)
 		return;
-	auto im = ownify(Image::load(filename));
+	auto im = Image::load(filename);
 	if (!im)
 		throw Exception("failed to load texture image!");
-	write(*im);
+	write(im.value());
 }
 
 void Texture::write(const Image &im) {

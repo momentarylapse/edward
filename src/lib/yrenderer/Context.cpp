@@ -49,7 +49,7 @@ base::result<shared<ygfx::Shader>> Context::create_shader(const string &source) 
 base::result<shared<ygfx::Shader>> Context::load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module, const string& tessellation_module) const {
 	return shader_manager->load_surface_shader(path, render_path, vertex_module, geometry_module, tessellation_module);
 }
-void Context::load_shader_module(const Path& path) const {
+base::result_void Context::load_shader_module(const Path& path) const {
 	return shader_manager->load_shader_module(path);
 }
 

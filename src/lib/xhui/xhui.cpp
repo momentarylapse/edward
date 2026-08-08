@@ -354,8 +354,12 @@ void prepare_image(XImage* image) {
 	if (!image->dirty)
 		return;
 
-	if (!image->image and image->filename)
-		image->image = Image::load(image->filename);
+	if (!image->image and image->filename) {
+		if (auto im = Image::load(image->filename)) {
+			image->image = new Image;
+			*image->image = *im;
+		}
+	}
 
 #ifdef USING_VULKAN
 	if (!vulkan::default_device)
@@ -409,9 +413,8 @@ void init_file_icons() {
 void register_file_icon(const string& ext, const Path& icon) {
 	::Image im;
 	im._load(os::app::directory_static | icon);
-	auto m = im.scale(FILE_ICON_SIZE, FILE_ICON_SIZE);
-	file_icons.set(ext, create_image(*m));
-	delete m;
+	const auto m = im.scale(FILE_ICON_SIZE, FILE_ICON_SIZE);
+	file_icons.set(ext, create_image(m));
 }
 
 string get_file_icon(bool is_dir, const string& ext) {

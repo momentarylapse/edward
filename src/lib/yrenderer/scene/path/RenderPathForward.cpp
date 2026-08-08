@@ -19,7 +19,7 @@ namespace yrenderer {
 
 RenderPathForward::RenderPathForward(Context* ctx, int shadow_resolution) : RenderPath(ctx, "fwd") {
 	if (ctx) {
-		shader_manager->load_shader_module("forward/module-surface.shader");
+		REQUIRED(shader_manager->load_shader_module("forward/module-surface.shader"));
 
 		scene_renderer = new SceneRenderer(ctx, RenderPathType::Forward, scene_view);
 		add_child(scene_renderer);
