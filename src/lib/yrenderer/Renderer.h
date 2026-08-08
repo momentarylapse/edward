@@ -7,6 +7,7 @@
 
 #pragma once
 #include <lib/ygraphics/graphics-fwd.h>
+#include <lib/base/error.h>
 #include <lib/base/pointer.h>
 #include <lib/base/optional.h>
 #include <lib/math/rect.h>

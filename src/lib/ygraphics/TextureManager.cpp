@@ -45,7 +45,7 @@ string split_filename_flags(Path& filename) {
 	return flags;
 }
 
-shared<Texture> TextureManager::load_texture(const Path& filename_with_flags) {
+base::result<shared<Texture>> TextureManager::load_texture(const Path& filename_with_flags) {
 	Path filename = filename_with_flags;
 	string flags = split_filename_flags(filename);
 
@@ -62,7 +62,7 @@ shared<Texture> TextureManager::load_texture(const Path& filename_with_flags) {
 
 	for (auto&& [key, t]: texture_map)
 		if (filename_absolute_with_flags == key)
-			return t;
+			return shared{t};
 
 	msg_write("loading texture: " + str(filename_absolute_with_flags));
 
@@ -81,7 +81,15 @@ shared<Texture> TextureManager::load_texture(const Path& filename_with_flags) {
 
 	textures.add(t);
 	texture_map.add({filename_absolute_with_flags, t});
-	return t;
+	return shared{t};
+}
+
+shared<Texture> TextureManager::load_texture_or_white(const Path &path) {
+	auto r = load_texture(path);
+	if (r.has_value())
+		return r.value();
+	msg_error(r.error().msg);
+	return tex_white;
 }
 
 void TextureManager::clear() {

@@ -110,6 +110,12 @@ namespace base {
 				f(error().msg);
 			return value();
 		}
+		template<class R, class F>
+		result<R> transform(F f) const {
+			if (has_value())
+				return f(value());
+			return error();
+		}
 		E& error() const {
 			//if (type != 2)
 			//	throw Exception("no error");
@@ -149,5 +155,11 @@ string str(const base::result<T, E>& e) {
 		return str("ERROR: " + e.error());
 	return "nil";
 }
+
+#define RESULT_PROPAGATE_ERROR(VAR, EXPR, X) \
+	auto X = (EXPR); \
+	if (X.has_error()) \
+		return X.error(); \
+	auto& VAR = X.value();
 
 #endif

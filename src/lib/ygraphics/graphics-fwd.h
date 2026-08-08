@@ -14,6 +14,7 @@
 	#define USING_OPENGL
 #endif
 
+struct string;
 
 #ifdef USING_VULKAN
 
@@ -144,5 +145,10 @@ namespace ygfx {
 
 namespace ygfx {
 	struct VertexX;
+
+	void critical_error(const string& err);
 }
 
+
+#define REQUIRED(result) \
+	result.value_or_do([] (const string& err) { ygfx::critical_error(err); })

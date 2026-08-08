@@ -9,6 +9,7 @@
 #pragma once
 
 #include "Renderer.h"
+#include <lib/base/error.h>
 #include <lib/ygraphics/graphics-fwd.h>
 
 struct GLFWwindow;
@@ -50,13 +51,13 @@ struct Context {
 	void _create_default_textures();
 
 	void create_managers(const Array<Path>& texture_dirs, const Array<Path>& shader_dirs, const Array<Path>& material_dirs);
-	shared<ygfx::Texture> load_texture(const Path& path) const;
-	Material* load_material(const Path &filename) const;
+	base::result<shared<ygfx::Texture>> load_texture(const Path& path) const;
+	base::result<Material*> load_material(const Path &filename) const;
 	Material* create_internal_material() const;
 
-	shared<ygfx::Shader> load_shader(const Path& path) const;
-	xfer<ygfx::Shader> create_shader(const string &source) const;
-	shared<ygfx::Shader> load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module, const string& tessellation_module) const;
+	base::result<shared<ygfx::Shader>> load_shader(const Path& path) const;
+	base::result<shared<ygfx::Shader>> create_shader(const string &source) const;
+	base::result<shared<ygfx::Shader>> load_surface_shader(const Path& path, const string &render_path, const string &vertex_module, const string &geometry_module, const string& tessellation_module) const;
 	void load_shader_module(const Path& path) const;
 
 	void reset_gpu_timestamp_queries();

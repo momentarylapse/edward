@@ -340,7 +340,7 @@ void PluginManager::link_plugins() {
 
 template<class T>
 void link_component_x(shared<kaba::Module> mm, const string& name) {
-	T::_class = mm->tree->create_new_class(name, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
+	T::_class = mm->tree->create_new_class(name, kaba::MetaClass::NONE, nullptr, sizeof(T), 0, nullptr, {}, mm->tree->base_class, -1);
 }
 
 void PluginManager::load_project_stuff(const Path &dir) {

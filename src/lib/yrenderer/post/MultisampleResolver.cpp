@@ -19,7 +19,7 @@ MultisampleResolver::MultisampleResolver(Context* ctx, int width, int height, in
 	//depth_buffer = new nix::RenderBuffer(width, height, samples, "ds:u24i88");
 	texture_renderer = new TextureRenderer(ctx, "tex", {texture.get(), depth_buffer.get()}, {format("samples=%d", samples)});
 
-	shader_resolve_multisample = shader_manager->load_shader("post/resolve-multisample.shader");
+	shader_resolve_multisample = REQUIRED(shader_manager->load_shader("post/resolve-multisample.shader"));
 	out_renderer = new ThroughShaderRenderer(ctx, "ms", shader_resolve_multisample);
 	out_renderer->bind_textures(0, {texture.get(), depth_buffer.get()});
 	add_child(out_renderer.get());

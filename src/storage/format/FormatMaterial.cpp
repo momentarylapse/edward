@@ -46,7 +46,7 @@ void FormatMaterial::load_legacy(LegacyFile &lf, DataMaterial *data) {
 			int n = f->read_int();
 			data->material.textures.resize(n);
 			for (int i=0;i<n;i++)
-				data->material.textures[i] = session->resource_manager->load_texture(f->read_str());
+				data->material.textures[i] = session->resource_manager->load_texture_or_white(f->read_str());
 		}
 		// Colors
 		f->read_comment();

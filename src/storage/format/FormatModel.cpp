@@ -224,7 +224,7 @@ public:
 		f->read_bool();
 		temp.textures.resize(f->read_int());
 		for (int t=0; t<temp.textures.num; t++)
-			temp.textures[t] = session->resource_manager->load_texture(f->read_str());
+			temp.textures[t] = session->resource_manager->load_texture_or_white(f->read_str());
 		parent->num_uvs.add(temp.textures.num);
 
 		bool user_texture = user_color;

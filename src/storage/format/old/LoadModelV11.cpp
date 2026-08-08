@@ -441,7 +441,7 @@ void FormatModel::_load_v11(LegacyFile& lf, DataModel *data, bool deep) {
 		yrenderer::Material temp;
 		m->textures.clear();
 		for (int t=0;t<n;t++)
-			temp.textures.add(session->resource_manager->load_texture(f->read_str()));
+			temp.textures.add(session->resource_manager->load_texture_or_white(f->read_str()));
 
 		bool user_texture = user_color;
 		if (filename != "") {

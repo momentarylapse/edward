@@ -95,7 +95,7 @@ void ShaderCache::_prepare_shader(RenderPathType render_path_type, const Materia
 		return;
 	static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 	const string &rpt = RENDER_PATH_NAME[(int)render_path_type];
-	shader[i] = ctx->shader_manager->load_surface_shader(material->pass0.shader_path, rpt, vertex_module, geometry_module, tessellation_module);
+	shader[i] = REQUIRED(ctx->shader_manager->load_surface_shader(material->pass0.shader_path, rpt, vertex_module, geometry_module, tessellation_module));
 }
 void ShaderCache::_prepare_shader_multi_pass(RenderPathType render_path_type, const Material* material, const string& vertex_module, const string& geometry_module, const string& tessellation_module, int k) {
 	int i = shader_index(render_path_type);
@@ -103,7 +103,7 @@ void ShaderCache::_prepare_shader_multi_pass(RenderPathType render_path_type, co
 		return;
 	static const string RENDER_PATH_NAME[3] = {"", "forward", "deferred"};
 	const string &rpt = RENDER_PATH_NAME[(int)render_path_type];
-	shader[i] = ctx->shader_manager->load_surface_shader(material->pass(k).shader_path, rpt, vertex_module, geometry_module, tessellation_module);
+	shader[i] = REQUIRED(ctx->shader_manager->load_surface_shader(material->pass(k).shader_path, rpt, vertex_module, geometry_module, tessellation_module));
 }
 
 Shader *ShaderCache::get_shader(RenderPathType render_path_type) {

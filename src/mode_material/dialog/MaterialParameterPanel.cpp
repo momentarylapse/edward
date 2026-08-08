@@ -214,7 +214,7 @@ void MaterialParameterPanel::on_texture_level_load() {
 		session->storage->file_dialog(FD_TEXTURE, false, true).then([this, sel] (const auto& p) {
 			auto temp = *material;
 			auto rm = session->resource_manager;
-			temp.textures[sel] = rm->load_texture(p.relative);
+			temp.textures[sel] = rm->load_texture_or_white(p.relative);
 			data->execute(new ActionModelEditMaterial(session, material, temp));
 		});
 	}
@@ -234,7 +234,7 @@ void MaterialParameterPanel::on_texture_level_save() {
 			im.save(p.complete);
 
 			auto temp = *material;
-			temp.textures[sel] = session->resource_manager->load_texture(p.relative);
+			temp.textures[sel] = session->resource_manager->load_texture_or_white(p.relative);
 			data->execute(new ActionModelEditMaterial(session, material, temp));
 		});
 }
@@ -282,7 +282,7 @@ void MaterialParameterPanel::on_texture_level_linear() {
 	if (sel >= 0) {
 		auto temp = *material;
 		auto rm = session->resource_manager;
-		temp.textures[sel] = rm->load_texture(rm->filename(temp.textures[sel].get()).with("@linear"));
+		temp.textures[sel] = rm->load_texture_or_white(rm->filename(temp.textures[sel].get()).with("@linear"));
 		data->execute(new ActionModelEditMaterial(session, material, temp));
 	}
 }
@@ -292,7 +292,7 @@ void MaterialParameterPanel::on_texture_level_srgb() {
 	if (sel >= 0) {
 		auto temp = *material;
 		auto rm = session->resource_manager;
-		temp.textures[sel] = rm->load_texture(str(rm->filename(temp.textures[sel].get())).replace("@linear", ""));
+		temp.textures[sel] = rm->load_texture_or_white(str(rm->filename(temp.textures[sel].get())).replace("@linear", ""));
 		data->execute(new ActionModelEditMaterial(session, material, temp));
 	}
 }

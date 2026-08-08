@@ -50,7 +50,7 @@ void DataMaterial::ShaderData::reset(DocumentSession *s) {
 void DataMaterial::reset() {
 	filename = "";
 
-	material.textures = {doc->session->resource_manager->load_texture("")};
+	material.textures = {doc->session->resource_manager->load_texture("").value()};
 
 	material.albedo = White;
 	material.roughness = 0.5f;

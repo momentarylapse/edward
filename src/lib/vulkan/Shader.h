@@ -5,6 +5,7 @@
 
 
 #include "../base/base.h"
+#include "../base/error.h"
 #include "../base/pointer.h"
 #include "../os/path.h"
 #include <vulkan/vulkan.h>
@@ -29,8 +30,8 @@ namespace vulkan{
 		VkShaderModule get_module(VkShaderStageFlagBits stage) const;
 
 		static Path directory;
-		static xfer<Shader> load(const Path &filename);
-		static xfer<Shader> create(const string &source);
+		static base::result<xfer<Shader>> load(const Path &filename);
+		static base::result<xfer<Shader>> create(const string &source);
 	};
 
 };

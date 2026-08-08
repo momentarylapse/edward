@@ -4,6 +4,7 @@
 #pragma once
 
 #include "graphics-fwd.h"
+#include <lib/base/error.h>
 #include <lib/base/pointer.h>
 #include <lib/base/map.h>
 #include <lib/os/path.h>
@@ -15,7 +16,8 @@ public:
 	explicit TextureManager(Context *ctx, const Array<Path>& texture_dirs);
 	Context* ctx;
 
-	shared<Texture> load_texture(const Path& path);
+	base::result<shared<Texture>> load_texture(const Path& path);
+	shared<Texture> load_texture_or_white(const Path& path);
 
 	Path find_absolute_texture_path(const Path& path) const;
 

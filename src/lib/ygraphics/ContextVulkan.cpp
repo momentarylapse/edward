@@ -5,6 +5,7 @@
 #include "../os/msg.h"
 #include "../image/image.h"
 #include "graphics-impl.h"
+#include "lib/os/app.h"
 
 namespace ygfx {
 
@@ -35,16 +36,14 @@ vulkan::DescriptorSet* DrawingHelperData::get_descriptor_set(Texture* texture) {
 void DrawingHelperData::_create_basic_internal() {
 	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096", 65536);
 
-	try {
-
-		dset = pool->create_set(shader);
-		dset->set_texture(0, context->tex_white);
-		dset->update();
+	dset = pool->create_set(shader);
+	dset->set_texture(0, context->tex_white);
+	dset->update();
 
 
 
-		shader_lines = vulkan::Shader::create(
-			R"foodelim(
+	shader_lines = REQUIRED(vulkan::Shader::create(
+		R"foodelim(
 <Layout>
 	version = 430
 	bindings = [[sampler]]
@@ -161,15 +160,10 @@ void main() {
 	}*/
 }
 </FragmentShader>
-)foodelim");
-		dset_lines = pool->create_set(shader_lines);
-		dset_lines->set_texture(0, context->tex_white);
-		dset_lines->update();
-
-	} catch (Exception& e) {
-		msg_error(e.message());
-		throw;
-	}
+)foodelim"));
+	dset_lines = pool->create_set(shader_lines);
+	dset_lines->set_texture(0, context->tex_white);
+	dset_lines->update();
 }
 
 
@@ -220,7 +214,7 @@ Context::~Context() {
 	delete instance;
 }
 
-Shader *Context::create_shader(const string &source) const {
+base::result<Shader*> Context::create_shader(const string &source) const {
 	return vulkan::Shader::create(source);
 }
 

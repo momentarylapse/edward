@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lib/ygraphics/graphics-fwd.h>
+#include <lib/base/error.h>
 #include <lib/base/pointer.h>
 #include <lib/os/path.h>
 
@@ -37,7 +38,10 @@ public:
 	owned<TerrainManager> terrain_manager;
 	Path map_dir;
 
-	shared<ygfx::Texture> load_texture(const Path& path);
+	base::result<shared<ygfx::Texture>> load_texture(const Path& path);
+	shared<ygfx::Texture> load_texture_or_white(const Path& path);
+	base::result<shared<ygfx::Shader>> load_shader(const Path& path);
+	base::result<shared<ygfx::Shader>> create_shader(const string& code);
 	yrenderer::Material* load_material(const Path &filename);
 	yrenderer::Material* create_material();
 	Model* load_model(const Path &filename);

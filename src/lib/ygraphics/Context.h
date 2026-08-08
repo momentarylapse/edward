@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/base/error.h>
 #include <lib/base/pointer.h>
 #include "graphics-fwd.h"
 #include "font.h"
@@ -72,7 +73,7 @@ public:
 #else
 	nix::Context* ctx = nullptr;
 #endif
-	Shader* create_shader(const string& source) const;
+	base::result<Shader*> create_shader(const string& source) const;
 
 	void make_current();
 

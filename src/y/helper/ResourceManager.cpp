@@ -186,8 +186,20 @@ void ResourceManager::save_template(const Template *t, const Path &filename) {
 }
 
 
-shared<ygfx::Texture> ResourceManager::load_texture(const Path& filename) {
+base::result<shared<ygfx::Texture>> ResourceManager::load_texture(const Path& filename) {
 	return texture_manager->load_texture(filename);
+}
+
+shared<ygfx::Texture> ResourceManager::load_texture_or_white(const Path &path) {
+	return texture_manager->load_texture_or_white(path);
+}
+
+base::result<shared<ygfx::Shader>> ResourceManager::load_shader(const Path &path) {
+	return shader_manager->load_shader(path);
+}
+
+base::result<shared<ygfx::Shader>> ResourceManager::create_shader(const string &code) {
+	return shader_manager->create_shader(code);
 }
 
 Path ResourceManager::filename(const Model *m) const {

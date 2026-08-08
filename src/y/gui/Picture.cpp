@@ -45,7 +45,7 @@ Picture::~Picture() = default;
 
 void Picture::set_option(const string &k, const string &v) {
 	if (k == "texture") {
-		texture = engine.resource_manager->load_texture(v);
+		texture = engine.resource_manager->load_texture_or_white(v);
 	} else if (k == "angle") {
 		angle = v._float();
 	} else if (k == "radius") {

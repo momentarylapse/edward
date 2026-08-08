@@ -127,7 +127,7 @@ static TBuiltInResource create_glslang_resources() {
 
 static TBuiltInResource default_resource;
 
-bytes glslang_to_spirv(const string& source, VkShaderStageFlagBits type) {
+base::result<bytes> glslang_to_spirv(const string& source, VkShaderStageFlagBits type) {
 	static bool initialized = false;
 	if (!initialized) {
 		[[maybe_unused]] int r = ShInitialize();
@@ -170,13 +170,13 @@ bytes glslang_to_spirv(const string& source, VkShaderStageFlagBits type) {
 	shader.setEnvTarget(glslang::EshTargetSpv, glslang::EShTargetSpv_1_6);
 
 	if (!shader.parse(&default_resource, 330, false, (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules))) {
-		throw Exception(format("compiling shader: %s", shader.getInfoLog()));
+		return base::Error{format("compiling shader: %s", shader.getInfoLog())};
 	}
 
 	glslang::TProgram program;
 	program.addShader(&shader);
 	if (!program.link((EShMessages)(EShMsgSpvRules | EShMsgVulkanRules))) {
-		throw Exception(format("linking shader: %s", program.getInfoLog()));
+		return base::Error{format("linking shader: %s", program.getInfoLog())};
 	}
 
 	glslang::TIntermediate *intermediate = program.getIntermediate(stage);
@@ -198,7 +198,7 @@ string with_line_numbers(const string& s) {
 namespace vulkan {
 
 
-	VkShaderModule create_shader_module(const bytes &code) {
+	base::result<VkShaderModule> create_shader_module(const bytes &code) {
 		if (code.num == 0)
 			return nullptr;
 		VkShaderModuleCreateInfo info = {};
@@ -208,7 +208,7 @@ namespace vulkan {
 
 		VkShaderModule shaderModule;
 		if (vkCreateShaderModule(default_device->device, &info, nullptr, &shaderModule) != VK_SUCCESS)
-			throw Exception("failed to create shader module!");
+			return base::Error{"failed to create shader module!"};
 
 		return shaderModule;
 	}
@@ -326,7 +326,7 @@ namespace vulkan {
 		return source.sub(pos0, pos1);
 	}
 
-	string expand_shader_source(const string &source, ShaderMetaData &meta) {
+	base::result<string> expand_shader_source(const string &source, ShaderMetaData &meta) {
 		string r = source;
 		while (true) {
 			int p = r.find("#import", 0);
@@ -345,7 +345,7 @@ namespace vulkan {
 					break;
 				}
 			if (!found)
-				throw Exception(format("shader import '%s' not found", imp));
+				return base::Error{format("shader import '%s' not found", imp)};
 		}
 
 		string intro;
@@ -363,12 +363,12 @@ namespace vulkan {
 		return intro + r;
 	}
 
-	VkShaderModule create_vk_shader(const string &_source, VkShaderStageFlagBits type, ShaderMetaData &meta) {
-		string source = expand_shader_source(_source, meta);
+	base::result<VkShaderModule> create_vk_shader(const string &_source, VkShaderStageFlagBits type, ShaderMetaData &meta) {
+		RESULT_PROPAGATE_ERROR(source, expand_shader_source(_source, meta), x1);
 		if (source.num == 0)
 			return nullptr;
 
-		bytes _code = glslang_to_spirv(source, type);
+		RESULT_PROPAGATE_ERROR(_code, glslang_to_spirv(source, type), x2);
 		return create_shader_module(_code);
 
 		/*
@@ -412,11 +412,11 @@ namespace vulkan {
 		return m;
 	}
 
-	xfer<Shader> Shader::create(const string &source) {
+	base::result<xfer<Shader>> Shader::create(const string &source) {
 		auto parts = get_shader_parts(source);
 
 		if (parts.num == 0)
-			throw Exception("no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)");
+			return base::Error{"no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)"};
 
 		//int prog = create_empty_shader_program();
 		auto s = new Shader();
@@ -434,7 +434,7 @@ namespace vulkan {
 			} else if ((int)p.type == TYPE_LAYOUT) {
 				meta = parse_meta(p.source);
 			} else {
-				auto mm = create_vk_shader(p.source, p.type, meta);
+				RESULT_PROPAGATE_ERROR(mm, create_vk_shader(p.source, p.type, meta), x1);
 				if (mm)
 					s->modules.add({mm, p.type});
 			}
@@ -461,16 +461,17 @@ namespace vulkan {
 	}
 
 
-	xfer<Shader> Shader::load(const Path &_filename) {
+	base::result<xfer<Shader>> Shader::load(const Path &_filename) {
 		if (!_filename)
 			return nullptr;
 		Path filename = directory | _filename;
 		if (verbosity >= 1)
 			msg_write(format("load shader %s", filename));
 
-		if (!os::fs::exists(filename.with(".compiled")))
-			return create(os::fs::read_text(filename));
+	//	if (!os::fs::exists(filename.with(".compiled")))
+		return create(os::fs::read_text(filename));
 
+#if 0
 		Shader *s = new Shader();
 
 		auto f = ownify(os::fs::open(filename.with(".compiled"), "rb"));
@@ -487,21 +488,29 @@ namespace vulkan {
 				} else if (tag == "Input") {
 				} else if (tag == "Info") {
 				} else if (tag == "VertexShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_VERTEX_BIT});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_VERTEX_BIT});
 				} else if (tag == "GeometryShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_GEOMETRY_BIT});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_GEOMETRY_BIT});
 				} else if (tag == "FragmentShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_FRAGMENT_BIT});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_FRAGMENT_BIT});
 				} else if (tag == "ComputeShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_COMPUTE_BIT});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_COMPUTE_BIT});
 				} else if (tag == "RayGenShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_RAYGEN_BIT_KHR});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_RAYGEN_BIT_KHR});
 				} else if (tag == "RayMissShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_MISS_BIT_KHR});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_MISS_BIT_KHR});
 				} else if (tag == "RayClosestHitShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
 				} else if (tag == "RayAnyHitShader") {
-					s->modules.add({create_shader_module(value), VK_SHADER_STAGE_ANY_HIT_BIT_KHR});
+					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
+					s->modules.add({m, VK_SHADER_STAGE_ANY_HIT_BIT_KHR});
 				} else {
 					msg_write("WARNING: " + value);
 				}
@@ -510,6 +519,7 @@ namespace vulkan {
 		}
 
 		return s;
+#endif
 	}
 
 	VkShaderModule Shader::get_module(VkShaderStageFlagBits stage) const {

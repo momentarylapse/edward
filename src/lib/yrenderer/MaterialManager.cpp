@@ -158,7 +158,7 @@ void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 			texture_files.add("");
 		m->textures.resize(max(m->textures.num, texture_files.num));
 		for (const auto& [i, f]: enumerate(texture_files))
-			m->textures[i] = texture_manager->load_texture(f);
+			m->textures[i] = texture_manager->load_texture_or_white(f);
 	}
 	if (c.has("shader"))
 		m->pass0.shader_path = c.get_str("shader", "");
@@ -224,7 +224,7 @@ void MaterialManager::_load_from_file(Material* m, const Path &filename) {
 		auto texture_files = c.get_str_array("reflection.cubemap");
 		shared_array<Texture> cmt;
 		for (auto &f: texture_files)
-			cmt.add(texture_manager->load_texture(f));
+			cmt.add(texture_manager->load_texture_or_white(f));
 		m->reflection.density = c.get_float("reflection.density", 1);
 #if 0
 			m->reflection.cube_map = new CubeMap(m->reflection.cube_map_size);
@@ -381,7 +381,7 @@ void MaterialManager::set_save_state(Material* m) {
 
 Material* MaterialManager::create_internal() {
 	auto m = new Material();
-	m->textures = {texture_manager->load_texture("")};
+	m->textures = {texture_manager->load_texture_or_white("")};
 	internal_materials.add(m);
 	return m;
 }

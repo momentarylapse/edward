@@ -17,7 +17,7 @@ constexpr int NSAMPLES = 2560;
 using namespace ygfx;
 
 LightMeter::LightMeter(Context* ctx, Texture* tex)
-	: ComputeTask(ctx, "expo", ctx->shader_manager->load_shader("compute/brightness.shader"), NSAMPLES, 1, 1)
+	: ComputeTask(ctx, "expo", REQUIRED(ctx->shader_manager->load_shader("compute/brightness.shader")), NSAMPLES, 1, 1)
 {
 	ch_prepare = profiler::create_channel("expo.p", channel);
 	params = new UniformBuffer(8);

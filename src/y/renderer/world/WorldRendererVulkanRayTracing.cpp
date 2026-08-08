@@ -59,9 +59,9 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 		rtx.dset->set_uniform_buffer(4, rvd.ubo_light.get());
 		rtx.dset->set_uniform_buffer(5, scene_view.ray_tracing_data->buffer_meshes.get());
 
-		auto shader_gen = shader_manager->load_shader("raytracing/gen.shader");
-		auto shader1 = shader_manager->load_shader("raytracing/group1.shader");
-		auto shader2 = shader_manager->load_shader("raytracing/group2.shader");
+		auto shader_gen = REQUIRED(shader_manager->load_shader("raytracing/gen.shader"));
+		auto shader1 = REQUIRED(shader_manager->load_shader("raytracing/group1.shader"));
+		auto shader2 = REQUIRED(shader_manager->load_shader("raytracing/group2.shader"));
 		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 
@@ -71,7 +71,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 
 		compute.pool = new vulkan::DescriptorPool("image:1,storage-buffer:1,buffer:8,sampler:1", 1);
 
-		auto shader = shader_manager->load_shader("compute/pathtracing.shader");
+		auto shader = REQUIRED(shader_manager->load_shader("compute/pathtracing.shader"));
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
 		compute.dset = compute.pool->create_set("image,buffer,buffer");
 		compute.dset->set_storage_image(0, offscreen_image);
@@ -83,7 +83,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 	pc.t_rand = 0;
 
 
-	auto shader_out = shader_manager->load_shader("vulkan/passthrough.shader");
+	auto shader_out = REQUIRED(shader_manager->load_shader("vulkan/passthrough.shader"));
 	out_renderer = new ThroughShaderRenderer(ctx, "out", shader_out);
 	out_renderer->bind_texture(0, offscreen_image);
 }

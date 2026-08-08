@@ -5,6 +5,8 @@
 #include "Context.h"
 #include "graphics-impl.h"
 #include <lib/image/image.h>
+#include <lib/os/msg.h>
+#include <lib/os/app.h>
 
 namespace ygfx {
 
@@ -70,7 +72,7 @@ layout(binding=0) uniform sampler2D tex0;
 </Module>
 )foodelim");
 
-	shader = context->create_shader(
+	shader = REQUIRED(context->create_shader(
 			R"foodelim(
 <Layout>
 	version = 430
@@ -108,9 +110,9 @@ void main() {
 	out_color *= color * in_color;
 }
 </FragmentShader>
-)foodelim");
+)foodelim"));
 
-	shader_round  = context->create_shader(
+	shader_round  = REQUIRED(context->create_shader(
 			R"foodelim(
 <Layout>
 	version = 430
@@ -157,7 +159,7 @@ void main() {
 	}
 }
 </FragmentShader>
-)foodelim");
+)foodelim"));
 
 	_create_basic_internal();
 
@@ -181,6 +183,11 @@ VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
 		num_line_vbs_used ++;
 		return _vb;
 	}
+}
+
+void critical_error(const string& err) {
+	msg_error(err);
+	os::app::exit(1);
 }
 
 }

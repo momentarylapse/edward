@@ -131,20 +131,15 @@ Model* __load_model(const Path& filename) {
 }
 
 shared<Shader> __load_shader(const Path& filename) {
-	try {
-		return engine.resource_manager->shader_manager->load_shader(filename);
-	} catch (Exception& e) {
-		msg_error(e.message());
-		return nullptr;
-	}
+	return REQUIRED(engine.resource_manager->shader_manager->load_shader(filename));
 }
 
-xfer<Shader> __create_shader(const string& source) {
-	return engine.resource_manager->shader_manager->create_shader(source);
+shared<Shader> __create_shader(const string& source) {
+	return REQUIRED(engine.resource_manager->shader_manager->create_shader(source));
 }
 
 shared<Texture> __load_texture(const Path& filename) {
-	return engine.resource_manager->load_texture(filename);
+	return engine.resource_manager->load_texture_or_white(filename);
 }
 
 yrenderer::Material* __load_material(const Path& filename) {

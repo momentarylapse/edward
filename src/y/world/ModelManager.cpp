@@ -260,7 +260,7 @@ public:
 			me->textures.resize(nt);
 		for (int t=0;t<nt;t++) {
 			Path fn = f->read_str();
-			me->textures[t] = chunked_file_parser_get_resource_manager(root)->load_texture(fn);
+			me->textures[t] = chunked_file_parser_get_resource_manager(root)->load_texture_or_white(fn);
 		}
 	}
 	void write(Stream *f) override {}

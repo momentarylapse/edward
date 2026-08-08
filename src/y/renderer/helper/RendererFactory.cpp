@@ -116,7 +116,7 @@ void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 					im.set_pixel(i, j, ((i/16+j/16)%2 == 0) ? Black : White);
 			shared tex = new Texture();
 			tex->write(im);
-			auto shader = engine.resource_manager->shader_manager->load_shader("forward/blur.shader");
+			auto shader = REQUIRED(engine.resource_manager->shader_manager->load_shader("forward/blur.shader"));
 			auto tsr = new ThroughShaderRenderer(ctx, "blur", shader);
 			tsr->bind_texture(0, tex.get());
 			Any axis_x, axis_y;

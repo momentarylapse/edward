@@ -47,7 +47,7 @@ RenderPathDeferred::RenderPathDeferred(Context* ctx, int width, int height, int 
 		shader_manager->load_shader_module("forward/module-surface.shader");
 		shader_manager->load_shader_module("deferred/module-surface.shader");
 
-		auto shader_gbuffer_out = shader_manager->load_shader("deferred/out.shader");
+		auto shader_gbuffer_out = REQUIRED(shader_manager->load_shader("deferred/out.shader"));
 		//	if (!shader_gbuffer_out->link_uniform_block("SSAO", 13))
 		//		msg_error("SSAO");
 

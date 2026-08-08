@@ -16,7 +16,7 @@ xfer<vulkan::Texture> __vulkan_load_texture(const Path &filename) {
 }
 
 xfer<vulkan::Shader> __vulkan_load_shader(const Path &filename) {
-	KABA_EXCEPTION_WRAPPER(return vulkan::Shader::load(filename));
+	//KABA_EXCEPTION_WRAPPER(return vulkan::Shader::load(filename));
 	return nullptr;
 }
 

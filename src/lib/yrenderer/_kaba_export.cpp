@@ -184,28 +184,13 @@ void shader_set_floats(Shader *s, const string &name, float *f, int num) {
 class ContextWrapper : public yrenderer::Context {
 public:
 	shared<Texture> _load_texture(const Path& path) {
-		try {
-			return load_texture(path);
-		} catch (const ::Exception& e) {
-			msg_error(e.message());
-			exit(1);
-		}
+		return REQUIRED(load_texture(path));
 	}
-	xfer<Shader> _create_shader(const string& code) {
-		try {
-			return create_shader(code);
-		} catch (const ::Exception& e) {
-			msg_error(e.message());
-			exit(1);
-		}
+	shared<Shader> _create_shader(const string& code) {
+		return REQUIRED(create_shader(code));
 	}
 	shared<Shader> _load_shader(const Path& path) {
-		try {
-			return load_shader(path);
-		} catch (const ::Exception& e) {
-			msg_error(e.message());
-			exit(1);
-		}
+		return REQUIRED(load_shader(path));
 	}
 };
 
@@ -595,7 +580,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.17");
+	ext->package_info("yrenderer", "0.18");
 	_export_package_yrenderer_internal(ext);
 }
 
