@@ -3,11 +3,6 @@
 #include "../../template/template.h"
 #include "../../Context.h"
 #include "../../lib/lib.h"
-#include "../../dynamic/exception.h"
-#include "../../dynamic/dynamic.h"
-#include <lib/base/set.h>
-#include <lib/base/iter.h>
-#include <lib/os/msg.h>
 
 namespace kaba {
 
@@ -42,7 +37,7 @@ shared<Node> Concretifier::concretify_special_function_typeof(shared<Node> node,
 shared<Node> implement_len(shared<Node> node, Concretifier *con, Block *block, const Class *ns, int token_id) {
 	node = con->concretify_node(node, block, ns);
 	node = con->force_concrete_type(node);
-	node = con->deref_if_reference(node);
+	node = con->try_auto_deref(node);
 
 	// array?
 	if (node->type->is_array())
@@ -148,6 +143,12 @@ shared<Node> Concretifier::concretify_special_function_give(shared<Node> node, B
 	return nullptr;
 }
 
+shared<Node> Concretifier::concretify_special_function_noderef(shared<Node> node, Block *block, const Class *ns) {
+	auto sub = concretify_node(node->params[0], block, block->name_space());
+	flags_set(sub->flags, Flags::Noderef);
+	return sub;
+}
+
 shared<Node> Concretifier::concretify_special_function_call(shared<Node> node, SpecialFunction *s, Block *block, const Class *ns) {
 	node = node->shallow_copy();
 	node->params.erase(0);
@@ -172,6 +173,8 @@ shared<Node> Concretifier::concretify_special_function_call(shared<Node> node, S
 		return concretify_special_function_weak(node, block, ns);
 	} else if (s->id == SpecialFunctionID::Give) {
 		return concretify_special_function_give(node, block, ns);
+	} else if (s->id == SpecialFunctionID::Noderef) {
+		return concretify_special_function_noderef(node, block, ns);
 	} else if (s->id == SpecialFunctionID::Sort) {
 		return concretify_special_function_sort(node, block, ns);
 	} else if (s->id == SpecialFunctionID::Filter) {
