@@ -38,9 +38,6 @@ EngineData::EngineData() {
 
 	width = 0;
 	height = 0;
-	window_renderer = nullptr;
-	gui_renderer = nullptr;
-	region_renderer = nullptr;
 
 	detail_level = 100;
 	detail_factor_inv = 1.0f;

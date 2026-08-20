@@ -35,11 +35,11 @@ float fb_ratio(ygfx::FrameBuffer* fb) {
 }
 
 RenderParams RenderParams::into_window(ygfx::FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio) {
-	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), true, frame_buffer, frame_buffer->area()};
+	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), true, false, frame_buffer, frame_buffer->area()};
 
 }
 RenderParams RenderParams::into_texture(ygfx::FrameBuffer *frame_buffer, const base::optional<float>& aspect_ratio) {
-	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), false, frame_buffer, frame_buffer->area()};
+	return {aspect_ratio.value_or(fb_ratio(frame_buffer)), false, false, frame_buffer, frame_buffer->area()};
 }
 
 

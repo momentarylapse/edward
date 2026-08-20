@@ -82,6 +82,7 @@ CodeContext get_class_block_map(Module* m, const Class* c) {
 	for (auto cc: weak(c->constants))
 		if (cc->owner == m->tree)
 			last_token = max(last_token, cc->token_id);
+	last_token = min(last_token, m->tree->parser->Exp.lines.back().last_token_id);
 	auto l = m->tree->parser->Exp.token_logical_line(last_token);
 	bm.end = l->offset + l->length;
 	return bm;
@@ -98,8 +99,8 @@ Array<CodeContext> get_block_block_map(Module* m, Function* f, shared<Node> b) {
 	};
 
 	// mark (direct) coverage of all blocks
-	kaba::Transformer::transformb_block(b.get(), [mark] (shared<Node> n, Block* bb) {
-		if (bb and n->token_id >= 0)
+	kaba::Transformer::transformb_block(b.get(), [mark, m] (shared<Node> n, Block* bb) {
+		if (bb and n->token_id >= 0 and !bb->function->is_template() and !bb->function->auto_declared and bb->function->name.head(1) != ":" and bb->function->owner() == m->tree)
 			mark(bb, n->token_id);
 		return n;
 	});
@@ -116,10 +117,12 @@ Array<CodeContext> get_block_block_map(Module* m, Function* f, shared<Node> b) {
 	// tokens -> offsets
 	Array<CodeContext> map;
 	for (const auto& [bb, range]: block_tokens) {
-		int first = m->tree->parser->Exp.token_logical_line(range.first)->offset;
-		int last = m->tree->parser->Exp.token_offset(range.last) + m->tree->parser->Exp.get_token(range.last).num;
-		CodeContext bm{m, f->name_space, f, bb, first, last};
-		map.add(bm);
+		if (auto l = m->tree->parser->Exp.token_logical_line(range.first)) {
+			int first = l->offset;
+			int last = m->tree->parser->Exp.token_offset(range.last) + m->tree->parser->Exp.get_token(range.last).num;
+			CodeContext bm{m, f->name_space, f, bb, first, last};
+			map.add(bm);
+		}
 	}
 	return map;
 }

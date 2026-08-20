@@ -45,6 +45,7 @@ Camera::Camera() {
 	component_type = _class;
 
 	fov = pi / 4;
+	offset = vec2::ZERO;
 	exposure = 1.0f;
 	bloom_radius = 10;
 	bloom_factor = 0.15f;
@@ -104,7 +105,7 @@ void Camera::update_matrix_cache(float aspect_ratio) {
 }
 
 yrenderer::CameraParams Camera::params() const {
-	return {owner->pos, owner->ang, fov, min_depth, max_depth};
+	return {owner->pos, owner->ang, fov, min_depth, max_depth, offset};
 }
 
 

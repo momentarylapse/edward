@@ -353,6 +353,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->link_virtual("Renderer.draw", &Renderer::draw, &renderer);
 	}
 	{
+#ifdef HAS_LIB_GLFW
 		WindowRenderer wr(nullptr, nullptr, true);
 		ext->declare_class_size("WindowRenderer", sizeof(WindowRenderer));
 		ext->link_class_func("WindowRenderer.__init__", &kaba::generic_init_ext<WindowRenderer, yrenderer::Context*, GLFWwindow*, bool>);
@@ -362,6 +363,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->link_class_func("WindowRenderer.create_params", &WindowRenderer::create_params);
 		ext->link_virtual("WindowRenderer.prepare", &WindowRenderer::prepare, &wr);
 		ext->link_virtual("WindowRenderer.draw", &WindowRenderer::draw, &wr);
+#endif
 	}
 	{
 
@@ -562,7 +564,9 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 
 	ext->link_func("apply_shader_data", &apply_shader_data);
 
+#ifdef HAS_LIB_GLFW
 	ext->link_func("api_init_glfw", &api_init_glfw);
+#endif
 	ext->link_func("api_init_xhui", &api_init_xhui);
 }
 

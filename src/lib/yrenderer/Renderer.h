@@ -11,6 +11,8 @@
 #include <lib/base/pointer.h>
 #include <lib/base/optional.h>
 #include <lib/math/rect.h>
+#include <lib/math/vec3.h>
+#include <lib/math/quaternion.h>
 
 struct rect;
 struct color;
@@ -31,12 +33,16 @@ rect dynamicly_scaled_source();
 struct RenderParams {
 	float desired_aspect_ratio = 1;
 	bool target_is_window = false;
+	bool is_vr = false; // TODO
 	ygfx::FrameBuffer* frame_buffer = nullptr;
 	rect area;
 #ifdef USING_VULKAN
 	ygfx::RenderPass *render_pass;
 	ygfx::CommandBuffer *command_buffer;
 #endif
+	vec3 vr_eye_pos = vec3(0, 0, 0);
+	quaternion vr_eye_ang = quaternion::ID;
+	rect vr_eye_fov = rect::EMPTY;
 
 	RenderParams with_target(ygfx::FrameBuffer* fb) const;
 	RenderParams with_area(const rect& area) const;

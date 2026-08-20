@@ -22,6 +22,7 @@ namespace vulkan {
 
 Device *default_device;
 
+Array<string> additional_device_extensions;
 
 base::map<Feature, string> feature_names() {
 	return {{
@@ -349,6 +350,8 @@ void Device::create_logical_device(VkSurfaceKHR surface) {
 #ifdef OS_MAC
 	extensions.add("VK_KHR_portability_subset");
 #endif
+	for (const auto& e: additional_device_extensions)
+		extensions.add(e.c_str()); // should be fine... for a short time... :P
 	create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.num);
 	create_info.ppEnabledExtensionNames = &extensions[0];
 

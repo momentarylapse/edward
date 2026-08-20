@@ -23,6 +23,7 @@ namespace yrenderer {
 	class Renderer;
 	class MaterialManager;
 	class WindowRenderer;
+	class VrRenderer;
 	class RegionRenderer;
 	class RenderTask;
 }
@@ -84,9 +85,10 @@ public:
 	yrenderer::Context* context;
 	ResourceManager *resource_manager;
 
-	yrenderer::WindowRenderer* window_renderer;
-	yrenderer::Renderer* gui_renderer;
-	yrenderer::RegionRenderer* region_renderer;
+	yrenderer::WindowRenderer* window_renderer = nullptr;
+	yrenderer::VrRenderer* vr_renderer = nullptr;
+	yrenderer::Renderer* gui_renderer = nullptr;
+	yrenderer::RegionRenderer* region_renderer = nullptr;
 	Array<FullCameraRenderer*> camera_renderers;
 
 	Array<yrenderer::RenderTask*> render_tasks;

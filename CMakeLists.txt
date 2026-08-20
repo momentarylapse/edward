@@ -469,6 +469,7 @@ add_executable(edward
 	src/lib/yrenderer/target/TargetRenderer.cpp
 	src/lib/yrenderer/target/TextureRendererGL.cpp
 	src/lib/yrenderer/target/TextureRendererVulkan.cpp
+	src/lib/yrenderer/target/VrRenderer.cpp
 	src/lib/yrenderer/target/WindowRendererGL.cpp
 	src/lib/yrenderer/target/WindowRendererVulkan.cpp
 	src/lib/yrenderer/target/XhuiRenderer.cpp

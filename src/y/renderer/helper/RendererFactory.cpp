@@ -19,13 +19,8 @@
 #include <lib/os/msg.h>
 #include <lib/profiler/Profiler.h>
 #include <Config.h>
-#include <helper/ResourceManager.h>
-#include <lib/ygraphics/ShaderManager.h>
+#include <lib/yrenderer/target/VrRenderer.h>
 
-// for debugging
-#include <lib/ygraphics/graphics-impl.h>
-#include <lib/image/image.h>
-#include <lib/yrenderer/target/TextureRenderer.h>
 
 using namespace yrenderer;
 using namespace ygfx;
@@ -43,9 +38,9 @@ string render_graph_str(Renderer *r) {
 	return s;
 }
 
-void print_render_chain() {
+void print_render_graph(Renderer* root) {
 	msg_write("------------------------------------------");
-	msg_write("CHAIN:  " + render_graph_str(engine.window_renderer));
+	msg_write("CHAIN:  " + render_graph_str(root));
 	msg_write("------------------------------------------");
 }
 
@@ -97,8 +92,8 @@ void create_and_attach_camera_renderer(yrenderer::Context* ctx, Camera *cam) {
 
 
 void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
-	yrenderer::cubemap_default_resolution = config.cubemap_resolution;
-	yrenderer::cubemap_default_rate = config.cubemap_update_rate;
+	cubemap_default_resolution = config.cubemap_resolution;
+	cubemap_default_rate = config.cubemap_update_rate;
 
 	try {
 		engine.window_renderer = create_window_renderer(ctx, window);
@@ -106,57 +101,29 @@ void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 		engine.gui_renderer = create_gui_renderer(ctx);
 		engine.window_renderer->add_child(engine.region_renderer);
 		engine.region_renderer->add_region(engine.gui_renderer, rect::ID, 999);
-
-		if (false) {
-			int N = 256;
-			Image im;
-			im.create(N, N, Black);
-			for (int i = 0; i < N; i++)
-				for (int j = 0; j < N; j++)
-					im.set_pixel(i, j, ((i/16+j/16)%2 == 0) ? Black : White);
-			shared tex = new Texture();
-			tex->write(im);
-			auto shader = REQUIRED(engine.resource_manager->shader_manager->load_shader("forward/blur.shader"));
-			auto tsr = new ThroughShaderRenderer(ctx, "blur", shader);
-			tsr->bind_texture(0, tex.get());
-			Any axis_x, axis_y;
-			axis_x.list_set(0, Any(1.0f));
-			axis_x.list_set(1, Any(0.0f));
-			axis_y.list_set(0, Any(0.0f));
-			axis_y.list_set(1, Any(1.0f));
-			Any data;
-			data.dict_set("radius:8", Any(5.0f));
-			data.dict_set("threshold:12", Any(0.0f));
-			data.dict_set("axis:0", axis_x);
-			tsr->bindings.shader_data = data;
-			// tsr:  tex -> shader -> ...
-
-			shared tex2 = new Texture(N, N, "rgba:i8");
-#ifdef USING_VULKAN
-			shared<Texture> depth2 = new DepthBuffer(N, N, "d:f32", true);
-#else
-			shared<Texture> depth2 = new DepthBuffer(N, N, "d24s8");
-#endif
-			auto tr = new TextureRenderer(ctx, "tex", {tex2, depth2});
-			//tr->use_params_area = false;
-			tr->add_child(tsr);
-			// tr:  ... -> tex2
-
-			auto tsr2 = new ThroughShaderRenderer(ctx, "text", shader);
-			tsr2->bind_texture(0, tex2.get());
-			data.dict_set("radius:8", Any(5.0f));
-			data.dict_set("threshold:12", Any(0.0f));
-			data.dict_set("axis:0", axis_y);
-			tsr2->bindings.shader_data = data;
-			tsr2->add_sub_task(tr);
-			// tsr2:  tex2 -> shader -> ...
-
-			engine.window_renderer->add_child(tsr2);
-		}
-
 	} catch(Exception &e) {
 		msg_error(e.message());
-		throw e;
+		throw;
 	}
-	print_render_chain();
+	print_render_graph(engine.window_renderer);
+}
+
+
+void create_base_renderer_vr(yrenderer::Context* ctx) {
+#ifdef HAS_VR_RENDERER
+	cubemap_default_resolution = config.cubemap_resolution;
+	cubemap_default_rate = config.cubemap_update_rate;
+
+	try {
+		engine.vr_renderer = new VrRenderer(ctx);
+		engine.region_renderer = create_region_renderer(ctx);
+		engine.gui_renderer = create_gui_renderer(ctx);
+		engine.vr_renderer->add_child(engine.region_renderer);
+		engine.region_renderer->add_region(engine.gui_renderer, rect::ID, 999);
+	} catch(Exception &e) {
+		msg_error(e.message());
+		throw;
+	}
+	print_render_graph(engine.vr_renderer);
+#endif
 }

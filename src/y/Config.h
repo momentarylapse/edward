@@ -21,7 +21,8 @@ enum class AntialiasingMethod {
 enum class ScreenMode {
 	Windowed,
 	Fullscreen,
-	WindowedFullscreen
+	WindowedFullscreen,
+	VR
 };
 
 struct DigestedConfig {

@@ -3,12 +3,14 @@
 //
 
 #include "CameraParams.h"
+#include <cmath>
 
 namespace yrenderer {
 
 mat4 CameraParams::projection_matrix(float aspect_ratio) const {
 	// flip the y-axis
-	return mat4::perspective(fov, aspect_ratio, min_depth, max_depth, false) * mat4::scale(1,-1,1);
+	float a = tanf(fov / 2);
+	return mat4::translation({offset.x/(a*aspect_ratio), offset.y/a, 0}) * mat4::perspective(fov, aspect_ratio, min_depth, max_depth, false) * mat4::scale(1,-1,1);
 }
 
 mat4 CameraParams::view_matrix() const {

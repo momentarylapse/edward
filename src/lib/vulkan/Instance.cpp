@@ -10,9 +10,8 @@
 #include "vulkan.h"
 #include "Instance.h"
 #include "common.h"
-#include "../os/msg.h"
-
-
+#include <lib/os/msg.h>
+#include <lib/base/algo.h>
 
 
 VkResult create_debug_utils_messenger_ext(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
@@ -49,6 +48,8 @@ namespace vulkan {
 		"VK_LAYER_KHRONOS_validation",
 	};
 
+Array<string> additional_instance_extensions;
+
 
 Array<const char*> get_required_instance_extensions(bool glfw, bool validation, bool headless) {
 	Array<const char*> extensions;
@@ -76,6 +77,13 @@ Array<const char*> get_required_instance_extensions(bool glfw, bool validation, 
 
 	if (validation)
 		extensions.add(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+	for (const auto& x: additional_instance_extensions) {
+		if (!base::find_if(extensions, [x] (const char* name) {
+			return string(name) == x;
+		}))
+			extensions.add(x.c_str());
+	}
 
 	return extensions;
 }

@@ -11,6 +11,7 @@
 
 
 #include <lib/base/base.h>
+#include <lib/math/vec2.h>
 #include <lib/math/vec3.h>
 #include <lib/math/quaternion.h>
 #include <lib/math/rect.h>
@@ -31,6 +32,7 @@ struct Camera : ecs::Component {
 	float min_depth, max_depth;
 	
 	float fov;
+	vec2 offset;
 	float exposure;
 	float bloom_radius;
 	float bloom_factor;

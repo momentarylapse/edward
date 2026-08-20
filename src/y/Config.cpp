@@ -116,6 +116,9 @@ void RawConfig::load(const Array<string> &arg) {
 	p.option("--wfs/--windowed-fullscreen", "windowed fullscreen mode", [this] {
 		set_str(ID_SCREEN_MODE, "windowed-fullscreen");
 	});
+	p.option("--vr", "use vr headset instead of screen/window", [this] {
+		set_str(ID_SCREEN_MODE, "vr");
+	});
 	p.option("--fps", "RANGE", "limit framerate in MIN[:MAX]", [this] (const string& a) {
 		auto r = parse_range(a);
 		set_float(ID_RENDERER_MIN_FRAMERATE, r[0]);
@@ -181,6 +184,8 @@ DigestedConfig RawConfig::digest() const {
 		c.screen_mode = ScreenMode::Fullscreen;
 	else if (sm == "windowed-fullscreen")
 		c.screen_mode = ScreenMode::WindowedFullscreen;
+	else if (sm == "vr")
+		c.screen_mode = ScreenMode::VR;
 
 	string aa = get_str(ID_RENDERER_ANTIALIASING, "");
 	if (aa == "") {

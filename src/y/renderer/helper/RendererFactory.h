@@ -20,6 +20,8 @@ namespace yrenderer {
 // everything except the camera:
 //   window <- region <- ui
 void create_base_renderer(yrenderer::Context* ctx, GLFWwindow* window);
+//   vr <- region <- ui
+void create_base_renderer_vr(yrenderer::Context* ctx);
 
 // camera (plug into region)
 FullCameraRenderer* create_camera_renderer(yrenderer::Context* ctx, Camera* cam);

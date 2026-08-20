@@ -161,6 +161,8 @@ void CommandBuffer::draw_instanced(VertexBuffer *vb, int num_instances) {
 }
 
 void CommandBuffer::begin() {
+//	vkResetCommandBuffer(buffer, VkCommandBufferResetFlags(0));
+
 	VkCommandBufferBeginInfo info = {
 		.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
 		.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT

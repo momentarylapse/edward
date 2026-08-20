@@ -272,13 +272,14 @@ SwapChain::~SwapChain() {
 bool SwapChain::present(int image_index, const Array<Semaphore*> &wait_sem) {
 	auto wait_semaphores = extract_semaphores(wait_sem);
 
-	VkPresentInfoKHR present_info = {};
-	present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-	present_info.waitSemaphoreCount = wait_semaphores.num;
-	present_info.pWaitSemaphores = &wait_semaphores[0];
-	present_info.swapchainCount = 1;
-	present_info.pSwapchains = &swap_chain;
-	present_info.pImageIndices = (unsigned int*)&image_index;
+	VkPresentInfoKHR present_info = {
+		.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR,
+		.waitSemaphoreCount = (unsigned)wait_semaphores.num,
+		.pWaitSemaphores = &wait_semaphores[0],
+		.swapchainCount = 1,
+		.pSwapchains = &swap_chain,
+		.pImageIndices = (unsigned int*)&image_index
+	};
 
 	VkResult result = vkQueuePresentKHR(device->present_queue.queue, &present_info);
 
