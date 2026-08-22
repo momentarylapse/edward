@@ -610,12 +610,12 @@ void export_fx(kaba::IExporter* ext) {
 
 void export_ui(kaba::IExporter* ext) {
 #ifdef HAS_INPUT
-	ext->declare_enum("VRDeviceRole.NONE", input::VRDeviceRole::None);
-	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VRDeviceRole::ControllerRight);
-	ext->declare_enum("VRDeviceRole.CONTROLLER_LEFT", input::VRDeviceRole::ControllerLeft);
-	ext->declare_enum("VRDeviceRole.HEADSET", input::VRDeviceRole::Headset);
-	ext->declare_enum("VRDeviceRole.LIGHTHOUSE0", input::VRDeviceRole::Lighthouse0);
-	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VRDeviceRole::Lighthouse1);
+	ext->declare_enum("VRDeviceRole.NONE", input::VrDeviceRole::None);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_RIGHT", input::VrDeviceRole::ControllerRight);
+	ext->declare_enum("VRDeviceRole.CONTROLLER_LEFT", input::VrDeviceRole::ControllerLeft);
+	ext->declare_enum("VRDeviceRole.HEADSET", input::VrDeviceRole::Headset);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE0", input::VrDeviceRole::Lighthouse0);
+	ext->declare_enum("VRDeviceRole.LIGHTHOUSE1", input::VrDeviceRole::Lighthouse1);
 #endif
 
 	{
@@ -734,14 +734,18 @@ void export_ui(kaba::IExporter* ext) {
 	ext->link_class_func("Gamepad.button", &input::Gamepad::button);
 	ext->link_class_func("Gamepad.clicked", &input::Gamepad::clicked);
 
-	ext->declare_class_size("VRDevice", sizeof(input::VRDevice));
-	ext->declare_class_element("VRDevice.role", &input::VRDevice::role);
-	ext->declare_class_element("VRDevice.name", &input::VRDevice::name);
-	ext->declare_class_element("VRDevice.pos", &input::VRDevice::pos);
-	ext->declare_class_element("VRDevice.ang", &input::VRDevice::ang);
-	ext->link_class_func("VRDevice.button", &input::VRDevice::button);
-	ext->link_class_func("VRDevice.clicked", &input::VRDevice::clicked);
-	ext->link_class_func("VRDevice.axis", &input::VRDevice::axis);
+	ext->declare_class_size("VrDevice", sizeof(input::VrDevice));
+	ext->declare_class_element("VrDevice.role", &input::VrDevice::role);
+	ext->declare_class_element("VrDevice.name", &input::VrDevice::name);
+	ext->declare_class_element("VrDevice.pos", &input::VrDevice::pos);
+	ext->declare_class_element("VrDevice.ang", &input::VrDevice::ang);
+	ext->declare_class_element("VrDevice.aim_pos", &input::VrDevice::aim_pos);
+	ext->declare_class_element("VrDevice.aim_ang", &input::VrDevice::aim_ang);
+	ext->declare_class_element("VrDevice.vibration", &input::VrDevice::vibration);
+	ext->link_class_func("VrDevice.button", &input::VrDevice::button);
+	ext->link_class_func("VrDevice.clicked", &input::VrDevice::clicked);
+	ext->link_class_func("VrDevice.touch", &input::VrDevice::touch);
+	ext->link_class_func("VrDevice.axis", &input::VrDevice::axis);
 #else
 	static int dummy;
 	ext->link("key_state", &dummy);
@@ -765,9 +769,10 @@ void export_ui(kaba::IExporter* ext) {
 	ext->link_class_func("Gamepad.button", &dummy);
 	ext->link_class_func("Gamepad.clicked", &dummy);
 
-	ext->link_class_func("VRDevice.button", &dummy);
-	ext->link_class_func("VRDevice.clicked", &dummy);
-	ext->link_class_func("VRDevice.axis", &dummy);
+	ext->link_class_func("VrDevice.button", &dummy);
+	ext->link_class_func("VrDevice.clicked", &dummy);
+	ext->link_class_func("VrDevice.touch", &dummy);
+	ext->link_class_func("VrDevice.axis", &dummy);
 #endif
 
 	ext->link("toplevel", &gui::toplevel);
