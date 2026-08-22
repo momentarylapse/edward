@@ -95,9 +95,10 @@ void Session::load_project(const Path& dir, bool serious) {
 	engine.set_dirs(storage->root_dir_kind[FD_SOUND],
 			storage->root_dir_kind[FD_SCRIPT],
 			storage->root_dir_kind[FD_FONT]);
-	resource_manager->set_dirs(storage->root_dir_kind[FD_MODEL], storage->root_dir_kind[FD_TERRAIN],
-		{storage->root_dir_kind[FD_TEXTURE]}, {storage->root_dir_kind[FD_MATERIAL]},
-		{storage->root_dir_kind[FD_SHADERFILE], os::app::directory_static | "shader"});
+	if (resource_manager)
+		resource_manager->set_dirs(storage->root_dir_kind[FD_MODEL], storage->root_dir_kind[FD_TERRAIN],
+			{storage->root_dir_kind[FD_TEXTURE]}, {storage->root_dir_kind[FD_MATERIAL]},
+			{storage->root_dir_kind[FD_SHADERFILE], os::app::directory_static | "shader"});
 
 	if (serious)
 		plugin_manager->load_project_stuff(project_dir);

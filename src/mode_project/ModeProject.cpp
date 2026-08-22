@@ -67,11 +67,14 @@ void ModeProject::create_project(const Path &dir, const string &first_world) {
 	gi.set_str(GameIniData::ID_DEFAULT_WORLD, first_world);
 	gi.save(dir);
 
+	session->load_project(dir);
+
 	Path world_file = dir | "Maps" | (first_world + ".world");
 	msg_write(format("%sCREATE%s  %s", os::terminal::YELLOW, os::terminal::END, world_file));
 	DataWorld w(doc);
-	Storage s(session);
-	s.save(world_file, &w);
+	w.add_initial_data();
+
+	session->storage->save(world_file, &w);
 }
 
 static void create_directory_recursive(const Path &dir) {

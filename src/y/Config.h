@@ -65,6 +65,8 @@ struct DigestedConfig {
 	int cubemap_update_rate = 0;
 
 	float input_mouse_speed = 1.0f;
+
+	float vr_scale = 1.0f;
 };
 extern DigestedConfig config;
 
@@ -103,4 +105,5 @@ public:
 	static const string ID_DEBUG_LEVEL;
 	static const string ID_DEBUG_SCRIPTS1;
 	static const string ID_DEBUG_SCRIPTS2;
+	static const string ID_VR_SCALE;
 };

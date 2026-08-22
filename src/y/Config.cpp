@@ -39,6 +39,7 @@ const string RawConfig::ID_INPUT_MOUSE_SPEED = "input.mouse-speed";
 const string RawConfig::ID_DEBUG_LEVEL = "debug.level";
 const string RawConfig::ID_DEBUG_SCRIPTS1 = "debug.scripts1";
 const string RawConfig::ID_DEBUG_SCRIPTS2 = "debug.scripts2";
+const string RawConfig::ID_VR_SCALE = "vr.scale";
 
 DigestedConfig config;
 
@@ -219,6 +220,8 @@ DigestedConfig RawConfig::digest() const {
 		c.ambient_occlusion_radius = -1;
 
 	c.input_mouse_speed = get_float(ID_INPUT_MOUSE_SPEED, 1.0f);
+
+	c.vr_scale = get_float(ID_VR_SCALE, 500);
 
 	if (has("cli.game-dir"))
 		c.game_dir = get_str("cli.game-dir");

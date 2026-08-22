@@ -236,14 +236,14 @@ int main(const Array<string>& args) {
 		session->universal_new(FD_WORLD);
 	});
 	p.cmd("project create", "DIR FIRST_WORLD", "create a new project", [] (const Array<string> &arg) {
-		Session session;
-		DocumentSession doc(&session);
+		auto session = create_session(false);
+		DocumentSession doc(session);
 		ModeProject mode_project(&doc);
 		mode_project.create_project(arg[0], arg[1]);
 	});
 	p.cmd("project upgrade", "DIR", "upgrade scripts of a project", [] (const Array<string> &arg) {
-		Session session;
-		DocumentSession doc(&session);
+		auto session = create_session(false);
+		DocumentSession doc(session);
 		ModeProject mode_project(&doc);
 		for (const auto& a: arg)
 			mode_project.upgrade_project(a);

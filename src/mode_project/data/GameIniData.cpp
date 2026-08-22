@@ -61,8 +61,8 @@ void GameIniData::reset_default() {
 	set_str(ID_RENDERER_LIGHT_SOURCES, "default");
 
 	set_int(ID_DEBUG_LEVEL, 1);
-	set_str_array(ID_DEBUG_SCRIPTS1, {"debug/stats.kaba", "debug/wireframe.kaba"});
-	set_str_array(ID_DEBUG_SCRIPTS2, {"debug/hdr.kaba", "debug/gbuffer.kaba", "debug/shadows.kaba"});
+	set_str_array(ID_DEBUG_SCRIPTS1, {"yengine/debug/stats.kaba", "yengine/debug/wireframe.kaba"});
+	set_str_array(ID_DEBUG_SCRIPTS2, {"yengine/debug/hdr.kaba", "yengine/debug/gbuffer.kaba", "yengine/debug/shadows.kaba"});
 
 	set_float(ID_SHADOW_BOXSIZE, 2000);
 	set_int(ID_SHADOW_RESOLUTION, 2048);
