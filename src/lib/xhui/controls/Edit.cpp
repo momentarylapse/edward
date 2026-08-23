@@ -902,6 +902,9 @@ void Edit::set_option(const string& key, const string& value) {
 	} else if (key == "resetsavestate") {
 		save_history_index = -1;
 		emit_event(event_id::Changed, true);
+	} else if (key == "select") {
+		set_cursor_pos(0);
+		set_cursor_pos(text.num, CursorMovingMode::Selecting);
 	} else {
 		Control::set_option(key, value);
 	}

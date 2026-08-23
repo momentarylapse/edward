@@ -283,10 +283,12 @@ void CodeEditor::search_start() {
 	set_visible("search-grid", true);
 	activate("search-pattern");
 
-	if (p0 == p1)
+	if (p0 == p1) {
 		search_find(search_pos);
-	else
+	} else {
 		set_string("search-pattern", edit->text.sub(p0, p1).escape());
+		set_options("search-pattern", "select");
+	}
 }
 
 void CodeEditor::search_start_replace() {
