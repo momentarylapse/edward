@@ -13,18 +13,35 @@ namespace yrenderer {
 
 class ComputeTask : public RenderTask {
 public:
-    explicit ComputeTask(Context* ctx, const string& name, const shared<ygfx::Shader>& shader, int nx, int ny, int nz);
-    shared<ygfx::Shader> shader;
+	explicit ComputeTask(Context* ctx, const string& name, const shared<ygfx::Shader>& shader, int nx, int ny, int nz);
+	shared<ygfx::Shader> shader;
 
-    IMPLEMENT_BINDABLE_INTERFACE
+	IMPLEMENT_BINDABLE_INTERFACE
 
-    int nx, ny, nz;
+	int nx, ny, nz;
 
 #ifdef USING_VULKAN
-    owned<vulkan::ComputePipeline> pipeline;
+	owned<vulkan::ComputePipeline> pipeline;
 #endif
 
-    void render(const RenderParams &params) override;
+	void render(const RenderParams &params) override;
+};
+
+class ComputeScheduler : public RenderTask {
+public:
+	explicit ComputeScheduler(Context* ctx);
+	~ComputeScheduler() override;
+	RenderParams start();
+	void submit(bool block);
+	void wait();
+
+	void render(const RenderParams &params) override {}
+
+
+#ifdef USING_VULKAN
+	owned<vulkan::CommandBuffer> command_buffer;
+	owned<vulkan::Fence> fence;
+#endif
 };
 
 }

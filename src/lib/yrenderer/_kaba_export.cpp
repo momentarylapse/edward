@@ -424,6 +424,15 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	}
 
 	{
+		ext->declare_class_size("ComputeScheduler", sizeof(ComputeScheduler));
+		ext->link_class_func("ComputeScheduler.__init__", &kaba::generic_init_ext<ComputeScheduler, yrenderer::Context*>);
+		ext->link_class_func("ComputeScheduler.__delete__", &kaba::generic_delete<ComputeScheduler>);
+		ext->link_class_func("ComputeScheduler.start", &ComputeScheduler::start);
+		ext->link_class_func("ComputeScheduler.submit", &ComputeScheduler::submit);
+		ext->link_class_func("ComputeScheduler.wait", &ComputeScheduler::wait);
+	}
+
+	{
 		ext->declare_class_size("TextureRenderer", sizeof(TextureRenderer));
 		ext->declare_class_element("TextureRenderer.clear_z", &TextureRenderer::clear_z);
 		ext->declare_class_element("TextureRenderer.clear_colors", &TextureRenderer::clear_colors);
@@ -571,7 +580,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.19");
+	ext->package_info("yrenderer", "0.20");
 	_export_package_yrenderer_internal(ext);
 }
 
