@@ -64,8 +64,6 @@ void ComputeScheduler::submit(bool block) {
 #ifdef USING_VULKAN
 	command_buffer->end();
 	ctx->device->compute_queue.submit(command_buffer.get(), {}, {}, fence.get());
-	fence->wait();
-	ctx->device->wait_idle();
 #endif
 	if (block)
 		wait();
@@ -74,7 +72,7 @@ void ComputeScheduler::submit(bool block) {
 void ComputeScheduler::wait() {
 #ifdef USING_VULKAN
 	fence->wait();
-	ctx->device->wait_idle();
+	//ctx->device->wait_idle();
 #endif
 }
 

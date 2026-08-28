@@ -342,6 +342,7 @@ add_executable(edward
 	src/lib/syntaxhighlight/_kaba_export.cpp
 	src/lib/syntaxhighlight/AutoComplete.cpp
 	src/lib/syntaxhighlight/BaseParser.cpp
+	src/lib/syntaxhighlight/ParserBash.cpp
 	src/lib/syntaxhighlight/ParserC.cpp
 	src/lib/syntaxhighlight/ParserCmake.cpp
 	src/lib/syntaxhighlight/ParserHui.cpp
