@@ -980,7 +980,7 @@ void FormatModel::_load(const Path &filename, DataModel *data, bool deep) {
 
 	auto lf = file_get_legacy_header(filename);
 
-	data->file_time = os::fs::mtime(filename).time;
+	data->file_time = os::fs::mtime(filename).value_or(Date{}).time;
 
 	if (lf) {
 		_load_old(*lf, data, deep);
