@@ -20,9 +20,6 @@ using namespace ygfx;
 
 namespace yrenderer {
 
-//static float resolution_scale_x = 1.0f;
-//static float resolution_scale_y = 1.0f;
-
 
 PostProcessor::PostProcessor(Context* ctx, int width, int height) : PostProcessorBase(ctx) {
 	ch_post_blur = profiler::create_channel("blur", channel);
@@ -185,7 +182,7 @@ void PostProcessor::process_depth(FrameBuffer *source, FrameBuffer *target, cons
 
 void PostProcessor::process(const Array<Texture*> &source, FrameBuffer *target, Shader *shader, const Any &data) {
 	nix::bind_frame_buffer(target);
-	nix::set_scissor(dynamicly_scaled_area(target), target->area());
+	nix::set_scissor(dynamicly_scaled_area(target, {1,1}), target->area());
 	nix::set_z(false, false);
 	//nix::set_projection_ortho_relative();
 	//nix::set_view_matrix(matrix::ID);

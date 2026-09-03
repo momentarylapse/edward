@@ -5,14 +5,14 @@
 #pragma once
 #if __has_include(<lib/vr/vr.h>)
 #if HAS_LIB_OPENXR
+#include <lib/ygraphics/graphics-fwd.h>
+#ifdef USING_VULKAN
 #define HAS_VR_RENDERER 1
 
 #include "WindowRenderer.h"
-#include <lib/math/quaternion.h>
 
 namespace yrenderer {
 
-#ifdef USING_VULKAN
 
 class VrRenderer : public TargetRenderer {
 public:
@@ -36,9 +36,8 @@ public:
 	int current_view_index = 0;
 };
 
-#endif
-
 }
 
+#endif
 #endif
 #endif

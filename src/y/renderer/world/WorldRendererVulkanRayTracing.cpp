@@ -155,7 +155,7 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 		vulkan::ImageLayout::GENERAL, vulkan::ImageLayout::SHADER_READ_ONLY_OPTIMAL);
 
 
-	out_renderer->set_source(dynamicly_scaled_source());
+	out_renderer->set_source(dynamicly_scaled_source({1,1}));
 	//out_renderer->bindings.shader_data.dict_set("model:0", mat4_to_any(mat4::ID));
 	//out_renderer->bindings.shader_data.dict_set("view:64", mat4_to_any(mat4::ID));
 	out_renderer->bindings.shader_data.dict_set("project:128", mat4_to_any(mat4::ID));

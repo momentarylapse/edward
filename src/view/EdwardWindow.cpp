@@ -47,16 +47,6 @@ Session* session;
 
 void ExternalModelCleanup(Model *m) {}
 
-namespace yrenderer {
-	rect dynamicly_scaled_area(ygfx::FrameBuffer *fb) {
-		return {};
-	}
-
-	rect dynamicly_scaled_source() {
-		return rect::ID;
-	}
-}
-
 string nice_path(const Path& p) {
 	string home = str(os::app::home_directory);
 	if (str(p).head(home.num) == home)

@@ -8,11 +8,21 @@
 #include "Renderer.h"
 #include "Context.h"
 #include <lib/math/rect.h>
+#include <lib/math/vec2.h>
 #include <lib/profiler/Profiler.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 
 namespace yrenderer {
+
+rect dynamicly_scaled_area(ygfx::FrameBuffer* fb, const vec2& scale) {
+	return rect(0, max((float)fb->width * scale.x, 2.0f),
+		0, max((float)fb->height * scale.y, 2.0f));
+}
+
+rect dynamicly_scaled_source(const vec2& scale) {
+	return rect(0, scale.x, 0, scale.y);
+}
 
 const RenderParams RenderParams::WHATEVER = {};
 

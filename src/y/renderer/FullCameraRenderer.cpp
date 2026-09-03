@@ -156,13 +156,13 @@ void FullCameraRenderer::create_post_processing(Renderer* source) {
 		multisample_resolver = new yrenderer::MultisampleResolver(ctx, engine.width, engine.height, 4);
 		multisample_resolver->add_child(source);
 
-		hdr_resolver = new HDRResolver(ctx, engine.width, engine.height);
+		hdr_resolver = new HDRResolver(ctx);
 		hdr_resolver->add_child(multisample_resolver);
 
 		texture_renderer = hdr_resolver->texture_renderer.get();
 		add_child(hdr_resolver);
 	} else {
-		hdr_resolver = new HDRResolver(ctx, engine.width, engine.height);
+		hdr_resolver = new HDRResolver(ctx);
 		hdr_resolver->add_child(source);
 
 		texture_renderer = hdr_resolver->texture_renderer.get();
@@ -265,9 +265,16 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	render_path->scene_view.fog_density = 1 / world->fog.distance;
 	render_path->scene_view.fog_color = world->fog._color;
 
+	vec2 scale = {params.area.width() / (float)engine.output_width * engine.resolution_scale_x, params.area.height() / (float)engine.output_height * engine.resolution_scale_y};
+	int render_width = (int)((float)engine.width * scale.x);
+	int render_height = (int)((float)engine.height * scale.y);
+
+	render_path->set_preferred_resolution(render_width, render_height);
+
 	if (hdr_resolver) {
 		hdr_resolver->exposure = cam->exposure;
 		hdr_resolver->bloom_factor = cam->bloom_factor;
+		hdr_resolver->set_resolution(render_width, render_height);
 	}
 
 	if (cube_map_source)
@@ -277,8 +284,9 @@ void FullCameraRenderer::prepare(const yrenderer::RenderParams& params) {
 	if (type != RenderPathType::PathTracing)
 		render_cubemaps(params);
 
-	if (texture_renderer)
-		texture_renderer->set_area(yrenderer::dynamicly_scaled_area(texture_renderer->frame_buffer.get()));
+//	if (texture_renderer)
+//		texture_renderer->set_area({0, params.area.width() * fx, 0, params.area.height() * fy});
+		//texture_renderer->set_area(yrenderer::dynamicly_scaled_area(texture_renderer->frame_buffer.get(), {1,1}));
 
 	if (light_meter and hdr_resolver)
 		light_meter->active = cam and cam->auto_exposure;

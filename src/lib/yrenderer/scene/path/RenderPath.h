@@ -33,6 +33,10 @@ public:
 	float ambient_occlusion_radius = 0;
 	base::optional<color> background_color;
 
+	int preferred_width = -1;
+	int preferred_height = -1;
+	void set_preferred_resolution(int w, int h);
+
 	SceneView scene_view;
 
 	owned<ShadowRenderer> shadow_renderer;

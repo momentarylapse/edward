@@ -3,6 +3,7 @@
 #include "../target/TextureRenderer.h"
 #include <lib/ygraphics/ShaderManager.h>
 #include <lib/ygraphics/graphics-impl.h>
+#include <lib/math/vec2.h>
 
 // https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
 
@@ -30,10 +31,11 @@ MultisampleResolver::MultisampleResolver(Context* ctx, int width, int height, in
 void MultisampleResolver::prepare(const RenderParams& params) {
 	// resolve
 	if (true) {
+		const vec2 resolution_scale = {params.area.size().x / (float)texture->width, params.area.size().y / (float)texture->height};
 		out_renderer->bindings.shader_data.dict_set("width:0", Any((float)texture_renderer->frame_buffer->width));
 		out_renderer->bindings.shader_data.dict_set("height:4", Any((float)texture_renderer->frame_buffer->height));
-		out_renderer->set_source(dynamicly_scaled_source());
-		texture_renderer->set_area(dynamicly_scaled_area(texture_renderer->frame_buffer.get()));
+		out_renderer->set_source(dynamicly_scaled_source(resolution_scale));
+		texture_renderer->set_area(dynamicly_scaled_area(texture_renderer->frame_buffer.get(), resolution_scale));
 		texture_renderer->render(params);
 	} else {
 		// not sure, why this does not work... :(

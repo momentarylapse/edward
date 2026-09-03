@@ -32,6 +32,8 @@ public:
 	Array<Region> regions;
 	Array<Region*> sorted_regions;
 
+	Region* get_region(Renderer* renderer);
+
 private:
 	void update_regions();
 };

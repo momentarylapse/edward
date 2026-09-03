@@ -12,6 +12,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/ShaderManager.h>
 
+
 namespace yrenderer {
 
 /*struct GeoPush {
@@ -56,6 +57,11 @@ RenderPath::RenderPath(Context* ctx, const string &name) : Renderer(ctx, name) {
 }
 
 RenderPath::~RenderPath() = default;
+
+void RenderPath::set_preferred_resolution(int w, int h) {
+	preferred_width = w;
+	preferred_height = h;
+}
 
 void RenderPath::set_view(const CameraParams& _view) {
 	view = _view;

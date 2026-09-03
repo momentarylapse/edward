@@ -23,6 +23,7 @@ public:
 
 	void render(const RenderParams& params) override;
 
+	void set_textures(const shared_array<ygfx::Texture>& textures);
 	void set_area(const rect& area);
 	bool override_area = false;
 	rect user_area;
@@ -31,6 +32,7 @@ public:
 
 	shared<ygfx::FrameBuffer> frame_buffer;
 #ifdef USING_VULKAN
+	Array<string> options;
 	owned<ygfx::RenderPass> render_pass;
 #endif
 	shared_array<ygfx::Texture> textures;

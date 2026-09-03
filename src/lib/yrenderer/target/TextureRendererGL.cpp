@@ -15,7 +15,7 @@
 namespace yrenderer {
 
 TextureRenderer::TextureRenderer(Context* ctx, const string& name, const shared_array<ygfx::Texture>& textures, const Array<string>& options) : RenderTask(ctx, name) {
-	frame_buffer = new ygfx::FrameBuffer(textures);
+	set_textures(textures);
 }
 
 TextureRenderer::~TextureRenderer() = default;
@@ -27,6 +27,11 @@ RenderParams TextureRenderer::make_params(const RenderParams &params) const {
 
 	auto p = params.with_target(frame_buffer.get()).with_area(area);
 	return p;
+}
+
+void TextureRenderer::set_textures(const shared_array<ygfx::Texture>& tex) {
+	textures = tex;
+	frame_buffer = new ygfx::FrameBuffer(textures);
 }
 
 void TextureRenderer::set_area(const rect& _area) {

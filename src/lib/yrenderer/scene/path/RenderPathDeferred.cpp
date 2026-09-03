@@ -79,6 +79,8 @@ RenderPathDeferred::RenderPathDeferred(Context* ctx, int width, int height, int 
 		create_shadow_renderer(shadow_resolution);
 		create_cube_renderer();
 	}
+	preferred_width = width;
+	preferred_height = height;
 }
 
 void RenderPathDeferred::remove_all_emitters() {
@@ -110,7 +112,7 @@ void RenderPathDeferred::prepare(const RenderParams& params) {
 
 	auto sub_params = params.with_target(gbuffer_renderer->frame_buffer.get());
 
-	gbuffer_renderer->set_area(dynamicly_scaled_area(gbuffer_renderer->frame_buffer.get()));
+	gbuffer_renderer->set_area({0, (float)preferred_width, 0, (float)preferred_height});
 
 	scene_renderer_background->set_view(params, view);
 	scene_renderer_background->background_color = background_color;
@@ -187,10 +189,10 @@ void RenderPathDeferred::render_out_from_gbuffer(FrameBuffer *source, const Rend
 	out_renderer->bind_texture(BINDING_SHADOW0, scene_view.shadow_maps[0]);
 	out_renderer->bind_texture(BINDING_SHADOW1, scene_view.shadow_maps[1]);
 
-	float resolution_scale_x = 1.0f;
-	data.dict_set("resolution_scale:0", vec2_to_any(vec2(resolution_scale_x, resolution_scale_x)));
+	vec2 scale = {(float)preferred_width / gbuffer_textures[0]->width, (float)preferred_height / gbuffer_textures[0]->height};
+	data.dict_set("resolution_scale:0", vec2_to_any(scale));
 
-	out_renderer->set_source(dynamicly_scaled_source());
+	out_renderer->set_source(dynamicly_scaled_source(scale));
 	out_renderer->draw(params);
 
 	// ...

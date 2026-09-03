@@ -59,8 +59,10 @@ public:
 	float fps_max, fps_min;
 	float time_scale, elapsed, elapsed_rt;
 
-	// output rendering/frame buffer resolution (might be smaller than the physical screen resolution)
+	// rendering/frame buffer resolution (might be smaller than the physical screen resolution)
 	int width, height;
+	// actual pixel resolution of output area (=physical resolution for full-screen, or window size)
+	int output_width, output_height;
 
 
 	// dynamic resolution scaling

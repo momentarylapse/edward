@@ -444,6 +444,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->declare_class_size("RegionsRenderer", sizeof(yrenderer::RegionRenderer));
 		ext->declare_class_element("RegionRenderer.regions", &yrenderer::RegionRenderer::regions);
 		ext->link_class_func("RegionRenderer.add_region", &yrenderer::RegionRenderer::add_region);
+		ext->link_class_func("RegionRenderer.remove_region", &yrenderer::RegionRenderer::remove_region);
+		ext->link_class_func("RegionRenderer.get_region", &yrenderer::RegionRenderer::get_region);
 
 		ext->declare_class_size("RegionRenderer.Region", sizeof(yrenderer::RegionRenderer::Region));
 		ext->declare_class_element("RegionRenderer.Region.dest", &yrenderer::RegionRenderer::Region::dest);
@@ -541,7 +543,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->declare_class_element("HDRResolver.texture", &HDRResolver::texture);
 		ext->declare_class_element("HDRResolver.depth_buffer", &HDRResolver::depth_buffer);
 		ext->declare_class_element("HDRResolver.bloom_levels", &HDRResolver::bloom_levels);
-		ext->link_class_func("HDRResolver.__init__", &kaba::generic_init_ext<HDRResolver, yrenderer::Context*, int, int>);
+		ext->link_class_func("HDRResolver.__init__", &kaba::generic_init_ext<HDRResolver, yrenderer::Context*>);
+		ext->link_class_func("HDRResolver.set_resolution", &HDRResolver::set_resolution);
 		//ext->link_class_func("HDRResolver.tex_bloom", &hdr_resolver_get_tex_bloom);
 	}
 
@@ -580,7 +583,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {
-	ext->package_info("yrenderer", "0.20");
+	ext->package_info("yrenderer", "0.21");
 	_export_package_yrenderer_internal(ext);
 }
 

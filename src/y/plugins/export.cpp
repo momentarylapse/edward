@@ -61,11 +61,13 @@
 #include "../world/components/CubeMapSource.h"
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/ygraphics/Context.h>
+#include <lib/ygraphics/Painter.h>
 #include <lib/kaba/dynamic/exception.h>
 #include <lib/os/msg.h>
 #include <lib/image/image.h>
 #include <ecs/EntityManager.h>
 #include <ecs/BaseClass.h>
+
 
 namespace PluginManager {
 
@@ -217,6 +219,10 @@ Light* attach_light_point(ecs::Entity* e, const color& c, float r) {
 }
 Light* attach_light_cone(ecs::Entity* e, const color& c, float r, float theta) {
 	return world->attach_light_cone(e, c, r, theta);
+}
+
+void painter_set_texture(ygfx::Painter* p, Texture* t) {
+	p->set_texture(t);
 }
 
 void export_ecs(kaba::IExporter* ext) {
@@ -694,6 +700,7 @@ void export_ui(kaba::IExporter* ext) {
 		ext->declare_class_size("Canvas", sizeof(gui::Canvas));
 		ext->link_class_func("Canvas.__init__:Canvas", &kaba::generic_init<gui::Canvas>);
 		ext->link_virtual("Canvas.__delete__", &kaba::generic_virtual<gui::Canvas>::__delete__, &canvas);
+		ext->link_func("Canvas.set_texture", &painter_set_texture);
 	}
 
 	{

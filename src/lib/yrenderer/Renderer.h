@@ -15,6 +15,7 @@
 #include <lib/math/quaternion.h>
 
 struct rect;
+struct vec2;
 struct color;
 
 namespace ygfx {
@@ -27,8 +28,8 @@ struct Context;
 class RenderTask;
 class Renderer;
 
-rect dynamicly_scaled_area(ygfx::FrameBuffer *fb);
-rect dynamicly_scaled_source();
+rect dynamicly_scaled_area(ygfx::FrameBuffer *fb, const vec2& scale);
+rect dynamicly_scaled_source(const vec2& scale);
 
 struct RenderParams {
 	float desired_aspect_ratio = 1;

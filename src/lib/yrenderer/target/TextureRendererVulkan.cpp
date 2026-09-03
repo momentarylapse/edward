@@ -9,10 +9,9 @@
 
 namespace yrenderer {
 
-TextureRenderer::TextureRenderer(Context* ctx, const string& name, const shared_array<ygfx::Texture>& tex, const Array<string>& options) : RenderTask(ctx, name) {
-	textures = tex;
-	render_pass = new ygfx::RenderPass(weak(textures), options);
-	frame_buffer = new ygfx::FrameBuffer(render_pass.get(), textures);
+TextureRenderer::TextureRenderer(Context* ctx, const string& name, const shared_array<ygfx::Texture>& tex, const Array<string>& _options) : RenderTask(ctx, name) {
+	options = _options;
+	set_textures(tex);
 }
 
 TextureRenderer::~TextureRenderer() = default;
@@ -27,6 +26,11 @@ RenderParams TextureRenderer::make_params(const RenderParams &params) const {
 	return p;
 }
 
+void TextureRenderer::set_textures(const shared_array<ygfx::Texture>& tex) {
+	textures = tex;
+	render_pass = new ygfx::RenderPass(weak(textures), options);
+	frame_buffer = new ygfx::FrameBuffer(render_pass.get(), textures);
+}
 
 void TextureRenderer::set_area(const rect& _area) {
 	user_area = _area;
