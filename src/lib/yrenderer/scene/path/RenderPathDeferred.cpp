@@ -84,9 +84,9 @@ RenderPathDeferred::RenderPathDeferred(Context* ctx, int width, int height, int 
 }
 
 void RenderPathDeferred::remove_all_emitters() {
-	scene_renderer_background->emitters.clear();
-	scene_renderer->emitters.clear();
-	scene_renderer_trans->emitters.clear();
+	scene_renderer_background->remove_all_emitters();
+	scene_renderer->remove_all_emitters();
+	scene_renderer_trans->remove_all_emitters();
 	shadow_renderer->remove_all_emitters();
 	cube_map_renderer->remove_all_emitters();
 }

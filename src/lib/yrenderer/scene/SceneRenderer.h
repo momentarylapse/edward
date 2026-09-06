@@ -26,6 +26,7 @@ public:
 
 	shared_array<MeshEmitter> emitters;
 	void add_emitter(shared<MeshEmitter> emitter);
+	void remove_all_emitters();
 
 	void set_view(const RenderParams& params, const CameraParams& cam, const mat4* proj = nullptr);
 

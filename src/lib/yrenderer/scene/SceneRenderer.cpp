@@ -34,6 +34,13 @@ SceneRenderer::~SceneRenderer() = default;
 
 void SceneRenderer::add_emitter(shared<MeshEmitter> emitter) {
 	emitters.add(emitter);
+	profiler::set_parent(emitter->channel, channel);
+}
+
+void SceneRenderer::remove_all_emitters() {
+	for (auto& e: weak(emitters))
+		profiler::set_parent(e->channel, -1);
+	emitters.clear();
 }
 
 void SceneRenderer::set_view(const RenderParams& params, const CameraParams& cam, const mat4* proj) {

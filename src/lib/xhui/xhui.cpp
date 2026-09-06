@@ -150,6 +150,7 @@ struct Runner {
 	int id;
 };
 static Array<Runner*> runners;
+static bool iterate_high_speed = false;
 
 Runner* create_runner() {
 	for (auto r: runners)
@@ -170,6 +171,8 @@ int run_repeated(float dt, Callback f) {
 	r->f = f;
 	r->dt = dt;
 	r->repeat = true;
+	if (dt < 0.05f)
+		iterate_high_speed = true;
 	return r->id;
 }
 int run_later(float dt, Callback f) {
@@ -223,7 +226,10 @@ void do_single_main_loop() {
 	iterate_runners(timer.get());
 
 	//usleep(8000);
-	os::sleep(0.008f);
+	if (iterate_high_speed)
+		os::sleep(0.001f);
+	else
+		os::sleep(0.008f);
 }
 
 void destroy() {

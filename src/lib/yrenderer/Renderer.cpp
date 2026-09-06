@@ -68,18 +68,26 @@ Node::~Node() {
 
 void Node::add_child(Renderer* child) {
 	custodian->children.add(child);
+	profiler::set_parent(child->channel, channel);
 }
 
 void Node::remove_child(Renderer* child) {
-	custodian->children.erase(children.find(child));
+	if (int i = children.find(child) >= 0) {
+		profiler::set_parent(child->channel, -1);
+		custodian->children.erase(i);
+	}
 }
 
 void Node::add_sub_task(RenderTask* child) {
 	sub_tasks.add(child);
+	profiler::set_parent(child->channel, channel);
 }
 
 void Node::remove_sub_task(RenderTask* child) {
-	sub_tasks.erase(sub_tasks.find(child));
+	if (int i = sub_tasks.find(child) >= 0) {
+		profiler::set_parent(child->channel, -1);
+		sub_tasks.erase(i);
+	}
 }
 
 void Node::prepare_children(const RenderParams& params) {

@@ -23,7 +23,7 @@ void CubeMapRenderer::set_source(CubeMapSource* s) {
 
 void CubeMapRenderer::remove_all_emitters() {
 	for (int i=0; i<6; i++)
-		scene_renderers[i]->emitters.clear();
+		scene_renderers[i]->remove_all_emitters();
 }
 
 void CubeMapRenderer::add_emitter(shared<MeshEmitter> emitter) {

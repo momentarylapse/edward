@@ -30,7 +30,7 @@ RenderPathForward::RenderPathForward(Context* ctx, int shadow_resolution) : Rend
 }
 
 void RenderPathForward::remove_all_emitters() {
-	scene_renderer->emitters.clear();
+	scene_renderer->remove_all_emitters();
 	shadow_renderer->remove_all_emitters();
 	cube_map_renderer->remove_all_emitters();
 }
