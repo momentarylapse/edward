@@ -108,8 +108,15 @@ void BindingData::bind_texture(int index, Texture *texture) {
 }
 
 void BindingData::bind_textures(int index0, const Array<Texture*>& textures) {
+#ifdef USING_OPENGL
 	for (auto&& [i, t]: enumerate(textures))
 		bind_texture(index0 + i, t);
+#endif
+#ifdef USING_VULKAN
+	for (auto&& [i, t]: enumerate(textures))
+		dset->set_texture(index0 + i, t);
+	dset->update();
+#endif
 }
 
 void BindingData::bind_image(int index, Texture *texture) {

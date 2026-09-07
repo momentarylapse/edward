@@ -70,8 +70,8 @@ public:
 	struct Label {
 		string category;
 		string name;
-		int line;
-		int level;
+		int line = 0;
+		int level = 0;
 	};
 
 	struct Error {
