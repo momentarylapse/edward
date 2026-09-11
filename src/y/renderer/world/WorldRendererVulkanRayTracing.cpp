@@ -29,8 +29,8 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 		rvd(ctx)
 {
 	device = ctx->device;
-	width = w;
-	height = h;
+	max_width = w;
+	max_height = h;
 
 	rvd.set_scene_view(&scene_view);
 
@@ -42,7 +42,7 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 	else
 		throw Exception("neither RTX nor compute shader support");
 
-	offscreen_image = new vulkan::StorageTexture(width, height, 1, "rgba:f16");
+	offscreen_image = new vulkan::StorageTexture(max_width, max_height, 1, "rgba:f16");
 	offscreen_image->set_options("magfilter=nearest,minfilter=nearest");
 
 	rt_setup_explicit(scene_view, mode);
@@ -95,8 +95,8 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	rvd.set_view(params, view);
 	rvd.update_light_ubo();
 
-	int w = (int)((float)width * engine.resolution_scale_x);
-	int h = (int)((float)height * engine.resolution_scale_y);
+	int w = preferred_width;
+	int h = preferred_height;
 
 	pc.iview = view.view_matrix().inverse();
 	pc.background = world->background;
@@ -155,7 +155,9 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 		vulkan::ImageLayout::GENERAL, vulkan::ImageLayout::SHADER_READ_ONLY_OPTIMAL);
 
 
-	out_renderer->set_source(dynamicly_scaled_source({1,1}));
+	float sx = (float)preferred_width / (float)max_width;
+	float sy = (float)preferred_height / (float)max_height;
+	out_renderer->set_source(dynamicly_scaled_source({sx, sy}));
 	//out_renderer->bindings.shader_data.dict_set("model:0", mat4_to_any(mat4::ID));
 	//out_renderer->bindings.shader_data.dict_set("view:64", mat4_to_any(mat4::ID));
 	out_renderer->bindings.shader_data.dict_set("project:128", mat4_to_any(mat4::ID));

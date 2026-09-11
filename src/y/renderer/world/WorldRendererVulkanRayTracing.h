@@ -30,7 +30,7 @@ public:
 
 	vulkan::StorageTexture *offscreen_image;
 	//vulkan::Texture *offscreen_image2;
-	int width, height;
+	int max_width, max_height;
 
 	struct MeshDescription {
 		mat4 matrix;

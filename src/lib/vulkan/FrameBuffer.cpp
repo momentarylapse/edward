@@ -95,14 +95,15 @@ void FrameBuffer::_create(RenderPass *rp, const shared_array<Texture> &_attachme
 		}
 	}
 
-	VkFramebufferCreateInfo info = {};
-	info.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-	info.renderPass = rp->render_pass;
-	info.attachmentCount = views.num;
-	info.pAttachments = &views[0];
-	info.width = width;
-	info.height = height;
-	info.layers = 1;
+	VkFramebufferCreateInfo info = {
+		.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+		.renderPass = rp->render_pass,
+		.attachmentCount = (unsigned)views.num,
+		.pAttachments = &views[0],
+		.width = (unsigned)width,
+		.height = (unsigned)height,
+		.layers = 1
+	};
 
 	if (vkCreateFramebuffer(default_device->device, &info, nullptr, &frame_buffer) != VK_SUCCESS)
 		throw Exception("failed to create framebuffer!");

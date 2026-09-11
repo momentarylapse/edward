@@ -156,6 +156,8 @@ base::result<bytes> glslang_to_spirv(const string& source, VkShaderStageFlagBits
 		stage = EShLangAnyHit;
 	if (type == VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR)
 		stage = EShLangClosestHit;
+	if (type == VK_SHADER_STAGE_MISS_BIT_KHR)
+		stage = EShLangMiss;
 	if (type == VK_SHADER_STAGE_COMPUTE_BIT)
 		stage = EShLangCompute;
 

@@ -103,7 +103,7 @@ Array<Markup> Parser::create_markup(const string &text, int offset) {
 
 
 
-#define begin_token(t) ((pos+t.num < s.num) and string(p, t.num) == t)
+#define begin_token(t) ((pos+t.num <= s.num) and string(p, t.num) == t)
 #define skip_token_almost(t) p+=(t.num-1);pos+=(t.num-1)
 #define skip_token(t) p+=t.num;pos+=t.num
 
