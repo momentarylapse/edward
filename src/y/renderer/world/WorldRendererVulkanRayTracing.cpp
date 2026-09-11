@@ -42,6 +42,8 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 	else
 		throw Exception("neither RTX nor compute shader support");
 
+	REQUIRED(ctx->load_shader_module("module-pathtracing-common.shader"));
+
 	offscreen_image = new vulkan::StorageTexture(max_width, max_height, 1, "rgba:f16");
 	offscreen_image->set_options("magfilter=nearest,minfilter=nearest");
 
@@ -53,16 +55,16 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 
 		rtx.buffer_cam = new vulkan::UniformBuffer(sizeof(PushConst));
 
-		rtx.dset = rtx.pool->create_set("acceleration-structure,image,buffer,buffer,buffer,buffer");
+		rtx.dset = rtx.pool->create_set("acceleration-structure,image,buffer,buffer,buffer,buffer,buffer,buffer,buffer,buffer");
 		rtx.dset->set_storage_image(1, offscreen_image);
 		rtx.dset->set_uniform_buffer(2, rtx.buffer_cam);
-		rtx.dset->set_uniform_buffer(4, rvd.ubo_light.get());
+		rtx.dset->set_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
 		rtx.dset->set_uniform_buffer(5, scene_view.ray_tracing_data->buffer_meshes.get());
 
 		auto shader_gen = REQUIRED(shader_manager->load_shader("raytracing/gen.shader"));
 		auto shader1 = REQUIRED(shader_manager->load_shader("raytracing/group1.shader"));
 		auto shader2 = REQUIRED(shader_manager->load_shader("raytracing/group2.shader"));
-		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
+		rtx.pipeline = new vulkan::RayPipeline("[[acceleration-structure,image,buffer,buffer,buffer,buffer,buffer,buffer,buffer,buffer]]", {shader_gen.get(), shader1.get(), shader2.get()}, 2);
 		rtx.pipeline->create_sbt();
 
 
@@ -73,10 +75,10 @@ WorldRendererVulkanRayTracing::WorldRendererVulkanRayTracing(Context* ctx, int w
 
 		auto shader = REQUIRED(shader_manager->load_shader("compute/pathtracing.shader"));
 		compute.pipeline = new vulkan::ComputePipeline(shader.get());
-		compute.dset = compute.pool->create_set("image,buffer,buffer");
+		compute.dset = compute.pool->create_set("image,buffer,buffer,buffer,buffer,buffer,buffer,buffer,buffer,buffer");
 		compute.dset->set_storage_image(0, offscreen_image);
 		compute.dset->set_uniform_buffer(1, scene_view.ray_tracing_data->buffer_meshes.get());
-		compute.dset->set_uniform_buffer(2, rvd.ubo_light.get());
+		compute.dset->set_uniform_buffer(BINDING_LIGHT, rvd.ubo_light.get());
 		compute.dset->update();
 	}
 
@@ -93,7 +95,7 @@ void WorldRendererVulkanRayTracing::prepare(const RenderParams& params) {
 	ctx->gpu_timestamp_begin(params, ch_prepare);
 
 	rvd.set_view(params, view);
-	rvd.update_light_ubo();
+	rvd.update_light_ubo(false);
 
 	int w = preferred_width;
 	int h = preferred_height;

@@ -95,6 +95,8 @@ void RayTracingData::update_frame() {
 		if (auto m = mr->model) {
 			mr->update_materials();
 			for (int i=0; i<m->materials.num; i++) {
+				if (m->mesh[0]->sub[i].triangle_index.num == 0)
+					continue;
 				auto material = mr->get_material(i);
 
 				MeshDescription md;
@@ -136,7 +138,8 @@ void RayTracingData::update_frame() {
 			for (auto mr: models)
 				if (auto m = mr->model) {
 					for (int i=0; i<m->materials.num; i++)
-						matrices.add(mr->owner->get_matrix().transpose());
+						if (m->mesh[0]->sub[i].triangle_index.num > 0)
+							matrices.add(mr->owner->get_matrix().transpose());
 				}
 			for (auto *t: terrains) {
 				auto o = t->owner;
@@ -158,6 +161,8 @@ void RayTracingData::update_frame() {
 			for (auto mr: models)
 				if (auto m = mr->model) {
 					for (int i=0; i<m->materials.num; i++) {
+						if (m->mesh[0]->sub[i].triangle_index.num == 0)
+							continue;
 						auto vb = m->mesh[0]->sub[i].vertex_buffer;
 						make_indexed(vb);
 						rtx.blas.add(vulkan::AccelerationStructure::create_bottom(ctx->device, vb));

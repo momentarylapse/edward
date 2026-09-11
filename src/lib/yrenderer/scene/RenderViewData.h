@@ -98,7 +98,7 @@ struct RenderViewData {
 
 	owned<ygfx::UniformBuffer> ubo_light;
 	LightMetaData light_meta_data;
-	void update_light_ubo();
+	void update_light_ubo(bool using_view_space);
 
 	void clear(const RenderParams& params, const Array<color>& colors, float z=-1);
 

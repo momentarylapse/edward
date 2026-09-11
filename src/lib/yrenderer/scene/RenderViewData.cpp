@@ -63,12 +63,12 @@ void RenderViewData::set_view(const RenderParams& params, const CameraParams& vi
 }
 
 
-void RenderViewData::update_light_ubo() {
+void RenderViewData::update_light_ubo(bool using_view_space) {
 	Array<UBOLight> lights;
 	lights.resize(scene_view->lights.num);
 	for (auto&& [i, l]: enumerate(scene_view->lights))
 		// using current view
-		lights[i] = l->to_ubo(camera_params.pos, camera_params.ang, true);
+		lights[i] = l->to_ubo(camera_params.pos, camera_params.ang, using_view_space);
 
 	for (const auto [i,l]: enumerate(scene_view->shadow_indices)) {
 		auto ll = scene_view->lights[l];
