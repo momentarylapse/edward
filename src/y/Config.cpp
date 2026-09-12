@@ -10,6 +10,8 @@
 #include <lib/os/msg.h>
 #include <lib/os/CommandLineParser.h>
 
+#include "lib/yrenderer/target/WindowRenderer.h"
+
 const string RawConfig::ID_API_VERSION = "api.version";
 const string RawConfig::ID_DEFAULT_SCRIPT = "default.main-script";
 const string RawConfig::ID_DEFAULT_WORLD = "default.world";
@@ -71,7 +73,7 @@ void RawConfig::load(const Array<string> &arg) {
 		set(xx[0].trim(), Any::parse(xx[1].trim()));
 	});
 	p.option("-u/--uncapped", "uncapped framerate", [this] {
-		set_bool("renderer.uncapped-framerate", true);
+		set_bool("screen.sync", false);
 	});
 	p.option("-D/--debug", "enable debug mode (level 2)", [this] {
 		set_int(ID_DEBUG_LEVEL, 2);
@@ -206,7 +208,12 @@ DigestedConfig RawConfig::digest() const {
 	c.resolution_scale_filter = get_str(ID_RESOLUTION_SCALE_FILTER, "linear");
 	c.target_framerate = get_float(ID_RENDERER_TARGET_FRAMERATE, 60.0f);
 	c.min_framerate = get_float(ID_RENDERER_MIN_FRAMERATE, 10.0f);
-	c.uncapped_framerate = get_bool("renderer.uncapped-framerate", false);
+	const string pm = get_str("screen.sync", "true");
+	c.screen_sync_mode = (yrenderer::SyncMode)2;
+	if (pm == "off" or pm == "no" or pm == "false")
+		c.screen_sync_mode = (yrenderer::SyncMode)1;
+	else if (pm == "x")
+		c.screen_sync_mode = (yrenderer::SyncMode)0;
 
 	c.shadow_box_size = get_float(ID_SHADOW_BOXSIZE, 2000);
 	c.shadow_resolution = get_int(ID_SHADOW_RESOLUTION, 1024);

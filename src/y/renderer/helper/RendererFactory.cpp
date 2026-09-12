@@ -47,7 +47,7 @@ void print_render_graph(Renderer* root) {
 
 WindowRenderer *create_window_renderer(yrenderer::Context* ctx, GLFWwindow* window) {
 #ifdef HAS_LIB_GLFW
-	return new WindowRenderer(ctx, window, true);
+	return new WindowRenderer(ctx, window, true, config.screen_sync_mode);
 #else
 	return nullptr;
 #endif

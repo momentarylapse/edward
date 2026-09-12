@@ -12,6 +12,10 @@
 #include <lib/os/config.h>
 #include <lib/os/path.h>
 
+namespace yrenderer {
+	enum class SyncMode;
+}
+
 enum class AntialiasingMethod {
 	NONE,
 	MSAA,
@@ -42,13 +46,13 @@ struct DigestedConfig {
 	int screen_width = 0;
 	int screen_height = 0;
 	ScreenMode screen_mode;
+	yrenderer::SyncMode screen_sync_mode;
 
 	float resolution_scale_min = 0;
 	float resolution_scale_max = 0;
 	string resolution_scale_filter;
 	float target_framerate = 0;
 	float min_framerate = 0;
-	bool uncapped_framerate = false;
 	float ambient_occlusion_radius = 0;
 
 	float shadow_box_size;

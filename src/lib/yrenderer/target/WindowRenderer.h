@@ -23,10 +23,16 @@ using Device = vulkan::Device;
 
 namespace yrenderer {
 
+enum class SyncMode {
+	UNSYNCED,
+	UNSYNCED_NO_TEARING,
+	SYNCED
+};
+
 #ifdef USING_VULKAN
 class SurfaceRendererVulkan : public TargetRenderer {
 public:
-	SurfaceRendererVulkan(Context* ctx, const string& name, bool gamma_correction);
+	SurfaceRendererVulkan(Context* ctx, const string& name, bool gamma_correction, SyncMode sync_mode);
 	~SurfaceRendererVulkan() override;
 
 
@@ -49,6 +55,7 @@ public:
 
 	Device *device;
 	bool gamma_correction;
+	SyncMode sync_mode;
 	SwapChain *swap_chain = nullptr;
 	Array<ygfx::Texture*> swap_images;
 	RenderPass* default_render_pass = nullptr;
@@ -66,7 +73,7 @@ public:
 #ifdef USING_VULKAN
 class WindowRenderer : public SurfaceRendererVulkan {
 public:
-	WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction);
+	WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction, SyncMode sync_mode);
 
 	void create_swap_chain() override;
 
@@ -75,7 +82,7 @@ public:
 #else
 class WindowRenderer : public TargetRenderer {
 public:
-	explicit WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction);
+	explicit WindowRenderer(Context* ctx, GLFWwindow* win, bool gamma_correction, SyncMode sync_mode);
 
 
 	bool start_frame();
@@ -88,6 +95,7 @@ public:
 
 	GLFWwindow* window;
 	bool gamma_correction;
+	SyncMode sync_mode;
 
 	ygfx::DepthBuffer* _depth_buffer;
 	ygfx::FrameBuffer* _frame_buffer;

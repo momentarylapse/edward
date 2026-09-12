@@ -51,16 +51,23 @@ VkSurfaceFormatKHR choose_swap_surface_format(const Array<VkSurfaceFormatKHR>& a
 	return best;
 }
 
-VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR>& available_present_modes) {
+VkPresentModeKHR choose_swap_present_mode(const Array<VkPresentModeKHR>& available_present_modes, SyncMode sync_mode) {
 	VkPresentModeKHR best_mode = VK_PRESENT_MODE_FIFO_KHR;
-
-	for (const auto& mode: available_present_modes) {
-		if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
-			return mode;
-		else if (mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
-			best_mode = mode;
+	if (sync_mode == SyncMode::UNSYNCED) {
+		for (const auto& mode: available_present_modes) {
+			if (mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+				return mode;
+			if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+				best_mode = mode;
+		}
+	} else if (sync_mode == SyncMode::UNSYNCED_NO_TEARING) {
+		for (const auto& mode: available_present_modes) {
+			if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+				return mode;
+			if (mode == VK_PRESENT_MODE_IMMEDIATE_KHR)
+				best_mode = mode;
+		}
 	}
-
 	return best_mode;
 }
 
@@ -151,7 +158,7 @@ xfer<RenderPass> SwapChain::create_render_pass(DepthBuffer *depth_buffer, const 
 }
 
 
-void SwapChain::rebuild(int w, int h, bool gamma_correction) {
+void SwapChain::rebuild(int w, int h, bool gamma_correction, SyncMode sync_mode) {
 	width = w;
 	height = h;
 
@@ -163,7 +170,7 @@ void SwapChain::rebuild(int w, int h, bool gamma_correction) {
 	msg_write("-----");*/
 
 	const VkSurfaceFormatKHR surface_format = choose_swap_surface_format(swap_chain_support.formats, gamma_correction);
-	const VkPresentModeKHR present_mode = choose_swap_present_mode(swap_chain_support.present_modes);
+	const VkPresentModeKHR present_mode = choose_swap_present_mode(swap_chain_support.present_modes, sync_mode);
 	const VkExtent2D extent = {(uint32_t)width, (uint32_t)height};
 
 	image_count = swap_chain_support.capabilities.minImageCount + 1;
@@ -207,17 +214,17 @@ void SwapChain::rebuild(int w, int h, bool gamma_correction) {
 }
 
 
-xfer<SwapChain> SwapChain::create(Device *device, int width, int height, bool gamma_correction) {
+xfer<SwapChain> SwapChain::create(Device *device, int width, int height, bool gamma_correction, SyncMode sync_mode) {
 	auto swap_chain = new SwapChain(device);
-	swap_chain->rebuild(width, height, gamma_correction);
+	swap_chain->rebuild(width, height, gamma_correction, sync_mode);
 	return swap_chain;
 }
 
 #ifdef HAS_LIB_GLFW
-xfer<SwapChain> SwapChain::create_for_glfw(Device *device, GLFWwindow* window, bool gamma_correction) {
+xfer<SwapChain> SwapChain::create_for_glfw(Device *device, GLFWwindow* window, bool gamma_correction, SyncMode sync_mode) {
 	const SwapChainSupportDetails swap_chain_support = query_swap_chain_support(device->physical_device, device->surface);
 	auto extent = choose_swap_extent(swap_chain_support.capabilities, window);
-	return create(device, (int)extent.width, (int)extent.height, gamma_correction);
+	return create(device, (int)extent.width, (int)extent.height, gamma_correction, sync_mode);
 }
 #endif
 

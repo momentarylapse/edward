@@ -38,6 +38,11 @@ struct SwapChainSupportDetails {
 };
 SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, VkSurfaceKHR surface);
 
+enum class SyncMode {
+	UNSYNCED, // no syncing, allow tearing
+	UNSYNCED_NO_TEARING, // uncapped but prevent tearing
+	SYNCED // wait for next screen frame
+};
 
 class SwapChain {
 public:
@@ -53,11 +58,11 @@ public:
 	explicit SwapChain(Device* device);
 	~SwapChain();
 
-	void rebuild(int w, int h, bool gamma_correction);
+	void rebuild(int w, int h, bool gamma_correction, SyncMode mode);
 
-	static xfer<SwapChain> create(Device* device, int w, int h, bool gamma_correction);
+	static xfer<SwapChain> create(Device* device, int w, int h, bool gamma_correction, SyncMode mode);
 #ifdef HAS_LIB_GLFW
-	static xfer<SwapChain> create_for_glfw(Device* device, GLFWwindow* window, bool gamma_correction);
+	static xfer<SwapChain> create_for_glfw(Device* device, GLFWwindow* window, bool gamma_correction, SyncMode mode);
 #endif
 
 	Array<VkImage> get_images();

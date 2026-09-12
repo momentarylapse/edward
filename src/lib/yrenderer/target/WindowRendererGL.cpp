@@ -18,12 +18,17 @@
 
 namespace yrenderer {
 
-WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* win, bool _gamma_correction) : TargetRenderer(ctx, "win") {
+WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* win, bool _gamma_correction, SyncMode _sync_mode) : TargetRenderer(ctx, "win") {
 	window = win;
 	gamma_correction = _gamma_correction;
+	sync_mode = _sync_mode;
 	if (ctx and window) {
 #if HAS_LIB_GLFW
 		glfwMakeContextCurrent(window);
+		if (sync_mode == SyncMode::SYNCED)
+			glfwSwapInterval(1);
+		else
+			glfwSwapInterval(0);
 		//glfwGetFramebufferSize(window, &width, &height);
 #endif
 

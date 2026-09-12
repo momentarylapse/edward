@@ -15,7 +15,7 @@
 
 namespace yrenderer {
 
-SurfaceRendererVulkan::SurfaceRendererVulkan(Context* ctx, const string& name, bool _gamma_correction) : TargetRenderer(ctx, name) {
+SurfaceRendererVulkan::SurfaceRendererVulkan(Context* ctx, const string& name, bool _gamma_correction, SyncMode _sync_mode) : TargetRenderer(ctx, name) {
 	if (ctx) {
 		device = ctx->device;
 
@@ -23,6 +23,7 @@ SurfaceRendererVulkan::SurfaceRendererVulkan(Context* ctx, const string& name, b
 		render_finished_semaphore = new vulkan::Semaphore(device);
 	}
 	gamma_correction = _gamma_correction;
+	sync_mode = _sync_mode;
 
 
 	framebuffer_resized = false;
@@ -127,26 +128,26 @@ void SurfaceRendererVulkan::draw(const RenderParams& params) {
 
 
 #ifdef HAS_LIB_GLFW
-WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* _window, bool gamma_correction) :
-		SurfaceRendererVulkan(ctx, "win", gamma_correction) {
+WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* _window, bool gamma_correction, SyncMode sync_mode) :
+		SurfaceRendererVulkan(ctx, "win", gamma_correction, sync_mode) {
 	window = _window;
 	if (ctx and window)
 		_create_swap_chain_and_stuff();
 }
 
 void WindowRenderer::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create_for_glfw(device, window, gamma_correction);
+	swap_chain = vulkan::SwapChain::create_for_glfw(device, window, gamma_correction, (vulkan::SyncMode)sync_mode);
 }
 #endif
 
 HeadlessSurfaceRendererVulkan::HeadlessSurfaceRendererVulkan(Context* ctx, int _width, int _height, bool gamma_correction) :
-		SurfaceRendererVulkan(ctx, "headless", gamma_correction) {
+		SurfaceRendererVulkan(ctx, "headless", gamma_correction, SyncMode::UNSYNCED) {
 	width = _width;
 	height = _height;
 }
 
 void HeadlessSurfaceRendererVulkan::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create(device, width, height, gamma_correction);
+	swap_chain = vulkan::SwapChain::create(device, width, height, gamma_correction, vulkan::SyncMode::UNSYNCED);
 }
 
 xfer<HeadlessSurfaceRendererVulkan> HeadlessSurfaceRendererVulkan::create(Context* ctx, int width, int height, bool gamma_correction) {
