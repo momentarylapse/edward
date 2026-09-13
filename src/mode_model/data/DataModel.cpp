@@ -150,8 +150,12 @@ void DataModel::reset() {
 
 	materials.clear();
 	materials.resize(1);
-	materials[0] = session->ctx->create_internal_material();
-	materials[0]->textures[0] = create_blank_texture();
+	if (session->ctx) {
+		materials[0] = session->ctx->create_internal_material();
+		materials[0]->textures[0] = create_blank_texture();
+	} else {
+		//materials[0] = new yrenderer::Material;
+	}
 
 	// skeleton
 	bones.clear();
