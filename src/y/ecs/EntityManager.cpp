@@ -84,8 +84,9 @@ void EntityManager::delete_component(Entity* entity, Component *c, bool notify) 
 
 
 void EntityManager::shift_all(const vec3 &dpos) {
-	for (auto *e: entities)
-		e->pos += dpos;
+	for (auto e: entities)
+		if (!e->parent)
+			e->pos += dpos;
 }
 
 

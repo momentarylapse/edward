@@ -33,7 +33,7 @@ struct SceneView {
 	shared<ygfx::CubeMap> cube_map;
 	Array<Light*> lights;
 	Array<int> shadow_indices;
-	owned<ygfx::UniformBuffer> surfel_buffer;
+	owned<ygfx::ShaderStorageBuffer> surfel_buffer;
 	int num_surfels = 0;
 	ivec3 probe_cells;
 	vec3 probe_min, probe_max;

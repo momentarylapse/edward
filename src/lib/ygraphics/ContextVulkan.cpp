@@ -34,7 +34,7 @@ vulkan::DescriptorSet* DrawingHelperData::get_descriptor_set(Texture* texture) {
 }
 
 void DrawingHelperData::_create_basic_internal() {
-	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096", 65536);
+	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096,ssbo:1024", 65536);
 
 	dset = pool->create_set(shader);
 	dset->set_texture(0, context->tex_white);

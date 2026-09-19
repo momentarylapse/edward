@@ -22,7 +22,7 @@
 
 static const int MAX_RT_TRIAS = 65536;
 static const int MAX_RT_MESHES = 512;
-static const int MAX_RT_REQUESTS = 4096*16;
+static const int MAX_RT_REQUESTS = 4096*1024;
 
 void rt_setup_explicit(yrenderer::SceneView& scene_view, RaytracingMode mode) {
 	scene_view.ray_tracing_data = new RayTracingData(engine.context, mode);
@@ -45,7 +45,7 @@ RayTracingData::RayTracingData(yrenderer::Context* _ctx, RaytracingMode _mode) {
 
 	buffer_meshes = new ygfx::UniformBuffer(sizeof(MeshDescription) * MAX_RT_MESHES); // 64k!
 	buffer_requests = new ygfx::ShaderStorageBuffer(sizeof(RayRequest) * MAX_RT_REQUESTS);
-	buffer_reply = new vulkan::StorageBuffer(sizeof(RayReply) * MAX_RT_REQUESTS);
+	buffer_reply = new ygfx::ShaderStorageBuffer(sizeof(RayReply) * MAX_RT_REQUESTS);
 
 	if (mode == RaytracingMode::RTX) {
 		msg_error("RTX!!!");

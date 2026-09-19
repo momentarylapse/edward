@@ -11,7 +11,7 @@
 #include <lib/os/app.h>
 #include <lib/image/image.h>
 
-static const string DEFAULT_BINDINGS = "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,ubo]]";
+static const string DEFAULT_BINDINGS = "[[sampler,sampler,sampler,sampler,sampler,sampler,sampler,sampler,ubo,ubo,ubo,ubo,storage-buffer]]";
 static constexpr int DEFAULT_PUSH_SIZE = 96;
 
 #ifdef USING_VULKAN

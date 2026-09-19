@@ -586,6 +586,7 @@ void Edit::undo() {
 		auto& op = history[-- current_history_index];
 		string old = get_range(op.i0, op.i1);
 		_replace_range(op.i0, op.i1, op.t);
+		set_cursor_pos(op.i0 + op.t.num);
 		op.i1 = op.i0 + op.t.num;
 		op.t = old;
 	}
@@ -596,6 +597,7 @@ void Edit::redo() {
 		auto& op = history[current_history_index ++];
 		string old = get_range(op.i0, op.i1);
 		_replace_range(op.i0, op.i1, op.t);
+		set_cursor_pos(op.i0 + op.t.num);
 		op.i1 = op.i0 + op.t.num;
 		op.t = old;
 	}

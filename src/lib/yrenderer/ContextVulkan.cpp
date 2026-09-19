@@ -31,7 +31,7 @@ Context::~Context() {
 
 void _create_context_stuff(Context* ctx) {
 	ctx->device->create_query_pool(MAX_TIMESTAMP_QUERIES);
-	ctx->pool = new vulkan::DescriptorPool("ubo:65536,sampler:65536", 65536);
+	ctx->pool = new vulkan::DescriptorPool("ubo:65536,sampler:65536,ssbo:16384", 65536);
 
 	ctx->_create_default_textures();
 }

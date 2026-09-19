@@ -131,6 +131,8 @@ void Control::set_option(const string& key, const string& value) {
 			if (auto w = get_window())
 				w->focus_control = this;
 		});
+	} else if (key == "handlestabkey") {
+		handles_tab_key = value._bool() or (value == "");
 	} else if (key == "disabled") {
 		enable(false);
 	} else if (key == "enabled") {

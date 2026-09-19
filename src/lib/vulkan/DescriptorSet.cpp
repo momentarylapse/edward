@@ -135,7 +135,7 @@ VkDescriptorType descriptor_type(const string &s) {
 	}
 
 	void DescriptorSet::set_storage_buffer(int binding, Buffer *u) {
-		auto type = /*u->is_dynamic() ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC :*/ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+		auto type = /*u->is_dynamic() ? VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC :*/ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 		auto &i = get_for_binding(buffers, binding, type);
 		i.info.buffer = u->buffer;
 		i.info.offset = 0;

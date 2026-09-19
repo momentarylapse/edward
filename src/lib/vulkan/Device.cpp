@@ -336,31 +336,26 @@ void Device::create_logical_device(VkSurfaceKHR surface) {
 		features12.pNext = &as_features;
 	}
 
-	VkDeviceCreateInfo create_info = {};
-	create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	create_info.pNext = &device_features;
-
-	create_info.queueCreateInfoCount = queue_create_infos.num;
-	create_info.pQueueCreateInfos = &queue_create_infos[0];
-
-
 	Array<const char*> extensions;
 	for (auto f: features)
 		extensions.append(device_feature_extensions(f));
 #ifdef OS_MAC
 	extensions.add("VK_KHR_portability_subset");
+#else
+	//if (sa_contains(device_get_available_extensions(physical_device), "VK_KHR_portability_subset"))
+	//	extensions.add("VK_KHR_portability_subset");
 #endif
 	for (const auto& e: additional_device_extensions)
 		extensions.add(e.c_str()); // should be fine... for a short time... :P
-	create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.num);
-	create_info.ppEnabledExtensionNames = &extensions[0];
 
-	/*if (req & Requirements::VALIDATION) {
-		create_info.enabledLayerCount = static_cast<uint32_t>(validation_layers.num);
-		create_info.ppEnabledLayerNames = &validation_layers[0];
-	} else {
-		create_info.enabledLayerCount = 0;
-	}*/
+	VkDeviceCreateInfo create_info = {
+		.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+		.pNext = &device_features,
+		.queueCreateInfoCount = (unsigned)queue_create_infos.num,
+		.pQueueCreateInfos = &queue_create_infos[0],
+		.enabledExtensionCount = static_cast<uint32_t>(extensions.num),
+		.ppEnabledExtensionNames = &extensions[0]
+	};
 
 	auto r = vkCreateDevice(physical_device, &create_info, nullptr, &device);
 	if (r != VK_SUCCESS)

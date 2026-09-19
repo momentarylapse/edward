@@ -432,8 +432,12 @@ void Window::_on_mouse_wheel(const vec2 &d) {
 
 void Window::_on_key_down(int k) {
 	allow_event_propagation = true;
-	if (focus_control)
+	if (focus_control) {
 		focus_control->on_key_down(k);
+		if (k == KEY_TAB and !focus_control->handles_tab_key) {
+
+		}
+	}
 	if (allow_event_propagation)
 		for (const auto& e: event_key_codes)
 			if (k == e.key_code)

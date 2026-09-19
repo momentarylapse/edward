@@ -79,6 +79,7 @@ public:
 	Window* get_window() const;
 
 	bool can_grab_focus = false;
+	bool handles_tab_key = false;
 	bool enabled;
 	string tooltip;
 

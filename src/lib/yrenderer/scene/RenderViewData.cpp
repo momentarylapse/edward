@@ -230,7 +230,7 @@ RenderData& RenderViewData::start(
 	if (scene_view) {
 		rda[index].set_textures(*scene_view, weak(material->textures));
 		if (scene_view->surfel_buffer)
-			rda[index].dset->set_uniform_buffer(BINDING_SURFELS, scene_view->surfel_buffer.get());
+			rda[index].dset->set_storage_buffer(BINDING_SURFELS, scene_view->surfel_buffer.get());
 	}
 
 	return rda[index ++];

@@ -5,6 +5,7 @@ namespace xhui {
 MultilineEdit::MultilineEdit(const string &_id, const string &t) : Edit(_id, t) {
 	size_mode_y = SizeMode::Expand;
 	multiline = true;
+	handles_tab_key = true;
 	padding = {0,0,0,0};
 	//show_focus_frame = false;
 }
