@@ -415,11 +415,13 @@ void FormatWorld::_save(const Path &filename, DataWorld *data) {
 			.witha("pos", v2s(e->pos)); // also for directional/ambient! (for editing)
 			if (l->light.type == yrenderer::LightType::DIRECTIONAL) {
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
+				el.add_attribute("allow_shadow", b2s(l->light.allow_shadow));
 			} else if (l->light.type == yrenderer::LightType::POINT) {
 				el.add_attribute("allow_shadow", b2s(l->light.allow_shadow));
 			} else if (l->light.type == yrenderer::LightType::CONE) {
 				el.add_attribute("ang", v2s(e->ang.get_angles()));
 				el.add_attribute("theta", f2s(l->light.theta, 3));
+				el.add_attribute("allow_shadow", b2s(l->light.allow_shadow));
 			}
 			for (auto c: e->components) {
 				if (c->component_type != EdwardTag::_class and c->component_type != Light::_class)
