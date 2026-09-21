@@ -219,6 +219,7 @@ namespace vulkan {
 
 
 	string overwrite_bindings;
+	string overwrite_shader_version;
 	int overwrite_push_size = -1;
 
 
@@ -407,6 +408,8 @@ namespace vulkan {
 				}
 			}
 		}
+		if (overwrite_shader_version != "")
+			m.version = overwrite_shader_version;
 		if (overwrite_bindings != "")
 			m.bindings = overwrite_bindings;
 		if (overwrite_push_size >= 0)

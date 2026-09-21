@@ -19,6 +19,8 @@ const int TYPE_MODULE = -42;
 
 bool default_shader_bindings = false;
 
+string overwrite_shader_version;
+
 
 
 int create_empty_shader_program() {
@@ -202,6 +204,8 @@ void Shader::update(const string &source) {
 			return;
 		} else if (p.type == TYPE_LAYOUT) {
 			meta = parse_meta(p.source);
+			if (overwrite_shader_version != "")
+				meta.version = overwrite_shader_version;
 		} else {
 			int shader = create_gl_shader(ctx, p.source, p.type, meta);
 			shaders.add(shader);

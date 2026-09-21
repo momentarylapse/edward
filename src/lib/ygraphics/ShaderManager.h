@@ -28,8 +28,8 @@ public:
 	static string expand_tessellation_evaluation_shader_source(const string &source, const string &variant);
 	base::result_void load_shader_module(const Path& path);
 
-	base::result<shared<Shader>> __load_shader(const Path& path, const string &overwrite_bindings, int overwrite_push_size);
-	base::result<shared<Shader>> __create_shader(const string& source, const string &overwrite_bindings, int overwrite_push_size);
+	base::result<shared<Shader>> __load_shader(const Path& path, const string& overwrite_version, const string& overwrite_bindings, int overwrite_push_size);
+	base::result<shared<Shader>> __create_shader(const string& source, const string& overwrite_version, const string& overwrite_bindings, int overwrite_push_size);
 
 	Array<Path> shader_dirs;
 	Path default_shader;
