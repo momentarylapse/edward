@@ -52,7 +52,7 @@ void ModeMaterial::on_enter() {
 	multi_view->data_sets = {};
 	multi_view->light_mode = MultiView::LightMode::Fixed;
 
-	material = data->to_material();
+	data->out_changed();
 	set_mesh(PreviewMesh::TEAPOT);
 
 	set_side_panel(new MaterialPanel(this));
@@ -110,6 +110,11 @@ void ModeMaterial::on_leave() {
 void ModeMaterial::on_enter_rec() {
 	data->out_changed >> create_sink([this] {
 		material = data->to_material();
+
+		// test compile
+		auto xx = session->ctx->load_surface_shader(material->pass0.shader_path, "forward", "default", "", "");
+		if (xx.has_error())
+			session->error(format("%s:\n%s", material->pass0.shader_path, xx.error().msg));
 	});
 }
 
@@ -155,7 +160,7 @@ void ModeMaterial::on_draw_win(const yrenderer::RenderParams& params, MultiViewW
 	auto dh = win->multi_view->session->drawing_helper;
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
-		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), const_cast<yrenderer::Material*>(material), pass_no);
+		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material, pass_no);
 }
 
 void ModeMaterial::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {

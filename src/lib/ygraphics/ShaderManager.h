@@ -21,6 +21,7 @@ public:
 	base::result<shared<Shader>> load_shader(const Path& path);
 	base::result<shared<Shader>> create_shader(const string &source);
 	base::result<shared<Shader>> load_surface_shader(const Path& path, const string& render_path, const string& vertex_module, const string& geometry_module, const string& tessellation_module);
+	shared<Shader> dummy_surface_shader();
 	static string expand_vertex_shader_source(const string &source, const string &variant);
 	static string expand_fragment_shader_source(const string &source, const string &render_path);
 	static string expand_geometry_shader_source(const string &source, const string &variant);
@@ -37,6 +38,7 @@ public:
 
 
 	shared_array<Shader> shaders;
+	shared<Shader> dummy_shader;
 	Array<Path> shader_modules;
 	base::map<Path,Shader*> shader_map;
 	bool ignore_missing_files = false;

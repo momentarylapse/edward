@@ -65,7 +65,7 @@ void DrawingHelper::clear(const yrenderer::RenderParams& params, const color& c)
 #endif
 }
 
-void DrawingHelper::draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vertex_buffer, yrenderer::Material* material, int pass_no, const string& vertex_module) {
+void DrawingHelper::draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vertex_buffer, const yrenderer::Material* material, int pass_no, const string& vertex_module) {
 	auto shader = rvd.get_shader(material, pass_no, vertex_module, "");
 	auto& rd = rvd.start(params, matrix, shader, material, pass_no, ygfx::PrimitiveTopology::TRIANGLES, vertex_buffer);
 	rd.draw_triangles(params, vertex_buffer);

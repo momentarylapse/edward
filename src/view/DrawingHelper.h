@@ -39,7 +39,7 @@ public:
 
 	static void clear(const yrenderer::RenderParams& params, const color& c);
 
-	void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, yrenderer::Material* material, int pass_no = 0, const string& vertex_module = "default");
+	void draw_mesh(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd, const mat4& matrix, ygfx::VertexBuffer* vb, const yrenderer::Material* material, int pass_no = 0, const string& vertex_module = "default");
 
 	yrenderer::Context* ctx;
 
