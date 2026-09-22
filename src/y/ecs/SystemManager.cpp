@@ -66,7 +66,7 @@ void SystemManager::create(const Path& filename, const string& name, const Array
 
 void SystemManager::register_system(const kaba::Class* type, System* s) {
 	systems.add(s);
-	system_by_type.add({type, s});
+	system_by_type.set(type, s);
 	profiler::set_parent(s->channel, ch_system);
 	if (profiler::get_name(s->channel) == "System")
 		profiler::set_name(s->channel, type->name);

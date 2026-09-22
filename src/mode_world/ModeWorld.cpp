@@ -372,7 +372,7 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 Selection ModeWorld::get_selection(MultiViewWindow* win, const rect& _r) const {
 	auto r = _r.canonical();
 	Selection s;
-	s.add({MultiViewType::WORLD_ENTITY, {}});
+	s.set(MultiViewType::WORLD_ENTITY, {});
 	const auto filter = visibility_stack.get(MultiViewType::WORLD_ENTITY);
 	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
 		if (!filter(i))

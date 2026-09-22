@@ -44,7 +44,7 @@ GraphicsPipeline *get(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBu
 	p->set_z(test_z, write_z);
 	p->set_wireframe(wire);
 	p->rebuild();
-	ob_pipelines.add({key, p});
+	ob_pipelines.set(key, p);
 	return p;
 }
 GraphicsPipeline *get_alpha(Shader *s, RenderPass *rp, PrimitiveTopology top, VertexBuffer *vb, Alpha src, Alpha dst, vulkan::CullMode culling, bool test_z, bool write_z) {
@@ -57,7 +57,7 @@ GraphicsPipeline *get_alpha(Shader *s, RenderPass *rp, PrimitiveTopology top, Ve
 	p->set_blend(src, dst);
 	p->set_culling(culling);
 	p->rebuild();
-	ob_pipelines_alpha.add({key, p});
+	ob_pipelines_alpha.set(key, p);
 	return p;
 }
 
@@ -69,7 +69,7 @@ GraphicsPipeline *get_gui(Shader *s, RenderPass *rp, const string &format) {
 	p->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
 	p->set_z(false, false);
 	p->rebuild();
-	ob_pipelines_gui.add({s, p});
+	ob_pipelines_gui.set(s, p);
 	return p;
 }
 

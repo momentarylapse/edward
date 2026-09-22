@@ -99,7 +99,7 @@ BindingData::BindingData(Shader* shader) {
 
 void BindingData::bind_texture(int index, Texture *texture) {
 #ifdef USING_OPENGL
-	bindings.add({index, Binding::Type::Texture, texture});
+	bindings.set(index, {Binding::Type::Texture, texture});
 #endif
 #ifdef USING_VULKAN
 	dset->set_texture(index, texture);
@@ -121,7 +121,7 @@ void BindingData::bind_textures(int index0, const Array<Texture*>& textures) {
 
 void BindingData::bind_image(int index, Texture *texture) {
 #ifdef USING_OPENGL
-	bindings.add({index, Binding::Type::Image, texture});
+	bindings.set(index, {Binding::Type::Image, texture});
 #endif
 #ifdef USING_VULKAN
 	dset->set_storage_image(index, texture);
@@ -131,7 +131,7 @@ void BindingData::bind_image(int index, Texture *texture) {
 
 void BindingData::bind_uniform_buffer(int index, Buffer *buffer) {
 #ifdef USING_OPENGL
-	bindings.add({index, Binding::Type::UniformBuffer, buffer});
+	bindings.set(index, {Binding::Type::UniformBuffer, buffer});
 #endif
 #ifdef USING_VULKAN
 	dset->set_uniform_buffer(index, buffer);
@@ -141,7 +141,7 @@ void BindingData::bind_uniform_buffer(int index, Buffer *buffer) {
 
 void BindingData::bind_storage_buffer(int index, Buffer *buffer) {
 #ifdef USING_OPENGL
-	bindings.add({index, Binding::Type::StorageBuffer, buffer});
+	bindings.set(index, {Binding::Type::StorageBuffer, buffer});
 #endif
 #ifdef USING_VULKAN
 	dset->set_storage_buffer(index, buffer);
@@ -151,15 +151,15 @@ void BindingData::bind_storage_buffer(int index, Buffer *buffer) {
 
 void BindingData::apply(Shader* shader, const RenderParams& params) {
 #ifdef USING_OPENGL
-	for (auto& b: bindings) {
+	for (const auto& [index, b]: bindings) {
 		if (b.type == Binding::Type::Texture)
-			nix::bind_texture(b.index, static_cast<Texture*>(b.p));
+			nix::bind_texture(index, static_cast<Texture*>(b.p));
 		else if (b.type == Binding::Type::Image)
-			nix::bind_image(b.index, static_cast<nix::Texture*>(b.p), 0, 0, true);
+			nix::bind_image(index, static_cast<nix::Texture*>(b.p), 0, 0, true);
 		else if (b.type == Binding::Type::UniformBuffer)
-			nix::bind_uniform_buffer(b.index, static_cast<nix::UniformBuffer*>(b.p));
+			nix::bind_uniform_buffer(index, static_cast<nix::UniformBuffer*>(b.p));
 		else if (b.type == Binding::Type::StorageBuffer)
-			nix::bind_storage_buffer(b.index, static_cast<nix::ShaderStorageBuffer*>(b.p));
+			nix::bind_storage_buffer(index, static_cast<nix::ShaderStorageBuffer*>(b.p));
 	}
 #else
     auto cb = params.command_buffer;

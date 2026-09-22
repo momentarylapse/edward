@@ -80,7 +80,7 @@ base::result<shared<Texture>> TextureManager::load_texture(const Path& filename_
 	t->write_with_color_space(*im, color_space);
 
 	textures.add(t);
-	texture_map.add({filename_absolute_with_flags, t});
+	texture_map.set(filename_absolute_with_flags, t);
 	return shared{t};
 }
 

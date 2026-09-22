@@ -64,7 +64,7 @@ void assert_equal_up_to_permutation(const Mesh &a, const Mesh &b, float epsilon 
 				vmap.set(i, j);
 	if constexpr (verbose)
 		msg_write("vmap " + str(vmap));
-	if (vmap.num != a.vertices.num)
+	if (vmap.num() != a.vertices.num)
 		throw Failure("Mesh vmap...");
 
 	// check vertices

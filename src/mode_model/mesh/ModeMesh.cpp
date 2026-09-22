@@ -525,11 +525,11 @@ void selection_edges_from_polygons(base::set<int>& sele, const base::set<int>& s
 
 Selection ModeMesh::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Selection sel;
-	sel.add({MultiViewType::MODEL_VERTEX, {}});
-	sel.add({MultiViewType::MODEL_EDGE, {}});
-	sel.add({MultiViewType::MODEL_POLYGON, {}});
-	sel.add({MultiViewType::MODEL_BALL, {}});
-	sel.add({MultiViewType::MODEL_CYLINDER, {}});
+	sel.set(MultiViewType::MODEL_VERTEX, {});
+	sel.set(MultiViewType::MODEL_EDGE, {});
+	sel.set(MultiViewType::MODEL_POLYGON, {});
+	sel.set(MultiViewType::MODEL_BALL, {});
+	sel.set(MultiViewType::MODEL_CYLINDER, {});
 
 
 	auto selv = sel[MultiViewType::MODEL_VERTEX] = MultiView::select_points_in_rect(win, r, data->editing_mesh->vertices, visibility_stack.get(MultiViewType::MODEL_VERTEX));

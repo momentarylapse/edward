@@ -288,6 +288,11 @@ Shader* RenderViewData::get_shader(const Material* material, int pass_no, const 
 	return cache.get_shader(type);
 }
 
+void RenderViewData::clear_shader(const Material* material) {
+	for (int k=0; k<MAX_MATERIAL_PASSES; k++)
+		multi_pass_shader_cache[k].remove(material);
+}
+
 bool RenderViewData::is_shadow_pass() const {
 	return material_shadow;
 }

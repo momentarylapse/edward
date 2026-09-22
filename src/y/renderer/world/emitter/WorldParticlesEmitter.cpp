@@ -45,7 +45,7 @@ void WorldParticlesEmitter::draw_legacy_groups(const RenderParams& params, Rende
 		if (i >= 0) {
 			legacy_groups.by_index(i).add(p);
 		} else {
-			legacy_groups.add({p->texture.get(), {p}});
+			legacy_groups.set(p->texture.get(), {p});
 		}
 	}
 

@@ -119,7 +119,7 @@ base::result<shared<Shader>> ShaderManager::load_shader(const Path& filename) {
 	RESULT_PROPAGATE_ERROR(s, __load_shader(fn, "", "", -1), x1);
 
 	shaders.add(s);
-	shader_map.add({fn, s.get()});
+	shader_map.set(fn, s.get());
 	return s;
 }
 
@@ -202,11 +202,10 @@ base::result<shared<Shader>> ShaderManager::load_surface_shader(const Path& _fil
 	source = expand_fragment_shader_source(source, render_path);
 
 	RESULT_PROPAGATE_ERROR(shader, __create_shader(source, DEFAULT_VERSION, DEFAULT_BINDINGS, DEFAULT_PUSH_SIZE), x1);
-
 	//auto s = Shader::load(fn);
 
 	shaders.add(shader);
-	shader_map.add({fnx, shader.get()});
+	shader_map.set(fnx, shader.get());
 	return shader;
 }
 

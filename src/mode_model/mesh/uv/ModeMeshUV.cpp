@@ -226,7 +226,7 @@ base::optional<Hover> ModeMeshUV::get_hover(MultiViewWindow* win, const vec2& m)
 
 Selection ModeMeshUV::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Selection sel;
-	sel.add({MultiViewType::MODEL_SKIN_VERTEX, {}});
+	sel.set(MultiViewType::MODEL_SKIN_VERTEX, {});
 	sel[MultiViewType::MODEL_SKIN_VERTEX] = MultiView::select_points_in_rect(win, r, uv, mode_mesh->visibility_stack.get(MultiViewType::MODEL_SKIN_VERTEX));
 	return sel;
 }

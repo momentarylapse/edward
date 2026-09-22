@@ -21,7 +21,6 @@ struct Binding {
 		UniformBuffer,
 		StorageBuffer
 	};
-	int index;
 	Type type;
 	void* p;
 };
@@ -29,7 +28,7 @@ struct Binding {
 struct BindingData {
 	explicit BindingData(ygfx::Shader* shader);
 	Any shader_data; // must be offset=0 for kaba interface...
-	Array<Binding> bindings;
+	base::map<int, Binding> bindings;
 
 	void bind_texture(int index, ygfx::Texture* texture);
 	void bind_textures(int index0, const Array<ygfx::Texture*>& textures);

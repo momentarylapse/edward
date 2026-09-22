@@ -111,6 +111,8 @@ void ModeMaterial::on_enter_rec() {
 	data->out_changed >> create_sink([this] {
 		material = data->to_material();
 
+		multi_view->window->rvd().clear_shader(material);
+
 		// test compile
 		auto xx = session->ctx->load_surface_shader(material->pass0.shader_path, "forward", "default", "", "");
 		if (xx.has_error())

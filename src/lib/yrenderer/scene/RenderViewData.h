@@ -30,6 +30,8 @@ enum class RenderPathType;
 
 static constexpr int MAX_INSTANCES = 1<<11;
 
+static constexpr int MAX_MATERIAL_PASSES = 4;
+
 
 static constexpr int BINDING_TEX0 = 0;
 static constexpr int BINDING_SHADOW0 = 5;
@@ -107,9 +109,10 @@ struct RenderViewData {
 	                  ygfx::PrimitiveTopology top, ygfx::VertexBuffer *vb);
 
 
-	base::map<const Material*, ShaderCache> multi_pass_shader_cache[4];
+	base::map<const Material*, ShaderCache> multi_pass_shader_cache[MAX_MATERIAL_PASSES];
 	// material as id!
 	ygfx::Shader* get_shader(const Material* material, int pass_no, const string& vertex_shader_module, const string& geometry_shader_module = "", const string& tessellation_module = "");
+	void clear_shader(const Material* material);
 };
 
 }

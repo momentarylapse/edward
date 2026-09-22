@@ -242,7 +242,7 @@ base::optional<Hover> ModeSkeleton::get_hover(MultiViewWindow* win, const vec2& 
 Selection ModeSkeleton::select_in_rect(MultiViewWindow* win, const rect& r) {
 	Selection sel;
 	VisibilityStack dummy;
-	sel.add({MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones, dummy.get(MultiViewType::SKELETON_BONE))});
+	sel.set(MultiViewType::SKELETON_BONE, MultiView::select_points_in_rect(win, r, data->bones, dummy.get(MultiViewType::SKELETON_BONE)));
 	return sel;
 }
 
