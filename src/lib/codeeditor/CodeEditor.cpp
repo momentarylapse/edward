@@ -43,10 +43,11 @@ Dialog coding-panel ''
 	edit = (xhui::MultilineEdit*)get_control(id_edit);
 	edit->set_option("focusframe", "no");
 	edit->set_option("monospace", "");
-	edit->set_option("fontsize", "12");
-	edit->set_option("lineheightscale", "1.1");
+	edit->set_option("fontsize", "11");
+	edit->set_option("lineheightscale", "1.2");
 	edit->set_option("altbg", "");
 	edit->set_option("linenumbers", "");
+	edit->set_option("showindents", "");
 
 
 	auto list = (xhui::ListView*)get_control(id_structure);

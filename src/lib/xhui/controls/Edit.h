@@ -67,6 +67,7 @@ public:
 	bool numerical = false;
 	bool show_focus_frame = true;
 	bool show_line_numbers = false;
+	bool show_indents = false;
 	float line_number_area_width = 0;
 	string font_name;
 	float font_size;

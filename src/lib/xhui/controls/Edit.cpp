@@ -393,6 +393,7 @@ void Edit::draw_text(Painter* p) {
 		if (!multiline)
 			cache.line_y0[0] = area.center().y - line_height / 2;
 	}
+	float tab_dx = p->get_str_width("\t");
 
 	// highlight current line?
 	if (multiline and enabled) {
@@ -436,6 +437,16 @@ void Edit::draw_text(Painter* p) {
 			continue;
 		if (cache.line_y0[line] > area.y2)
 			continue;
+		if (show_indents and l.head(2) == "\t\t") {
+			p->set_color(Theme::_default.text.with_alpha(0.08f));
+			if (color_space_shaders == ColorSpace::Linear)
+				p->set_color(Theme::_default.text.with_alpha(0.02f)); // FIXME find a more correct/intuitive way
+			for (int i=1; i<l.num-1; i++) {
+				p->draw_line({text_x0 + tab_dx*(float)i, cache.line_y0[line]}, {text_x0 + tab_dx*(float)i, cache.line_y0[line+1]});
+				if (l[i+1] != '\t')
+					break;
+			}
+		}
 		if (markups.num > 0) {
 			int i0 = cache.line_first_index[line];
 			int i1 = i0 + l.num;
@@ -898,6 +909,9 @@ void Edit::set_option(const string& key, const string& value) {
 	} else if (key == "linenumbers") {
 		show_line_numbers = true;
 		line_number_area_width = DEFAULT_LINE_NUMBER_WIDTH;
+		request_redraw();
+	} else if (key == "showindents") {
+		show_indents = true;
 		request_redraw();
 	} else if (key == "savestate") {
 		set_save_state();
