@@ -1,6 +1,7 @@
 #if HAS_LIB_GL
 
 #include "Context.h"
+#include "ShaderManager.h"
 #include "graphics-impl.h"
 
 namespace ygfx {
@@ -53,6 +54,7 @@ Context::Context(nix::Context* _ctx) {
 	ctx = _ctx;
 	color_space_shaders = ColorSpace::Linear;
 	color_space_input = ColorSpace::SRGB;
+	shader_manager = new ShaderManager(this, {});
 }
 
 DrawingHelperData* Context::_create_auxiliary_stuff() {
@@ -64,8 +66,8 @@ DrawingHelperData* Context::_create_auxiliary_stuff() {
 void Context::make_current() {
 }
 
-base::result<Shader*> Context::create_shader(const string &source) const {
-	return ctx->create_shader(source);
+base::result<shared<Shader>> Context::create_shader(const string &source) {
+	return shader_manager->create_shader(source);
 }
 
 }

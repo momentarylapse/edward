@@ -2,6 +2,7 @@
 
 #include "Context.h"
 #include "font.h"
+#include "ShaderManager.h"
 #include "../os/msg.h"
 #include "../image/image.h"
 #include "graphics-impl.h"
@@ -25,7 +26,7 @@ vulkan::DescriptorSet* DrawingHelperData::get_descriptor_set(Texture* texture) {
 	if (descriptor_sets_used < descriptor_sets.num) {
 		dset = descriptor_sets[descriptor_sets_used ++];
 	} else {
-		dset = pool->create_set(shader);
+		dset = pool->create_set(shader.get());
 		descriptor_sets.add(dset);
 	}
 	dset->set_texture(0, texture);
@@ -36,13 +37,12 @@ vulkan::DescriptorSet* DrawingHelperData::get_descriptor_set(Texture* texture) {
 void DrawingHelperData::_create_basic_internal() {
 	pool = new vulkan::DescriptorPool("buffer:4096,sampler:4096,ssbo:1024", 65536);
 
-	dset = pool->create_set(shader);
+	dset = pool->create_set(shader.get());
 	dset->set_texture(0, context->tex_white);
 	dset->update();
 
 
-
-	shader_lines = REQUIRED(vulkan::Shader::create(
+	shader_lines = REQUIRED(context->create_shader(
 		R"foodelim(
 <Layout>
 	version = 430
@@ -161,40 +161,40 @@ void main() {
 }
 </FragmentShader>
 )foodelim"));
-	dset_lines = pool->create_set(shader_lines);
+	dset_lines = pool->create_set(shader_lines.get());
 	dset_lines->set_texture(0, context->tex_white);
 	dset_lines->update();
 }
 
 
 void DrawingHelperData::rebuild(RenderPass* render_pass) {
-	pipeline = new vulkan::GraphicsPipeline(shader, render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
+	pipeline = new vulkan::GraphicsPipeline(shader.get(), render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
 	pipeline->set_dynamic({"scissor"});
 	pipeline->set_z(false, false);
 	pipeline->set_culling(CullMode::NONE);
 	pipeline->rebuild();
 
-	pipeline_z = new vulkan::GraphicsPipeline(shader, render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
+	pipeline_z = new vulkan::GraphicsPipeline(shader.get(), render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
 	pipeline_z->set_dynamic({"scissor"});
 	pipeline_z->set_z(true, true);
 	pipeline_z->set_culling(CullMode::NONE);
 	pipeline_z->rebuild();
 
-	pipeline_alpha = new vulkan::GraphicsPipeline(shader, render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
+	pipeline_alpha = new vulkan::GraphicsPipeline(shader.get(), render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
 	pipeline_alpha->set_dynamic({"scissor"});
 	pipeline_alpha->set_z(true, false);
 	pipeline_alpha->set_culling(CullMode::NONE);
 	pipeline_alpha->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
 	pipeline_alpha->rebuild();
 
-	pipeline_round = new vulkan::GraphicsPipeline(shader_round, render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
+	pipeline_round = new vulkan::GraphicsPipeline(shader_round.get(), render_pass, 0, PrimitiveTopology::TRIANGLES, vb);
 	pipeline_round->set_dynamic({"scissor"});
 	pipeline_round->set_z(false, false);
 	pipeline_round->set_culling(CullMode::NONE);
 	pipeline_round->set_blend(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA);
 	pipeline_round->rebuild();
 
-	pipeline_lines = new vulkan::GraphicsPipeline(shader_lines, render_pass, 0, PrimitiveTopology::LINES, "3f");
+	pipeline_lines = new vulkan::GraphicsPipeline(shader_lines.get(), render_pass, 0, PrimitiveTopology::LINES, "3f");
 	pipeline_lines->set_dynamic({"scissor"});
 	pipeline_lines->set_z(false, false);
 	pipeline_lines->set_culling(CullMode::NONE);
@@ -207,6 +207,7 @@ Context::Context(vulkan::Instance* _instance, vulkan::Device* _device) {
 	color_space_shaders = ColorSpace::Linear;
 	color_space_input = ColorSpace::SRGB;
 	//num_line_vbs_used = 0;
+	shader_manager = new ShaderManager(this, {});
 }
 
 Context::~Context() {
@@ -214,8 +215,8 @@ Context::~Context() {
 	delete instance;
 }
 
-base::result<Shader*> Context::create_shader(const string &source) const {
-	return vulkan::Shader::create(source);
+base::result<shared<Shader>> Context::create_shader(const string &source) {
+	return shader_manager->create_shader(source);
 }
 
 DrawingHelperData* Context::_create_auxiliary_stuff() {

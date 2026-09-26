@@ -8,6 +8,8 @@
 #include <lib/os/msg.h>
 #include <lib/os/app.h>
 
+#include "ShaderManager.h"
+
 namespace ygfx {
 
 color Context::color_input_to_shaders(const color& c) const {
@@ -44,7 +46,7 @@ void DrawingHelperData::create_basic() {
 						 {vec3(1,0,0), {0,0,0}, 1, 0, White}};
 	vb->update(vv);
 
-	auto mm = context->create_shader(
+	context->shader_manager->create_shader_module(
 			R"foodelim(
 <Layout>
 	name = ui-data
@@ -70,7 +72,7 @@ uniform float softness = 0;
 layout(binding=0) uniform sampler2D tex0;
 
 </Module>
-)foodelim");
+)foodelim", ":ui-dummy:");
 
 	shader = REQUIRED(context->create_shader(
 			R"foodelim(

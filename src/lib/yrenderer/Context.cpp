@@ -6,13 +6,11 @@
  */
 
 #include "Context.h"
-#include "lib/ygraphics/Context.h"
-
 #include "MaterialManager.h"
+#include <lib/ygraphics/Context.h>
 #include <lib/ygraphics/TextureManager.h>
 #include <lib/ygraphics/ShaderManager.h>
 #include <lib/ygraphics/graphics-impl.h>
-#include <lib/image/image.h>
 
 namespace yrenderer {
 
@@ -25,6 +23,7 @@ void Context::_create_default_textures() {
 void Context::create_managers(const Array<Path>& texture_dirs, const Array<Path>& shader_dirs, const Array<Path>& material_dirs) {
 	texture_manager = new ygfx::TextureManager(context, texture_dirs);
 	shader_manager = new ygfx::ShaderManager(context, shader_dirs);
+	shader_manager->inherit_modules_from(*context->shader_manager);
 	material_manager = new MaterialManager(texture_manager, material_dirs);
 }
 

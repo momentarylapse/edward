@@ -12,10 +12,14 @@
 
 namespace ygfx {
 
+struct ShaderModule;
+
 class ShaderManager {
 public:
 	explicit ShaderManager(Context *ctx, const Array<Path>& _shader_dirs);
+	~ShaderManager();
 	void add_directory(const Path& dir);
+	void inherit_modules_from(const ShaderManager& shader_manager);
 	Context *ctx;
 
 	base::result<shared<Shader>> load_shader(const Path& path);
@@ -28,6 +32,7 @@ public:
 	static string expand_tessellation_control_shader_source(const string &source, const string &variant);
 	static string expand_tessellation_evaluation_shader_source(const string &source, const string &variant);
 	base::result_void load_shader_module(const Path& path);
+	base::result_void create_shader_module(const string &source, const Path& path);
 
 	base::result<shared<Shader>> __load_shader(const Path& path, const string& overwrite_version, const string& overwrite_bindings, int overwrite_push_size);
 	base::result<shared<Shader>> __create_shader(const string& source, const string& overwrite_version, const string& overwrite_bindings, int overwrite_push_size);
@@ -36,10 +41,11 @@ public:
 	Path default_shader;
 	void clear();
 
+	Array<ShaderModule> shader_modules;
 
 	shared_array<Shader> shaders;
 	shared<Shader> dummy_shader;
-	Array<Path> shader_modules;
+	//Array<Path> shader_modules;
 	base::map<Path,Shader*> shader_map;
 	bool ignore_missing_files = false;
 };

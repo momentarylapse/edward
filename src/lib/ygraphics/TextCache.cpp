@@ -49,7 +49,7 @@ CachedText& TextCache::get(const string& text, Face* face, float font_size, floa
 		cached_texts.add({});
 		tc = &cached_texts.back();
 #if HAS_LIB_VULKAN
-		tc->dset = aux->pool->create_set(aux->shader);
+		tc->dset = aux->pool->create_set(aux->shader.get());
 #endif
 		tc->texture = new ygfx::Texture();
 	}

@@ -1,4 +1,6 @@
 #if HAS_LIB_VULKAN
+#include "lib/base/error.h"
+#include "lib/base/error.h"
 
 
 #include "Shader.h"
@@ -189,13 +191,13 @@ base::result<bytes> glslang_to_spirv(const string& source, VkShaderStageFlagBits
 }
 
 
-string with_line_numbers(const string& s) {
+/*string with_line_numbers(const string& s) {
 	auto xx = s.explode("\n");
 	string r;
 	for (int i=0; i<xx.num; i++)
 		r += format("%03d  %s\n", i+1, xx[i]);
 	return r;
-}
+}*/
 
 namespace vulkan {
 
@@ -215,159 +217,9 @@ namespace vulkan {
 		return shaderModule;
 	}
 
-	Path Shader::directory;
+	//string shader_error;
 
-
-	string overwrite_bindings;
-	string overwrite_shader_version;
-	int overwrite_push_size = -1;
-
-
-
-	[[maybe_unused]] const int TYPE_LAYOUT = -41;
-	[[maybe_unused]] const int TYPE_MODULE = -42;
-
-
-	string vertex_module_default = "vertex-default-nix";
-
-	string shader_error;
-
-	struct ShaderSourcePart {
-		VkShaderStageFlagBits type;
-		string source;
-	};
-
-	struct ShaderMetaData {
-		string version, name, bindings;
-		Array<string> extensions;
-		int push_size = 0;
-	};
-
-	struct ShaderModule {
-		ShaderMetaData meta;
-		string source;
-	};
-	static Array<ShaderModule> shader_modules;
-
-	Array<ShaderSourcePart> get_shader_parts(const string &source) {
-		Array<ShaderSourcePart> parts;
-		bool has_vertex = false;
-		bool has_fragment = false;
-		int pos = 0;
-		while (pos < source.num - 5) {
-			int pos0 = source.find("<", pos);
-			if (pos0 < 0)
-				break;
-			pos = pos0 + 1;
-			int pos1 = source.find(">", pos0);
-			if (pos1 < 0)
-				break;
-
-			string tag = source.sub(pos0 + 1, pos1);
-			if ((tag.num > 64) or (tag.find("<") >= 0))
-				continue;
-
-			int pos2 = source.find("</" + tag + ">", pos1 + 1);
-			if (pos2 < 0)
-				continue;
-			ShaderSourcePart p;
-			p.source = source.sub(pos1 + 1, pos2);
-			pos = pos2 + tag.num + 3;
-			if (tag == "VertexShader") {
-				p.type = VK_SHADER_STAGE_VERTEX_BIT;
-				has_vertex = true;
-			} else if (tag == "FragmentShader") {
-				p.type = VK_SHADER_STAGE_FRAGMENT_BIT;
-				has_fragment = true;
-			} else if (tag == "ComputeShader") {
-				p.type = VK_SHADER_STAGE_COMPUTE_BIT;
-			} else if (tag == "TessellationControlShader") {
-				p.type = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
-			} else if (tag == "TessellationEvaluationShader") {
-				p.type = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
-			} else if (tag == "GeometryShader") {
-				p.type = VK_SHADER_STAGE_GEOMETRY_BIT;
-			} else if (tag == "RayGenShader") {
-				p.type = VK_SHADER_STAGE_RAYGEN_BIT_KHR;
-			} else if (tag == "RayClosestHitShader") {
-				p.type = VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
-			} else if (tag == "RayAnyHitShader") {
-				p.type = VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
-			} else if (tag == "RayMissShader") {
-				p.type = VK_SHADER_STAGE_MISS_BIT_KHR;
-			} else if (tag == "TaskShader") {
-				p.type = VK_SHADER_STAGE_TASK_BIT_EXT;
-			} else if (tag == "MeshShader") {
-				p.type = VK_SHADER_STAGE_MESH_BIT_EXT;
-			} else if (tag == "Module") {
-				p.type = (VkShaderStageFlagBits)TYPE_MODULE;
-			} else if (tag == "Layout") {
-				p.type = (VkShaderStageFlagBits)TYPE_LAYOUT;
-			} else {
-				msg_error("unknown shader tag: '" + tag + "'");
-				continue;
-			}
-			parts.add(p);
-		}
-		if (has_fragment and !has_vertex) {
-			if (verbosity >= 1)
-				msg_write(" ...auto import " + vertex_module_default);
-			parts.add({VK_SHADER_STAGE_VERTEX_BIT, format("#import %s\n", vertex_module_default)});
-		}
-		return parts;
-	}
-
-	string get_inside_of_tag(const string &source, const string &tag) {
-		string r;
-		int pos0 = source.find("<" + tag + ">");
-		if (pos0 < 0)
-			return "";
-		pos0 += tag.num + 2;
-		int pos1 = source.find("</" + tag + ">", pos0);
-		if (pos1 < 0)
-			return "";
-		return source.sub(pos0, pos1);
-	}
-
-	base::result<string> expand_shader_source(const string &source, ShaderMetaData &meta) {
-		string r = source;
-		while (true) {
-			int p = r.find("#import", 0);
-			if (p < 0)
-				break;
-			int p2 = r.find("\n", p);
-			string imp = r.sub(p + 7, p2).replace(" ", "");
-			//msg_error("import '" + imp + "'");
-
-			bool found = false;
-			for (auto &m: shader_modules)
-				if (m.meta.name == imp) {
-					//msg_error("FOUND " + imp);
-					r = r.head(p) + "\n// << + " + imp + "\n" + m.source + "\n// >> " + imp + "\n" + r.sub(p2);
-					found = true;
-					break;
-				}
-			if (!found)
-				return base::Error{format("shader import '%s' not found", imp)};
-		}
-
-		string intro;
-		if (meta.version != "")
-			intro += "#version " + meta.version + "\n";
-		for (auto &e: meta.extensions)
-			intro += "#extension " + e + " : require\n";
-		if (r.find("GL_ARB_separate_shader_objects", 0) < 0)
-			intro += "#extension GL_ARB_separate_shader_objects : enable\n";
-		if (false) {
-			msg_write("\n\n======================================");
-			msg_write(with_line_numbers(intro + r));
-			msg_write("======================================\n\n");
-		}
-		return intro + r;
-	}
-
-	base::result<VkShaderModule> create_vk_shader(const string &_source, VkShaderStageFlagBits type, ShaderMetaData &meta) {
-		RESULT_PROPAGATE_ERROR(source, expand_shader_source(_source, meta), x1);
+	base::result<VkShaderModule> create_vk_shader(const string &source, VkShaderStageFlagBits type) {
 		if (source.num == 0)
 			return nullptr;
 
@@ -384,70 +236,46 @@ namespace vulkan {
 		return nullptr;*/
 	}
 
-	ShaderMetaData parse_meta(const string& source) {
-		ShaderMetaData m;
-		for (auto &x: source.explode("\n")) {
-			auto y = x.explode("=");
-			if (y.num == 2) {
-				string k = y[0].trim();
-				string v = y[1].trim();
-				if (k == "name") {
-					m.name = v;
-				} else if (k == "version") {
-					m.version = v;
-				} else if ((k == "binding") or (k == "bindings")) {
-					m.bindings = v;
-				} else if (k == "pushsize") {
-					m.push_size = v._int();
-				} else if (k == "input") {
-				} else if (k == "topology") {
-				} else if (k == "extensions") {
-					m.extensions = v.explode(",");
-				} else {
-					msg_error("unhandled shader meta: " + x);
-				}
-			}
+	base::result<VkShaderStageFlagBits> parse_stage(const string& tag) {
+		if (tag == "VertexShader") {
+			return VK_SHADER_STAGE_VERTEX_BIT;
+		} else if (tag == "FragmentShader") {
+			return VK_SHADER_STAGE_FRAGMENT_BIT;
+		} else if (tag == "ComputeShader") {
+			return VK_SHADER_STAGE_COMPUTE_BIT;
+		} else if (tag == "TessellationControlShader") {
+			return VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT;
+		} else if (tag == "TessellationEvaluationShader") {
+			return VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT;
+		} else if (tag == "GeometryShader") {
+			return VK_SHADER_STAGE_GEOMETRY_BIT;
+		} else if (tag == "RayGenShader") {
+			return VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+		} else if (tag == "RayClosestHitShader") {
+			return VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR;
+		} else if (tag == "RayAnyHitShader") {
+			return VK_SHADER_STAGE_ANY_HIT_BIT_KHR;
+		} else if (tag == "RayMissShader") {
+			return VK_SHADER_STAGE_MISS_BIT_KHR;
+		} else if (tag == "TaskShader") {
+			return VK_SHADER_STAGE_TASK_BIT_EXT;
+		} else if (tag == "MeshShader") {
+			return VK_SHADER_STAGE_MESH_BIT_EXT;
+		} else {
+			return base::Error("unknown shader tag: '" + tag + "'");
 		}
-		if (overwrite_shader_version != "")
-			m.version = overwrite_shader_version;
-		if (overwrite_bindings != "")
-			m.bindings = overwrite_bindings;
-		if (overwrite_push_size >= 0)
-			m.push_size = overwrite_push_size;
-		return m;
 	}
 
-	base::result<xfer<Shader>> Shader::create(const string &source) {
-		auto parts = get_shader_parts(source);
+	base::result_void Shader::add_module(const string& _stage, const string &source) {
+		RESULT_PROPAGATE_ERROR(stage, parse_stage(_stage), x1);
+		RESULT_PROPAGATE_ERROR(mm, create_vk_shader(source, stage), x2);
+		modules.add({mm, stage});
+		return base::result_success();
+	}
 
-		if (parts.num == 0)
-			return base::Error{"no shader tags found (<VertexShader>...</VertexShader> or <FragmentShader>...</FragmentShader>)"};
-
-		//int prog = create_empty_shader_program();
-		auto s = new Shader();
-
-		ShaderMetaData meta;
-		for (auto p: parts) {
-			if ((int)p.type == TYPE_MODULE) {
-				ShaderModule m;
-				m.source = p.source;
-				m.meta = meta;
-				shader_modules.add(m);
-				if (verbosity >= 2)
-					msg_write("new module '" + m.meta.name + "'");
-				return nullptr;
-			} else if ((int)p.type == TYPE_LAYOUT) {
-				meta = parse_meta(p.source);
-			} else {
-				RESULT_PROPAGATE_ERROR(mm, create_vk_shader(p.source, p.type, meta), x1);
-				if (mm)
-					s->modules.add({mm, p.type});
-			}
-		}
-
-		s->push_size = meta.push_size;
-		s->descr_layouts = DescriptorSet::parse_bindings(meta.bindings);
-		return s;
+	void Shader::set_meta(const string& bindings, int _push_size) {
+		push_size = push_size;
+		descr_layouts = DescriptorSet::parse_bindings(bindings);
 	}
 
 
@@ -463,68 +291,6 @@ namespace vulkan {
 			vkDestroyShaderModule(default_device->device, m.module, nullptr);
 		for (auto &l: descr_layouts)
 			DescriptorSet::destroy_layout(l);
-	}
-
-
-	base::result<xfer<Shader>> Shader::load(const Path &_filename) {
-		if (!_filename)
-			return nullptr;
-		Path filename = directory | _filename;
-		if (verbosity >= 1)
-			msg_write(format("load shader %s", filename));
-
-	//	if (!os::fs::exists(filename.with(".compiled")))
-		return create(os::fs::read_text(filename));
-
-#if 0
-		Shader *s = new Shader();
-
-		auto f = ownify(os::fs::open(filename.with(".compiled"), "rb"));
-		try {
-			while(true) {
-				string tag = f->read_str();
-				string value = f->read_str();
-				//std::cout << tag << "\n";
-				if (tag == "Topology") {
-				} else if (tag == "Bindings") {
-					s->descr_layouts = DescriptorSet::parse_bindings(value);
-				} else if (tag == "PushSize") {
-					s->push_size = value._int();
-				} else if (tag == "Input") {
-				} else if (tag == "Info") {
-				} else if (tag == "VertexShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_VERTEX_BIT});
-				} else if (tag == "GeometryShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_GEOMETRY_BIT});
-				} else if (tag == "FragmentShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_FRAGMENT_BIT});
-				} else if (tag == "ComputeShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_COMPUTE_BIT});
-				} else if (tag == "RayGenShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_RAYGEN_BIT_KHR});
-				} else if (tag == "RayMissShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_MISS_BIT_KHR});
-				} else if (tag == "RayClosestHitShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR});
-				} else if (tag == "RayAnyHitShader") {
-					RESULT_PROPAGATE_ERROR(m, create_shader_module(value), x1);
-					s->modules.add({m, VK_SHADER_STAGE_ANY_HIT_BIT_KHR});
-				} else {
-					msg_write("WARNING: " + value);
-				}
-			}
-		} catch(...) {
-		}
-
-		return s;
-#endif
 	}
 
 	VkShaderModule Shader::get_module(VkShaderStageFlagBits stage) const {

@@ -12,7 +12,7 @@ namespace xhui {
 void Painter::draw_ximage(const rect &r, const XImage *image) {
 	auto t = image->texture.get();
 	const auto mat = mat4::translation(vec3(r.p00() + offset, 0)) * mat4::scale(r.width(), r.height(), 1);
-	nix::set_shader(aux->shader);
+	nix::set_shader(aux->shader.get());
 	nix::set_alpha_split(nix::Alpha::SOURCE_ALPHA, nix::Alpha::SOURCE_INV_ALPHA, nix::Alpha::ZERO, nix::Alpha::ONE);
 	aux->shader->set_matrix("matrix", mat_pixel_to_rel * mat);
 	aux->shader->set_color("color", _color);

@@ -27,11 +27,10 @@ namespace vulkan{
 		Array<VkDescriptorSetLayout> descr_layouts;
 		int push_size;
 
-		VkShaderModule get_module(VkShaderStageFlagBits stage) const;
+		void set_meta(const string& bindings, int push_size);
+		base::result_void add_module(const string& stage, const string& source);
 
-		static Path directory;
-		static base::result<xfer<Shader>> load(const Path &filename);
-		static base::result<xfer<Shader>> create(const string &source);
+		VkShaderModule get_module(VkShaderStageFlagBits stage) const;
 	};
 
 };
