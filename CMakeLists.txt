@@ -301,6 +301,7 @@ add_executable(edward
 	src/lib/nix/nix_vertexbuffer.cpp
 	src/lib/nix/nix_view.cpp
 	src/lib/obs/_kaba_export.cpp
+	src/lib/obs/FileWatcher.cpp
 	src/lib/obs/Log.cpp
 	src/lib/obs/Observable.cpp
 	src/lib/os/app.cpp
