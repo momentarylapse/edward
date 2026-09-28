@@ -96,6 +96,7 @@ void MaterialPanel::load_data() {
 	for (int i=0;i<data->material.num_passes;i++) {
 		add_string("passes", str(i));
 	}
+	set_int("passes", 0);
 
 	set_float("rcstatic", data->material.friction._static);
 	set_float("rcsliding", data->material.friction.sliding);
