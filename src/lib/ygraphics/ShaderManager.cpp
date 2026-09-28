@@ -192,7 +192,7 @@ base::result<shared<Shader>> ShaderManager::__load_shader(const Path& path, cons
 		return source.sub(pos0, pos1);
 	}
 
-	base::result<string> expand_shader_source(const string &source, ShaderManager* sm, const ShaderMetaData &meta) {
+	base::result<string> ShaderManager::expand_shader_source(const string &source, const ShaderMetaData &meta) {
 		string r = source;
 		while (true) {
 			int p = r.find("#import", 0);
@@ -203,7 +203,7 @@ base::result<shared<Shader>> ShaderManager::__load_shader(const Path& path, cons
 			//msg_error("import '" + imp + "'");
 
 			bool found = false;
-			for (const auto &m: sm->shader_modules)
+			for (const auto &m: shader_modules)
 				if (m.meta.name == imp) {
 					//msg_error("FOUND " + imp);
 					r = r.head(p) + "\n// << + " + imp + "\n" + m.source + "\n// >> " + imp + "\n" + r.sub(p2);
@@ -279,7 +279,7 @@ base::result<shared<Shader>> ShaderManager::__create_shader(const string& source
 		if (p.type == "Layout") {
 			meta = parse_meta(p.source, {overwrite_version, "", overwrite_bindings, {}, overwrite_push_size});
 		} else {
-			RESULT_PROPAGATE_ERROR(a, expand_shader_source(p.source, this, meta), x2);
+			RESULT_PROPAGATE_ERROR(a, expand_shader_source(p.source, meta), x2);
 			RESULT_PROPAGATE_ERROR_VOID(s->add_module(p.type, a));
 		}
 	}
@@ -431,10 +431,8 @@ base::result_void ShaderManager::load_shader_module(const Path& path) {
 	return create_shader_module(source, fn);
 }
 
-base::result_void ShaderManager::create_shader_module(const string& source, const Path& filename) {
+base::result<ShaderModule> _create_shader_module(const string& source, const Path& filename) {
 	auto parts = get_shader_parts(source);
-	if (parts.num == 0)
-		return base::Error{"no shader tags found (<Module>...</Module>"};
 
 	ShaderMetaData meta;
 	for (const auto& p: parts) {
@@ -445,12 +443,24 @@ base::result_void ShaderManager::create_shader_module(const string& source, cons
 			m.filename = filename;
 			m.source = p.source;
 			m.meta = meta;
-			shader_modules.add(m);
+			return m;
 		}
 	}
+	return base::Error("no <Module> tag found");
+}
+
+base::result_void ShaderManager::create_shader_module(const string& source, const Path& filename) {
+	RESULT_PROPAGATE_ERROR(m, _create_shader_module(source, filename), x1);
+	shader_modules.add(m);
 	return base::result_success();
 }
 
+void ShaderManager::reload_modules() {
+	for (auto& m: shader_modules)
+		if (auto source = os::fs::read_text2(m.filename))
+			if (auto mm = _create_shader_module(*source, m.filename))
+				m = *mm;
+}
 
 
 void ShaderManager::clear() {
