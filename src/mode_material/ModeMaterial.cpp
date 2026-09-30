@@ -28,7 +28,99 @@
 #include <lib/polymesh/create/Torus.h>
 #include <lib/polymesh/create/TorusKnot.h>
 #include <lib/polymesh/create/Teapot.h>
+#include <lib/yrenderer/helper/LineHelper.h>
 #include <lib/os/msg.h>
+#include <cmath>
+
+
+int LightController::hover(MultiViewWindow *win, const vec2 &m) const {
+	for (const auto& [i, l]: enumerate(multi_view->lights)) {
+		if (l->type == yrenderer::LightType::CONE) {
+			if ((win->project(l->pos).xy() - m).length_fuzzy() < 20)
+				return i;
+		} else if (l->type == yrenderer::LightType::DIRECTIONAL) {
+			const vec3 dir = l->_ang * vec3{0,0,1};
+			float r = win->multi_view->view_port.radius * 0.3f;
+			if ((win->project(-r * dir).xy() - m).length() < 20)
+				return i;
+		}
+	}
+	return -1;
+}
+
+void LightController::on_left_button_down(MultiViewWindow *win, const vec2 &m) {
+	hovering = dragging = hover(win, m);
+	if (dragging < 0)
+		return;
+
+	auto l = multi_view->lights[dragging];
+	if (l->type == yrenderer::LightType::CONE) {
+		dragging_front = win->project(l->pos).z < win->project({0,0,0}).z;
+	} else if (l->type == yrenderer::LightType::DIRECTIONAL) {
+		dragging_front = win->project(l->_ang * vec3{0,0,-1}).z < win->project({0,0,0}).z;
+	}
+}
+
+void LightController::on_mouse_move(MultiViewWindow *win, const vec2 &m) {
+	if (dragging < 0) {
+		hovering = hover(win, m);
+		return;
+	}
+	auto l = multi_view->lights[dragging];
+
+	float R = 9;
+	if (l->type == yrenderer::LightType::DIRECTIONAL)
+		R = win->multi_view->view_port.radius * 0.3f;
+
+	vec3 l1 = win->unproject(m, 0);
+	vec3 l2 = win->unproject(m, 1);
+	vec3 cam_dir = (l2 - l1).normalized();
+	auto pp = VecLineNearestPoint({0,0,0}, l1, l2);
+	if (pp.length() > R)
+		pp = pp.normalized() * R;
+	float r0 = min(pp.length(), R);
+	float dz = sqrtf(R*R - r0*r0);
+	vec3 pos = pp + cam_dir * dz * (dragging_front ? -1.0f : 1.0f);
+
+	if (l->type == yrenderer::LightType::CONE) {
+		l->pos = pos;
+		l->_ang = quaternion::rotation((-pos).normalized().dir2ang());
+	} else if (l->type == yrenderer::LightType::DIRECTIONAL) {
+		l->_ang = quaternion::rotation((-pos).normalized().dir2ang());
+	}
+}
+
+void LightController::on_left_button_up(MultiViewWindow *win, const vec2 &m) {
+	dragging = -1;
+}
+
+void LightController::draw(const yrenderer::RenderParams &params, MultiViewWindow *win) {
+	auto mv = win->multi_view;
+	auto lh = mv->session->line_helper;
+
+	lh->set_color(DrawingHelper::COLOR_X);
+	lh->set_line_width(DrawingHelper::LINE_THIN);
+
+	for (const auto& [i, l]: enumerate(multi_view->lights)) {
+		const vec3 dir = l->_ang * vec3{0,0,1};
+
+		if (l->type == yrenderer::LightType::CONE) {
+			float r = l->pos.length();
+			if (i == hovering)
+				lh->draw_circle({0,0,0}, win->direction(), r);
+
+			lh->draw_lines({l->pos, l->pos*0.95f}, true);
+			lh->draw_circle(l->pos, dir, r*0.05f);
+		} else if (l->type == yrenderer::LightType::DIRECTIONAL) {
+			float r = mv->view_port.radius * 0.3f;
+			if (i == hovering)
+				lh->draw_circle({0,0,0}, win->direction(), r);
+
+			lh->draw_lines({-r * dir, -r * dir * 0.95f}, true);
+			lh->draw_circle(-r * dir, dir, r*0.05f);
+		}
+	}
+}
 
 
 ModeMaterial::ModeMaterial(DocumentSession* doc) :
@@ -118,12 +210,39 @@ void ModeMaterial::on_enter_rec() {
 		if (xx.has_error())
 			session->error(format("%s:\n%s", material->pass0.shader_path, xx.error().msg));
 	});
+
+	if (!spot_light)
+		spot_light = new yrenderer::Light;
+	spot_light->init(yrenderer::LightType::CONE, White, 0.15f);
+	spot_light->pos = {3, 6, 12};
+	spot_light->_ang = quaternion::rotation_v((-spot_light->pos).normalized().dir2ang());
+	spot_light->power = 170;
+	spot_light->harshness = 1;
+	spot_light->enabled = true;
+
+	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.23f);
+	multi_view->default_light->allow_shadow = true;
+	multi_view->default_light->power = 0.3f;
+	multi_view->default_light->harshness = 0.7f;
+
+	light_controller.multi_view = multi_view;
 }
 
 void ModeMaterial::on_leave_rec() {
 	data->out_changed.unsubscribe(this);
 }
 
+void ModeMaterial::on_left_button_down(const vec2& m) {
+	light_controller.on_left_button_down(multi_view->active_window, m);
+}
+
+void ModeMaterial::on_left_button_up(const vec2& m) {
+	light_controller.on_left_button_up(multi_view->active_window, m);
+}
+
+void ModeMaterial::on_mouse_move(const vec2 &m, const vec2 &d) {
+	light_controller.on_mouse_move(multi_view->active_window, m);
+}
 
 void ModeMaterial::optimize_view() {
 	float r = 1.8f;
@@ -132,21 +251,6 @@ void ModeMaterial::optimize_view() {
 }
 
 void ModeMaterial::on_prepare_scene(const yrenderer::RenderParams& params) {
-	if (!spot_light) {
-		spot_light = new yrenderer::Light;
-		spot_light->init(yrenderer::LightType::CONE, White, 0.15f);
-		spot_light->pos = {3, 6, 12};
-		spot_light->_ang = quaternion::rotation_v((-spot_light->pos).normalized().dir2ang());
-		spot_light->power = 170;
-		spot_light->harshness = 1;
-		spot_light->enabled = true;
-	}
-
-	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.23f);
-	multi_view->default_light->allow_shadow = true;
-	multi_view->default_light->power = 0.3f;
-	multi_view->default_light->harshness = 0.7f;
-
 	multi_view->lights = {multi_view->default_light, spot_light.get()};
 }
 
@@ -159,10 +263,12 @@ void ModeMaterial::on_draw_background(const yrenderer::RenderParams& params, yre
 
 void ModeMaterial::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	auto& rvd = win->rvd();
-	auto dh = win->multi_view->session->drawing_helper;
+	auto dh = session->drawing_helper;
 
 	for (int pass_no=0; pass_no<material->num_passes; pass_no++)
 		dh->draw_mesh(params, rvd, mat4::ID, vertex_buffer.get(), material, pass_no);
+
+	light_controller.draw(params, win);
 }
 
 void ModeMaterial::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {

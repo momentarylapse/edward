@@ -42,7 +42,11 @@ vec3 MultiViewWindow::project(const vec3& v) const {
 
 vec3 MultiViewWindow::unproject(const vec2& v, const vec3& zref) const {
 	vec3 op = project(zref);
-	vec3 r = vec3(v, op.z);
+	return unproject(v, op.z);
+}
+
+vec3 MultiViewWindow::unproject(const vec2& v, float z) const {
+	vec3 r = vec3(v, z);
 	return to_pixels.inverse().project(r);
 }
 

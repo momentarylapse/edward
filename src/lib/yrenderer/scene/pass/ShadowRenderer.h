@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <functional>
-
 #include <lib/yrenderer/Renderer.h>
 #include <lib/ygraphics/graphics-fwd.h>
 #include <lib/math/mat4.h>

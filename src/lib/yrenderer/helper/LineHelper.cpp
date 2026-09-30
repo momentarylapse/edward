@@ -102,7 +102,7 @@ void LineHelper::draw_lines_colored(const Array<vec3>& points, const Array<color
 void LineHelper::draw_circle(const vec3& center, const vec3& axis, float r) {
 	int N = 128;
 	Array<vec3> points;
-	vec3 e1 = axis.ortho() * r;
+	vec3 e1 = axis.ortho().normalized() * r;
 	vec3 e2 = vec3::cross(axis, e1);
 	for (int i=0; i<=N; i++) {
 		float w = (float)i / (float)N * 2 * pi;

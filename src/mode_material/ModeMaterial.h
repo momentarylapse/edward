@@ -27,6 +27,19 @@ enum class PreviewMesh {
 	TEAPOT
 };
 
+class LightController {
+public:
+	int hover(MultiViewWindow* win, const vec2& m) const;
+	void draw(const yrenderer::RenderParams& params, MultiViewWindow* win);
+	void on_left_button_down(MultiViewWindow* win, const vec2& m);
+	void on_mouse_move(MultiViewWindow* win, const vec2& m);
+	void on_left_button_up(MultiViewWindow* win, const vec2& m);
+	MultiView* multi_view = nullptr;
+	int hovering = -1;
+	int dragging = -1;
+	bool dragging_front = false;
+};
+
 class ModeMaterial : public Mode {
 public:
 	explicit ModeMaterial(DocumentSession* session);
@@ -39,6 +52,9 @@ public:
 	void on_leave_rec() override;
 
 	void on_key_down(int key) override;
+	void on_mouse_move(const vec2 &m, const vec2 &d) override;
+	void on_left_button_down(const vec2 &) override;
+	void on_left_button_up(const vec2 &) override;
 
 	void on_prepare_scene(const yrenderer::RenderParams& params) override;
 	void on_draw_background(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) override;
@@ -59,6 +75,9 @@ public:
 	owned<yrenderer::Material> material_ground;
 
 	owned<yrenderer::Light> spot_light;
+	int hover = -1;
+
+	LightController light_controller;
 
 	void set_mesh(PreviewMesh m);
 };
