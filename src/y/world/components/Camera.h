@@ -37,11 +37,6 @@ struct Camera : ecs::Component {
 	float bloom_radius;
 	float bloom_factor;
 
-	bool auto_exposure;
-	float auto_exposure_min;
-	float auto_exposure_max;
-	float auto_exposure_speed;
-
 	bool focus_enabled;
 	float focal_length;
 	float focal_blur;

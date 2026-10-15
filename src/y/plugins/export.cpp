@@ -303,10 +303,6 @@ void export_world(kaba::IExporter* ext) {
 	ext->declare_class_size("Camera", sizeof(Camera));
 	ext->declare_class_element("Camera.fov", &Camera::fov);
 	ext->declare_class_element("Camera.exposure", &Camera::exposure);
-	ext->declare_class_element("Camera.auto_exposure", &Camera::auto_exposure);
-	ext->declare_class_element("Camera.auto_exposure_min", &Camera::auto_exposure_min);
-	ext->declare_class_element("Camera.auto_exposure_max", &Camera::auto_exposure_max);
-	ext->declare_class_element("Camera.auto_exposure_speed", &Camera::auto_exposure_speed);
 	ext->declare_class_element("Camera.bloom_radius", &Camera::bloom_radius);
 	ext->declare_class_element("Camera.bloom_factor", &Camera::bloom_factor);
 	ext->declare_class_element("Camera.focus_enabled", &Camera::focus_enabled);

@@ -88,23 +88,23 @@ void RenderPathDeferred::remove_all_emitters() {
 	scene_renderer->remove_all_emitters();
 	scene_renderer_trans->remove_all_emitters();
 	shadow_renderer->remove_all_emitters();
-	cube_map_renderer->remove_all_emitters();
+	cube_map_renderers->remove_all_emitters();
 }
 
 void RenderPathDeferred::add_background_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer_background->add_emitter(emitter);
-	cube_map_renderer->add_emitter(emitter);
+	cube_map_renderers->add_emitter(emitter);
 }
 
 void RenderPathDeferred::add_opaque_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer->add_emitter(emitter);
 	shadow_renderer->add_emitter(emitter);
-	cube_map_renderer->add_emitter(emitter);
+	cube_map_renderers->add_emitter(emitter);
 }
 
 void RenderPathDeferred::add_transparent_emitter(shared<MeshEmitter> emitter) {
 	scene_renderer_trans->add_emitter(emitter);
-	cube_map_renderer->add_emitter(emitter);
+	cube_map_renderers->add_emitter(emitter);
 }
 
 void RenderPathDeferred::prepare(const RenderParams& params) {

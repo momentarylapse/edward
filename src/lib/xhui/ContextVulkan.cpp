@@ -80,7 +80,7 @@ void Context::_create_swap_chain_and_stuff() {
 		glfwGetFramebufferSize(window->window, &w, &h);
 		swap_chain->rebuild(w, h, gamma_correction, vulkan::SyncMode::SYNCED);
 	} else {
-		swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window, gamma_correction, vulkan::SyncMode::SYNCED);
+		swap_chain = vulkan::SwapChain::create_for_glfw(device, window->window, gamma_correction, vulkan::SyncMode::SYNCED, swap_chain);
 	}
 	auto swap_images = swap_chain->create_textures();
 	for (auto t: swap_images)

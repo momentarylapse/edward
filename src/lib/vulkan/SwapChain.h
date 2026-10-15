@@ -60,9 +60,9 @@ public:
 
 	void rebuild(int w, int h, bool gamma_correction, SyncMode mode);
 
-	static xfer<SwapChain> create(Device* device, int w, int h, bool gamma_correction, SyncMode mode);
+	static xfer<SwapChain> create(Device* device, int w, int h, bool gamma_correction, SyncMode mode, SwapChain* swap_chain);
 #ifdef HAS_LIB_GLFW
-	static xfer<SwapChain> create_for_glfw(Device* device, GLFWwindow* window, bool gamma_correction, SyncMode mode);
+	static xfer<SwapChain> create_for_glfw(Device* device, GLFWwindow* window, bool gamma_correction, SyncMode mode, SwapChain* swap_chain);
 #endif
 
 	Array<VkImage> get_images();

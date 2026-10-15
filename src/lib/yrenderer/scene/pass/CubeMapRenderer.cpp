@@ -71,5 +71,44 @@ void CubeMapRenderer::render(const RenderParams& params) {
 	ctx->gpu_timestamp_end(params, channel);
 }
 
+
+MultiCubeMapRenderer::MultiCubeMapRenderer(Context *ctx, SceneView &_scene_view) :
+	RenderTask(ctx, "cubes"),
+	scene_view(_scene_view)
+{
+}
+
+MultiCubeMapRenderer::~MultiCubeMapRenderer() {
+	for (auto&& [s, r] : renderers)
+		delete r;
+}
+
+void MultiCubeMapRenderer::add_emitter(shared<MeshEmitter> emitter) {
+	emitters.add(emitter);
+	for (auto&& [s, r] : renderers)
+		r->add_emitter(emitter);
+}
+
+void MultiCubeMapRenderer::remove_all_emitters() {
+	emitters.clear();
+	for (auto&& [s, r] : renderers)
+		r->remove_all_emitters();
+}
+
+void MultiCubeMapRenderer::render_into_cubemap(const RenderParams& params, CubeMapSource& source) {
+	if (!renderers.contains(&source)) {
+		auto r = new CubeMapRenderer(ctx, scene_view);
+		r->set_source(&source);
+		for (auto e: weak(emitters))
+			r->add_emitter(e);
+		renderers.set(&source, r);
+	}
+
+	auto r = renderers[&source];
+	renderers[&source]->render(params);
+}
+
+void MultiCubeMapRenderer::render(const RenderParams &params) {
+}
 }
 

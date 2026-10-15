@@ -12,6 +12,8 @@
 #include <world/components/Camera.h>
 #include <lib/ygraphics/graphics-impl.h>
 
+#include "lib/os/msg.h"
+
 using namespace yrenderer;
 
 WorldSkyboxEmitter::WorldSkyboxEmitter(Context* ctx) : MeshEmitter(ctx, "sky") {
@@ -25,6 +27,13 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	ctx->gpu_timestamp_begin(params, channel);
 
 	rvd.clear(params, {world->background}, 1.0f);
+
+	float max_radius = -1;
+	for (auto sb: weak(world->skybox))
+		if (auto m = sb->model)
+			max_radius = max(max_radius, m->prop.radius);
+	if (max_radius < 0)
+		max_radius = 1;
 
 #if 1
 
@@ -42,8 +51,9 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 	auto mv = rvd.ubo.v;
 	auto mp = rvd.ubo.p;
 	//rvd.set_view(params, {0,0,0}, rvd.view_ang, mat4::scale(1,1,0.1f) * pp); // :P
+	const float scale = min(rvd.camera_params.max_depth / max_radius * 0.1f, 1.0f);
 	rvd.ubo.v = mat4::rotation(rvd.camera_params.ang.bar());
-	rvd.ubo.p = mp * mat4::scale(0.01f, 0.01f, 0.01f);
+	rvd.ubo.p = mp * mat4::scale(scale, scale, scale);
 
 	// not working anymore... should have 2nd light data ubo
 	int nlights = rvd.light_meta_data.num_lights;
@@ -57,7 +67,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 			for (int i=0; i<m->materials.num; i++) {
 				auto vb = m->mesh[0]->sub[i].vertex_buffer;
 				auto shader = rvd.get_shader(sb->materials[i], 0, "default", "");
-				auto& rd = rvd.start(params, matrix * mat4::scale(10,10,10), shader, sb->materials[i], 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
+				auto& rd = rvd.start(params, matrix, shader, sb->materials[i], 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 
 				rd.draw_triangles(params, vb);
 			}

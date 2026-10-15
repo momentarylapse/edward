@@ -549,8 +549,9 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	}
 
 	ext->declare_class_size("LightMeter", sizeof(LightMeter));
-	ext->declare_class_element("LightMeter.histogram", &LightMeter::histogram);
-	ext->declare_class_element("LightMeter.brightness", &LightMeter::brightness);
+	ext->declare_class_element("LightMeter.active", &LightMeter::active);
+	ext->declare_class_element("LightMeter.buffer", &LightMeter::buf);
+	ext->link_class_func("LightMeter.read_histogram", &LightMeter::read_histogram);
 
 	ext->declare_class_size("TextureManager", sizeof(TextureManager));
 	ext->declare_class_size("MaterialManager", sizeof(MaterialManager));

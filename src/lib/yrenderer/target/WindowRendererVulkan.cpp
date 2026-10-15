@@ -60,7 +60,7 @@ void SurfaceRendererVulkan::rebuild_default_stuff() {
 
 	device->wait_idle();
 
-	delete swap_chain;
+	//delete swap_chain;
 	//_delete_swap_chain_and_stuff();
 	_create_swap_chain_and_stuff();
 }
@@ -136,7 +136,7 @@ WindowRenderer::WindowRenderer(Context* ctx, GLFWwindow* _window, bool gamma_cor
 }
 
 void WindowRenderer::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create_for_glfw(device, window, gamma_correction, (vulkan::SyncMode)sync_mode);
+	swap_chain = vulkan::SwapChain::create_for_glfw(device, window, gamma_correction, (vulkan::SyncMode)sync_mode, swap_chain);
 }
 #endif
 
@@ -147,7 +147,7 @@ HeadlessSurfaceRendererVulkan::HeadlessSurfaceRendererVulkan(Context* ctx, int _
 }
 
 void HeadlessSurfaceRendererVulkan::create_swap_chain() {
-	swap_chain = vulkan::SwapChain::create(device, width, height, gamma_correction, vulkan::SyncMode::UNSYNCED);
+	swap_chain = vulkan::SwapChain::create(device, width, height, gamma_correction, vulkan::SyncMode::UNSYNCED, swap_chain);
 }
 
 xfer<HeadlessSurfaceRendererVulkan> HeadlessSurfaceRendererVulkan::create(Context* ctx, int width, int height, bool gamma_correction) {

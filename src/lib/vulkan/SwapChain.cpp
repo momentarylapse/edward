@@ -214,17 +214,18 @@ void SwapChain::rebuild(int w, int h, bool gamma_correction, SyncMode sync_mode)
 }
 
 
-xfer<SwapChain> SwapChain::create(Device *device, int width, int height, bool gamma_correction, SyncMode sync_mode) {
-	auto swap_chain = new SwapChain(device);
+xfer<SwapChain> SwapChain::create(Device *device, int width, int height, bool gamma_correction, SyncMode sync_mode, SwapChain* swap_chain) {
+	if (!swap_chain)
+		swap_chain = new SwapChain(device);
 	swap_chain->rebuild(width, height, gamma_correction, sync_mode);
 	return swap_chain;
 }
 
 #ifdef HAS_LIB_GLFW
-xfer<SwapChain> SwapChain::create_for_glfw(Device *device, GLFWwindow* window, bool gamma_correction, SyncMode sync_mode) {
+xfer<SwapChain> SwapChain::create_for_glfw(Device *device, GLFWwindow* window, bool gamma_correction, SyncMode sync_mode, SwapChain* swap_chain) {
 	const SwapChainSupportDetails swap_chain_support = query_swap_chain_support(device->physical_device, device->surface);
 	auto extent = choose_swap_extent(swap_chain_support.capabilities, window);
-	return create(device, (int)extent.width, (int)extent.height, gamma_correction, sync_mode);
+	return create(device, (int)extent.width, (int)extent.height, gamma_correction, sync_mode, swap_chain);
 }
 #endif
 

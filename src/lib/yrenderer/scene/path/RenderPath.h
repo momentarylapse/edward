@@ -18,6 +18,7 @@ namespace yrenderer {
 class ShadowMapRenderer;
 class MeshEmitter;
 class ShadowRenderer;
+class MultiCubeMapRenderer;
 class CubeMapRenderer;
 class CubeMapSource;
 
@@ -40,7 +41,7 @@ public:
 	SceneView scene_view;
 
 	owned<ShadowRenderer> shadow_renderer;
-	owned<CubeMapRenderer> cube_map_renderer;
+	owned<MultiCubeMapRenderer> cube_map_renderers;
 
 	virtual void remove_all_emitters() {}
 	virtual void add_background_emitter(shared<MeshEmitter> emitter) {}

@@ -156,14 +156,14 @@ public:
 			return index;
 		return base::None;
 	}
-	static xfer<vulkan::SwapChain> _create_for_glfw(vulkan::Device* device, void* window, bool gamma_correction, vulkan::SyncMode mode) {
+	static xfer<vulkan::SwapChain> _create_for_glfw(vulkan::Device* device, void* window, bool gamma_correction, vulkan::SyncMode mode, SwapChain* swap_chain) {
 #ifdef HAS_LIB_GLFW
-		KABA_EXCEPTION_WRAPPER(return create_for_glfw(device, (GLFWwindow*)window, gamma_correction, mode));
+		KABA_EXCEPTION_WRAPPER(return create_for_glfw(device, (GLFWwindow*)window, gamma_correction, mode, swap_chain));
 #endif
 		return nullptr;
 	}
-	static xfer<vulkan::SwapChain> _create(vulkan::Device* device, int width, int height, bool gamma_correction, vulkan::SyncMode mode) {
-		KABA_EXCEPTION_WRAPPER(return create(device, width, height, gamma_correction, mode));
+	static xfer<vulkan::SwapChain> _create(vulkan::Device* device, int width, int height, bool gamma_correction, vulkan::SyncMode mode, SwapChain* swap_chain) {
+		KABA_EXCEPTION_WRAPPER(return create(device, width, height, gamma_correction, mode, swap_chain));
 		return nullptr;
 	}
 };
