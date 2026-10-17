@@ -25,20 +25,20 @@ RenderPath::RenderPath(Context* ctx, const string &name) : Renderer(ctx, name) {
 
 	if (ctx) {
 		shader_manager->default_shader = "default.shader";
-		ctx->load_shader_module("module-basic-interface.shader");
-		ctx->load_shader_module("module-basic-data.shader");
-		ctx->load_shader_module(format("module-light-sources-%s.shader", light_sources_module));
-		ctx->load_shader_module(format("module-shadows-%s.shader", shadow_method));
-		ctx->load_shader_module(format("module-lighting-%s.shader", lighting_method));
-		ctx->load_shader_module(format("module-fog-%s.shader", fog_module));
-		ctx->load_shader_module("module-vertex-default.shader");
-		ctx->load_shader_module("module-vertex-animated.shader");
-		ctx->load_shader_module("module-vertex-instanced.shader");
-		ctx->load_shader_module("module-vertex-lines.shader");
-		ctx->load_shader_module("module-vertex-points.shader");
-		ctx->load_shader_module("module-vertex-fx.shader");
-		ctx->load_shader_module("module-geometry-lines.shader");
-		ctx->load_shader_module("module-geometry-points.shader");
+		REQUIRED(ctx->load_shader_module("module-basic-interface.shader"));
+		REQUIRED(ctx->load_shader_module("module-basic-data.shader"));
+		REQUIRED(ctx->load_shader_module(format("module-light-sources-%s.shader", light_sources_module)));
+		REQUIRED(ctx->load_shader_module(format("module-shadows-%s.shader", shadow_method)));
+		REQUIRED(ctx->load_shader_module(format("module-lighting-%s.shader", lighting_method)));
+		REQUIRED(ctx->load_shader_module(format("module-fog-%s.shader", fog_module)));
+		REQUIRED(ctx->load_shader_module("module-vertex-default.shader"));
+		REQUIRED(ctx->load_shader_module("module-vertex-animated.shader"));
+		REQUIRED(ctx->load_shader_module("module-vertex-instanced.shader"));
+		REQUIRED(ctx->load_shader_module("module-vertex-lines.shader"));
+		REQUIRED(ctx->load_shader_module("module-vertex-points.shader"));
+		REQUIRED(ctx->load_shader_module("module-vertex-fx.shader"));
+		REQUIRED(ctx->load_shader_module("module-geometry-lines.shader"));
+		REQUIRED(ctx->load_shader_module("module-geometry-points.shader"));
 	}
 }
 

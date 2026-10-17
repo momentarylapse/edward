@@ -60,7 +60,7 @@ void LightPanel::update_ui() {
 		set_float("theta", max(l->light.theta * 180 / pi, 0.0f));
 		set_color("color", l->light.col);
 		set_float("power", l->light.power);
-		check("allow-shadows", l->light.allow_shadow);
+		check("allow-shadows", l->light.allow_shadows);
 		enable("power", l->light.type == yrenderer::LightType::DIRECTIONAL or l->light.type == yrenderer::LightType::AMBIENT);
 		enable("radius", l->light.type != yrenderer::LightType::DIRECTIONAL and l->light.type != yrenderer::LightType::AMBIENT);
 		enable("theta", l->light.type == yrenderer::LightType::CONE or l->light.type == yrenderer::LightType::AMBIENT);
@@ -86,7 +86,7 @@ void LightPanel::on_edit() {
 	}
 	l.theta = get_float("theta") * pi / 180;
 	l.harshness = get_float("harshness") / 100;
-	l.allow_shadow = is_checked("allow-shadows");
+	l.allow_shadows = is_checked("allow-shadows");
 
 	editing = true;
 	auto e = data->entity(index);

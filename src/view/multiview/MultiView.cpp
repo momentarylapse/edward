@@ -59,7 +59,7 @@ MultiView::MultiView(DocumentSession* _doc) :
 	default_light->init(yrenderer::LightType::DIRECTIONAL, White);
 	default_light->_ang = quaternion::ID;
 	default_light->enabled = true;
-	default_light->allow_shadow = true;
+	default_light->allow_shadows = true;
 	default_light->harshness = 0.5f;
 	lights.add(default_light);
 

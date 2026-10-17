@@ -22,7 +22,7 @@ void Light::init(LightType _type, const color &c, float t) {
 		harshness = 1;
 	}
 	enabled = true;
-	allow_shadow = false;
+	allow_shadows = false;
 	user_shadow_control = false;
 	user_shadow_theta = -1;
 	shadow_dist_min = -1;

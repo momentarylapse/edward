@@ -125,10 +125,10 @@ bool LevelData::load(const Path& filename) {
 				l.set("color", e.value("color"));
 				l.set("power", e.value("power", "1.0")._float());
 				l.set("theta", -1.0);
-				l.set("allow_shadow", e.value("allow_shadow", "false")._bool());
+				l.set("allow_shadows", e.value("allow_shadows", "false")._bool());
 				if (e.value("type") == "directional") {
 					l.set("type", (int)yrenderer::LightType::DIRECTIONAL);
-					l.set("allow_shadow", e.value("allow_shadow", "true")._bool());
+					l.set("allow_shadows", e.value("allow_shadows", "true")._bool());
 				} else if (e.value("type") == "point") {
 					l.set("type", (int)yrenderer::LightType::POINT);
 					if (e.has_value("radius"))
@@ -140,7 +140,7 @@ bool LevelData::load(const Path& filename) {
 					l.set("theta", e.value("theta")._float());
 				} else if (e.value("type") == "ambient") {
 					l.set("type", (int)yrenderer::LightType::AMBIENT);
-					l.set("allow_shadow", false);
+					l.set("allow_shadows", false);
 				}
 				l.set("enabled", e.value("enabled", "true")._bool());
 				o.components.add(l);

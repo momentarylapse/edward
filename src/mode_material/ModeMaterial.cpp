@@ -221,7 +221,7 @@ void ModeMaterial::on_enter_rec() {
 	spot_light->enabled = true;
 
 	multi_view->default_light->_ang = quaternion::rotation_a(vec3::EX, pi*0.23f);
-	multi_view->default_light->allow_shadow = true;
+	multi_view->default_light->allow_shadows = true;
 	multi_view->default_light->power = 0.3f;
 	multi_view->default_light->harshness = 0.7f;
 

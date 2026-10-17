@@ -83,7 +83,7 @@ void MaterialPreviewManager::update() {
 		light.init(yrenderer::LightType::DIRECTIONAL, White);
 		light._ang = quaternion::rotation({0.5f,-0.5f,0});
 		light.harshness = 0.5f;
-		light.allow_shadow = false;//true;
+		light.allow_shadows = false;//true;
 		light.enabled = true;
 
 		yrenderer::RenderPathForward path(session->ctx, 256);

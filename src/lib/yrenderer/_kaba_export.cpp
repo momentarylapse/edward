@@ -235,7 +235,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 		ext->declare_class_element("YLight.theta", &Light::theta);
 		ext->declare_class_element("YLight.harshness", &Light::harshness);
 		ext->declare_class_element("YLight.enabled", &Light::enabled);
-		ext->declare_class_element("YLight.allow_shadow", &Light::allow_shadow);
+		ext->declare_class_element("YLight.allow_shadows", &Light::allow_shadows);
 		ext->declare_class_element("YLight.user_shadow_control", &Light::user_shadow_control);
 		ext->declare_class_element("YLight.user_shadow_theta", &Light::user_shadow_theta);
 		ext->declare_class_element("YLight.shadow_dist_max", &Light::shadow_dist_max);

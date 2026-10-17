@@ -66,6 +66,7 @@ void WorldSkyboxEmitter::emit(const RenderParams& params, RenderViewData& rvd, b
 
 			for (int i=0; i<m->materials.num; i++) {
 				auto vb = m->mesh[0]->sub[i].vertex_buffer;
+				sb->materials[i]->pass0.z_write = false; // FIXME
 				auto shader = rvd.get_shader(sb->materials[i], 0, "default", "");
 				auto& rd = rvd.start(params, matrix, shader, sb->materials[i], 0, ygfx::PrimitiveTopology::TRIANGLES, vb);
 

@@ -23,7 +23,7 @@ void SceneView::choose_shadows() {
 	shadow_indices.clear();
 	for (auto&& [i,l]: enumerate(lights)) {
 		l->shadow_index = -1;
-		if (l->allow_shadow and shadow_indices.num == 0) {
+		if (l->allow_shadows and shadow_indices.num == 0) {
 			l->shadow_index = shadow_indices.num;
 			shadow_indices.add(i);
 		}

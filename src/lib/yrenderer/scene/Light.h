@@ -47,7 +47,7 @@ struct Light {
 	float theta, harshness;
 	quaternion _ang;
 	bool enabled;
-	bool allow_shadow;
+	bool allow_shadows;
 	bool user_shadow_control;
 	float user_shadow_theta;
 	int shadow_index;
