@@ -17,6 +17,7 @@
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>
 
+#include "mode_world/data/WorldTerrain.h"
 
 
 TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
@@ -27,6 +28,7 @@ Dialog terrain-panel ''
 			Label ? 'Terrain' right disabled
 			Grid ? ''
 				Button terrain '' tooltip='Select a terrain' ellipsis expandx
+				Button new-terrain '+' paddingx=5 tooltip='Create new terrain' noexpandx
 				Button edit-terrain 'E' paddingx=5 tooltip='Edit terrain' primary noexpandx
 			---|
 			Label ? 'Size' right disabled
@@ -42,26 +44,26 @@ Dialog terrain-panel ''
 	auto e = data->entity(index);
 	auto tr = e->get_component<TerrainRef>();
 
-	event("terrain", [this, e, tr] {
-		data->session->storage->file_dialog(FD_TERRAIN, false, true).then([this, e, tr] (const ComplexPath& p) {
+	event("terrain", [this, e] {
+		data->session->storage->file_dialog(FD_TERRAIN, false, true).then([this, e] (const ComplexPath& p) {
 			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", str(p.relative)}}});
 		});
 	});
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, e] (yrenderer::Material* m) {
 		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", str(data->session->resource_manager->material_manager->get_filename(m))}}});
 	});
-	/*event("size-x", [this] {
-		auto e = data->entity(index);
-		if (auto t = e->get_component<TerrainRef>()->terrain)
-			data->edit_terrain_meta_data(index, {get_float("size-x") / (float)t->num_x, 0, t->pattern.z});
-	});
-	event("size-z", [this] {
-		auto e = data->entity(index);
-		if (auto t = e->get_component<TerrainRef>()->terrain)
-			data->edit_terrain_meta_data(index, {t->pattern.x, 0, get_float("size-z") / (float)t->num_z});
-	});*/
 	event("edit-terrain", [this] {
 		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
+	});
+	event("new-terrain", [this, e] {
+		data->session->storage->file_dialog(FD_TERRAIN, true, true).then([this, e] (const ComplexPath& p) {
+			WorldTerrain t;
+			constexpr int N = 64;
+			t.terrain = new Terrain(N, N, vec3(100, 0, 100));
+			t.filename = p.complete;
+			data->session->storage->save(p.complete, &t);
+			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", str(p.relative)}}});
+		});
 	});
 }
 
