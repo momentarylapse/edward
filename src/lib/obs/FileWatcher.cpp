@@ -3,11 +3,15 @@
 //
 
 #include "FileWatcher.h"
+
+#if __has_include("../os/path.h")
+
 #if defined(OS_LINUX)
 #include <cstdio>
 #include <unistd.h>
 #include <sys/epoll.h>
 #include <sys/inotify.h>
+#include <linux/limits.h>
 #endif
 
 namespace obs {
@@ -59,43 +63,66 @@ FileWatcher::~FileWatcher() {
 #endif
 }
 
-void FileWatcher::add_file(const Path &filename) {
+void FileWatcher::add(const Path& path) {
 #if defined(OS_LINUX)
-	int wd = inotify_add_watch(inotify_fd, filename.c_str(), IN_ALL_EVENTS);
+	int wd = inotify_add_watch(inotify_fd, path.c_str(), IN_ALL_EVENTS);
 	if (wd < 0) {
 		perror("Error while registering inotify watch");
 		return;
 	}
-	items.add({wd, filename});
+	items.add({wd, path});
 #endif
 }
 
 void FileWatcher::iterate() {
 #if defined(OS_LINUX)
 	while (true) {
-		struct epoll_event event = {};
+		epoll_event event = {};
 		if (epoll_wait(epoll_fd, &event, 1, 0) < 0) {
 			perror("Error while waiting for IO events");
 			return;
 		}
+		constexpr int BUF_LEN = sizeof(inotify_event) + NAME_MAX + 1;
+		char buf[BUF_LEN] __attribute__ ((aligned(8)));
 
-		struct inotify_event in_event;
-		ssize_t const read_bytes = read(inotify_fd, &in_event, sizeof(in_event));
+		const ssize_t read_bytes = read(inotify_fd, &buf, BUF_LEN);
 		if (read_bytes < 0) {
 			//perror("Error while reading event data");
 			return;
 		}
-		if (read_bytes != sizeof(in_event)) {
-			break;
-		}
 
-		if (in_event.mask == IN_CLOSE_WRITE) {
-			//printf("File event %d on wd %d\n", in_event.mask, in_event.wd);
-			for (const auto& i: items)
-				if (i.w == in_event.wd)
-					out_edited(i.filename);
+		int offset = 0;
+		while (read_bytes - offset >= sizeof(inotify_event)) {
+			auto in_event = (inotify_event*)&buf[offset];
+
+			string name;
+			if (in_event->len > 0)
+				name = string(&buf[offset + sizeof(inotify_event)]);//, in_event->len - 1);
+
+			for (auto& i: items)
+				if (i.w == in_event->wd) {
+					if (in_event->mask == IN_CLOSE_WRITE)
+						out_edited(i.path | name);
+					if (in_event->mask == IN_DELETE)
+						out_deleted(i.path | name);
+					if (in_event->mask == IN_DELETE_SELF)
+						out_edited(i.path);
+					if (in_event->mask == IN_CREATE)
+						out_created(i.path | name);
+//					if (in_event->mask == IN_MOVE)
+//						msg_write("MOVE: " + str(name));
+					if (in_event->mask == IN_MOVE_SELF)
+						out_moved({i.path, ""});
+					if (in_event->mask == IN_MOVED_FROM)
+						i.last_move_from = name;
+					if (in_event->mask == IN_MOVED_TO)
+						out_moved({i.path | i.last_move_from, i.path | name});
+				}
+			offset += sizeof(inotify_event) + in_event->len;
 		}
 	}
 #endif
 }
 } // obs
+
+#endif

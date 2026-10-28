@@ -1,8 +1,8 @@
 #include <lib/base/base.h>
 #include <lib/base/callable.h>
 #include "Observable.h"
+//#include "FileWatcher.h"
 #include <lib/kapi/KabaExporter.h>
-#include <cstdio>
 
 class Sink;
 
@@ -68,7 +68,7 @@ static void xpsubscribe(XPSource* source, XPSink* sink) {
 
 
 void export_package_obs(kaba::IExporter* e) {
-	e->package_info("obs", "0.7");
+	e->package_info("obs", "0.8");
 
 	e->declare_class_size("InternalNodeData", sizeof(obs::internal_node_data));
 	e->link_class_func("InternalNodeData.__init__", &kaba::generic_init<obs::internal_node_data>);
@@ -96,6 +96,19 @@ void export_package_obs(kaba::IExporter* e) {
 	e->link_class_func("XPSink.__init0__", &XPSink::__init_p__);
 	
 	e->link_func("xpsubscribe", &xpsubscribe);
+
+
+	/*{
+		obs::FileWatcher w;
+		e->declare_class_size("FileWatcher", sizeof(obs::FileWatcher));
+		e->declare_class_element("FileWatcher.out_edited", &obs::FileWatcher::out_edited);
+		e->declare_class_element("FileWatcher.out_created", &obs::FileWatcher::out_created);
+		e->declare_class_element("FileWatcher.out_deleted", &obs::FileWatcher::out_deleted);
+		e->declare_class_element("FileWatcher.out_moved", &obs::FileWatcher::out_moved);
+		e->link_class_func("FileWatcher.__init__", &kaba::generic_init<obs::FileWatcher>);
+		e->link_virtual("FileWatcher.__delete__", &kaba::generic_virtual<obs::FileWatcher>::__delete__, &w);
+		e->link_class_func("FileWatcher.add", &obs::FileWatcher::add);
+	}*/
 }
 
 
