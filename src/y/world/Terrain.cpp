@@ -44,6 +44,8 @@ void Terrain::reset() {
 		vertex_shader_module = "default";
 		topology = ygfx::PrimitiveTopology::TRIANGLES;
 	}
+	for (int i=0; i<MATERIAL_MAX_TEXTURES; i++)
+		texture_scale[i] = vec3(1, 0, 1);
 }
 
 Terrain::Terrain() {

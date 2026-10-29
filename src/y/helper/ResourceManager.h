@@ -11,6 +11,7 @@ class ModelManager;
 class Model;
 class Terrain;
 struct Template;
+struct vec3;
 class TemplateManager;
 class TerrainManager;
 
@@ -42,11 +43,12 @@ public:
 	shared<ygfx::Texture> load_texture_or_white(const Path& path);
 	base::result<shared<ygfx::Shader>> load_shader(const Path& path);
 	base::result<shared<ygfx::Shader>> create_shader(const string& code);
-	yrenderer::Material* load_material(const Path &filename);
+	yrenderer::Material* load_material(const Path& filename);
 	yrenderer::Material* create_material();
-	Model* load_model(const Path &filename);
-	Terrain* load_terrain(const Path &filename);
-	Terrain* load_terrain_lazy(const Path &filename);
+	Model* load_model(const Path& filename);
+	Terrain* load_terrain(const Path& filename);
+	Terrain* load_terrain_lazy(const Path& filename);
+	Terrain* create_terrain(int nx, int nz, const vec3& pattern);
 	Template* load_template(const Path& filename);
 
 	void save_template(const Template* t, const Path& filename);
@@ -56,6 +58,14 @@ public:
 	Path filename(const yrenderer::Material* m) const;
 	Path filename(const ygfx::Texture* t) const;
 	Path filename(const Template* t) const;
+
+	string describe(const yrenderer::Material* m, bool with_save_state = false) const;
+	string describe(const Terrain* t, bool with_save_state = false) const;
+//	void invalidate(yrenderer::Material* m);
+//	void set_save_state(yrenderer::Material* m);
+	bool is_from_file(const yrenderer::Material* m) const;
+	bool is_from_file(const Terrain* t) const;
+//	bool has_changes(const yrenderer::Material* m) const;
 
 	void clear();
 };

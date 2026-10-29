@@ -65,13 +65,26 @@ Dialog edit-terrain-panel ''
 			});
 		});
 	});
-	event("save", [this] {
+	auto save_as = [this] {
 		auto t = mode_terrain->terrain();
-		WorldTerrain ttt;
+		static WorldTerrain ttt; // :P
 		ttt.terrain = t;
-		if (mode_terrain->session->storage->save(mode_terrain->session->resource_manager->map_dir | t->filename_rel, &ttt))
+		mode_terrain->session->storage->save_as(&ttt).then([this, t] {
 			mode_terrain->session->info("saved: " + str(t->filename_rel));
+		});
+	};
+	event("save", [this, save_as] {
+		auto t = mode_terrain->terrain();
+		if (mode_terrain->session->resource_manager->is_from_file(t)) {
+			WorldTerrain ttt;
+			ttt.terrain = t;
+			if (mode_terrain->session->storage->save(mode_terrain->session->resource_manager->map_dir | t->filename_rel, &ttt))
+				mode_terrain->session->info("saved: " + str(t->filename_rel));
+		} else {
+			save_as();
+		}
 	});
+	event("save-as", save_as);
 
 	for (int i=0; i<2; i++) {
 		event(format("tex%d-scale", i), [this] { on_edit_texture_map(); });

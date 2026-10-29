@@ -4,7 +4,7 @@
 #include <Session.h>
 #include <view/MaterialPreviewManager.h>
 #include <lib/yrenderer/MaterialManager.h>
-#include <lib/history/Data.h>
+//#include <lib/history/Data.h>
 #include <y/helper/ResourceManager.h>
 #include <storage/format/Format.h>
 
@@ -42,8 +42,8 @@ Dialog material-selector ''
 		expand("expander", is_checked("edit-internal"));
 	});
 	event("edit", [this] {
-		if (session->resource_manager->material_manager->is_from_file(material))
-			session->universal_edit(FD_MATERIAL, session->resource_manager->material_manager->get_filename(material).with(".material"), true);
+		if (session->resource_manager->is_from_file(material))
+			session->universal_edit(FD_MATERIAL, session->resource_manager->filename(material).with(".material"), true);
 		else
 			session->error("Can not fully edit internal materials");
 	});
@@ -53,13 +53,13 @@ Dialog material-selector ''
 
 	session->ctx->material_manager->out_material_edited >> create_data_sink<yrenderer::Material*>([this] (yrenderer::Material* m) {
 		if (m == material)
-			set_string("material", session->ctx->material_manager->describe(material, true));
+			set_string("material", session->resource_manager->describe(material, true));
 	});
 }
 
 void MaterialSelector::set_material(yrenderer::Material* m) {
 	material = m;
 	set_string("preview", session->material_preview_manager->get(material));
-	set_string("material", session->ctx->material_manager->describe(material, true));
+	set_string("material", session->resource_manager->describe(material, true));
 	edit_panel->set_material(material);
 }

@@ -5,19 +5,16 @@
 #include "TerrainRefPanel.h"
 #include "../../terrain/ModeEditTerrain.h"
 #include "../../data/DataWorld.h"
+#include "../../data/WorldTerrain.h"
 #include <view/DocumentSession.h>
 #include <view/MaterialPreviewManager.h>
 #include <y/world/Terrain.h>
 #include <lib/yrenderer/Material.h>
-#include <lib/ygraphics/graphics-impl.h>
 #include <ecs/Entity.h>
 #include <y/helper/ResourceManager.h>
-#include <lib/yrenderer/MaterialManager.h>
 #include <lib/plugin/Instance.h>
 #include <storage/Storage.h>
 #include <mode_material/dialog/MaterialSelector.h>
-
-#include "mode_world/data/WorldTerrain.h"
 
 
 TerrainRefPanel::TerrainRefPanel(DataWorld* _data, int _index) : ComponentContentsPanel(_data, _index) {
@@ -50,20 +47,15 @@ Dialog terrain-panel ''
 		});
 	});
 	material_selector->out_selected >> create_data_sink<yrenderer::Material*>([this, e] (yrenderer::Material* m) {
-		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", str(data->session->resource_manager->material_manager->get_filename(m))}}});
+		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", str(data->session->resource_manager->filename(m))}}});
 	});
 	event("edit-terrain", [this] {
 		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
 	});
 	event("new-terrain", [this, e] {
-		data->session->storage->file_dialog(FD_TERRAIN, true, true).then([this, e] (const ComplexPath& p) {
-			WorldTerrain t;
-			constexpr int N = 64;
-			t.terrain = new Terrain(N, N, vec3(100, 0, 100));
-			t.filename = p.complete;
-			data->session->storage->save(p.complete, &t);
-			data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", str(p.relative)}}});
-		});
+		auto t = data->session->resource_manager->create_terrain(64, 64, vec3(100, 0, 100));
+		const auto filename = data->session->resource_manager->filename(t);
+		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"terrain", str(filename)}}});
 	});
 }
 
@@ -71,7 +63,7 @@ void TerrainRefPanel::update_ui() {
 	auto e = data->entity(index);
 	if (auto tr = e->get_component<TerrainRef>()) {
 		if (auto t = tr->terrain) {
-			set_string("terrain", str(t->filename_rel));
+			set_string("terrain", data->session->resource_manager->describe(t, true));
 			set_string("size", format("%.1f x %.1f", t->pattern.x * (float)t->num_x, t->pattern.z * (float)t->num_z));
 			set_string("cells", format("%d x %d", t->num_x, t->num_z));
 		}

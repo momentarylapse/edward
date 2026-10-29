@@ -122,11 +122,40 @@ public:
 		return t;
 	}
 
-	Path get_filename(const Terrain *t) const {
+	Terrain* create(int nx, int nz, const vec3& pattern) {
+		auto t = new Terrain(nx, nz, pattern);
+		t->filename_rel = "@" + p2s(t);
+		t->changed = true;
+		terrains.add(t);
+		return t;
+	}
+
+	Path get_filename(const Terrain* t) const {
 		for (auto _t: weak(terrains))
 			if (_t == t)
 				return _t->filename_rel;
-		return "";
+		return "@" + p2s(t);
+	}
+
+	string describe(const Terrain* t, bool with_save_state) const {
+		if (!t)
+			return "[none]";
+		string name = str(get_filename(t));
+		if (!is_from_file(t))
+			name = "[new terrain]";
+		if (with_save_state and has_changes(t))
+			name += " *";
+		return name;
+	}
+
+	bool is_from_file(const Terrain* t) const {
+		if (!t)
+			return false;
+		return str(get_filename(t)).head(1) != "@";
+	}
+
+	bool has_changes(const Terrain* t) const {
+		return t and t->changed;
 	}
 
 	void clear() {
@@ -177,6 +206,10 @@ Terrain* ResourceManager::load_terrain(const Path& filename) {
 	return terrain_manager->load(this, filename);
 }
 
+Terrain *ResourceManager::create_terrain(int nx, int nz, const vec3 &pattern) {
+	return terrain_manager->create(nx, nz, pattern);
+}
+
 Template* ResourceManager::load_template(const Path &filename) {
 	return template_manager->load(filename);
 }
@@ -220,6 +253,22 @@ Path ResourceManager::filename(const ygfx::Texture* t) const {
 
 Path ResourceManager::filename(const Template* t) const {
 	return template_manager->get_filename(t);
+}
+
+string ResourceManager::describe(const yrenderer::Material* m, bool with_save_state) const {
+	return material_manager->describe(m, with_save_state);
+}
+
+string ResourceManager::describe(const Terrain* t, bool with_save_state) const {
+	return terrain_manager->describe(t, with_save_state);
+}
+
+bool ResourceManager::is_from_file(const yrenderer::Material* m) const {
+	return material_manager->is_from_file(m);
+}
+
+bool ResourceManager::is_from_file(const Terrain* t) const {
+	return terrain_manager->is_from_file(t);
 }
 
 void ResourceManager::clear() {
