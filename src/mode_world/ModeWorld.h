@@ -75,6 +75,7 @@ public:
 	Array<int> event_ids;
 	owned<AnimationManager> animation_manager;
 
+	base::optional<Hover> get_hover_terrains(MultiViewWindow* win, const vec2& m) const;
 	base::optional<Hover> get_hover(MultiViewWindow* win, const vec2& m) const;
 
 	Selection get_selection(MultiViewWindow* win, const rect& r) const;

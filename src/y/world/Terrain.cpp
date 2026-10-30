@@ -17,6 +17,7 @@
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/math/vec3.h>
 #include <lib/math/plane.h>
+#include <lib/math/Box.h>
 #include <lib/os/file.h>
 #include <lib/os/msg.h>
 #include <lib/os/time.h>
@@ -120,8 +121,13 @@ bool Terrain::reload(ResourceManager* resource_manager, bool deep) {
 		if (deep)
 			update(-1, -1, -1, -1, TerrainUpdateAll);
 		// bounding box
-		min = vec3(0,0,0);
-		max = vec3(pattern.x * num_x, 0, pattern.z * num_z);
+		float h0 = 0, h1 = 0;
+		for (const float h: height) {
+			h0 = ::min(h0, h);
+			h1 = ::max(h1, h);
+		}
+		min = vec3(0,h0,0);
+		max = vec3(pattern.x * (float)num_x, h1, pattern.z * (float)num_z);
 
 		changed = false;
 		force_redraw = true;

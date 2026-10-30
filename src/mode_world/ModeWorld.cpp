@@ -90,7 +90,7 @@ void ModeWorld::on_enter_rec() {
 	data->out_entity_removed >> create_sink([this] {
 		multi_view->clear_selection();
 	});
-	auto update_dummies = [this]() {
+	auto update_dummies = [this] {
 		// FIXME
 		auto list = data->entity_manager->get_component_list<EdwardTag>();
 		data->dummy_entities.resize(list.num);
@@ -334,11 +334,38 @@ float model_hover_z(const Model *o, const mat4& matrix, MultiViewWindow* win, co
 	return (z < 1) ? 0 : -1;
 }*/
 
+base::optional<Hover> ModeWorld::get_hover_terrains(MultiViewWindow* win, const vec2& mouse) const {
+	base::optional<Hover> h;
+
+	float zmin = 1;
+
+	// terrains
+	const vec3 p0 = win->unproject(mouse, 0);
+	const vec3 p1 = win->unproject(mouse, 1);
+	const auto terrains = data->entity_manager->get_component_list<TerrainRef>();
+	for (auto tr: terrains)
+		if (auto t = tr->terrain) {
+			CollisionData cd;
+			if (t->trace(tr->owner, p0, p1, (p1 - p0).normalized(), (p1 - p0).length_fuzzy(), cd, false)) {
+				const float z = win->project(cd.pos).z;
+				//t->gimme_height_n(tr->owner, cd.pos, cd.n);
+				if (z >= 0 and z < zmin) {
+					zmin = z;
+					int i = tr->owner->get_component<EdwardTag>()->entity_index;
+					h = {MultiViewType::WORLD_ENTITY, i, cd.pos};
+				}
+			}
+		}
+
+	return h;
+}
+
 base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mouse) const {
 	base::optional<Hover> h;
 
 	float zmin = 1;//multi_view->view_port.radius * 2;
 
+	// entity dots
 	const auto filter = visibility_stack.get(MultiViewType::WORLD_ENTITY);
 	for (const auto& [i, e]: enumerate(data->entity_manager->entities)) {
 		if (!filter(i))
@@ -351,13 +378,13 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 		h = {MultiViewType::WORLD_ENTITY, i, e->pos};
 	}
 
-
+	// models
 	const auto models = data->entity_manager->get_component_list<ModelRef>();
 	for (auto mr: models)
 		if (auto m = mr->model) {
 			// TODO filter?
 			vec3 tp;
-			float z = model_hover_z(m, mr->owner->get_matrix(), win, mouse, tp);
+			const float z = model_hover_z(m, mr->owner->get_matrix(), win, mouse, tp);
 			//float dist = object_hover_distance(e, win, m, tp, z);
 			if (z >= 0 and z < zmin) {
 				zmin = z;
@@ -365,6 +392,15 @@ base::optional<Hover> ModeWorld::get_hover(MultiViewWindow* win, const vec2& mou
 				h = {MultiViewType::WORLD_ENTITY, i, tp};
 			}
 		}
+
+	// terrains
+	if (auto hh = get_hover_terrains(win, mouse)) {
+		const float z = win->project(hh->tp).z;
+		if (z >= 0 and z < zmin) {
+			zmin = z;
+			h = hh;
+		}
+	}
 
 	return h;
 }

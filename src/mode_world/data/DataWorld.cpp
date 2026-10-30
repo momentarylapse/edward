@@ -159,12 +159,11 @@ Box DataWorld::get_bounding_box() const {
 			vec3 max2 = mr->owner->pos + vec3(1,1,1) * m->prop.radius;
 			merge(min2, max2);
 		}
-#if 0
+#if 1
 	for (auto tr: entity_manager->get_component_list_const<TerrainRef>())
 		if (auto t = tr->terrain) {
-			//auto box = t->bounding_box();
-			vec3 min2 = tr->owner->pos - vec3(1,1,1) * t->...;
-			vec3 max2 = tr->owner->pos + vec3(1,1,1) * t->...;
+			vec3 min2 = tr->owner->pos + t->min;
+			vec3 max2 = tr->owner->pos + t->max;
 			merge(min2, max2);
 		}
 #endif

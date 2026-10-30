@@ -10,6 +10,12 @@
 #include <lib/xhui/xhui.h>
 #include <ecs/Entity.h>
 #include <y/world/Terrain.h>
+#include <y/world/World.h>
+
+#include "lib/os/msg.h"
+#include "lib/yrenderer/helper/LineHelper.h"
+#include "view/DrawingHelper.h"
+#include "view/EdwardWindow.h"
 
 ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_mode_world) {
 	mode_world = _mode_world;
@@ -23,7 +29,7 @@ void ModeEditTerrain::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(true);
 	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
-		return mode_world->get_hover(win, m);
+		return mode_world->get_hover_terrains(win, m);
 	};
 	multi_view->f_select = nullptr;
 	multi_view->f_get_selection_box = nullptr;
@@ -66,6 +72,19 @@ void ModeEditTerrain::on_mouse_move(const vec2& m, const vec2& d) {
 
 void ModeEditTerrain::on_draw_win(const yrenderer::RenderParams& params, MultiViewWindow* win) {
 	mode_world->on_draw_win(params, win);
+
+	auto t = terrain();
+	if (auto h = multi_view->hover) {
+		if (h->index == index) {
+			vec3 n;
+			t->gimme_height_n(data->entity(index), h->tp, n);
+			session->line_helper->set_color(DrawingHelper::COLOR_X);
+			session->line_helper->set_line_width(DrawingHelper::LINE_THIN);
+			session->line_helper->set_z_test(false);
+			session->line_helper->draw_circle(h->tp, n, 100);
+			session->line_helper->set_z_test(true);
+		}
+	}
 }
 
 void ModeEditTerrain::on_draw_post(Painter*) {
