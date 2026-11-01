@@ -31,6 +31,7 @@ public:
 	DataWorld* data;
 	ModeWorld* mode_world;
 	int index;
+	float brush_radius;
 
 	Terrain* terrain() const;
 };

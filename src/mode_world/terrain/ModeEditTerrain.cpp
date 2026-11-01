@@ -3,6 +3,9 @@
 //
 
 #include "ModeEditTerrain.h"
+
+#include <cmath>
+
 #include "../ModeWorld.h"
 #include <view/multiview/MultiView.h>
 #include <view/DocumentSession.h>
@@ -23,6 +26,7 @@ ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_
 	multi_view = mode_world->multi_view;
 	generic_data = data;
 	index = _index;
+	brush_radius = 500;
 }
 
 void ModeEditTerrain::on_enter() {
@@ -56,6 +60,32 @@ void ModeEditTerrain::on_key_down(int key) {
 
 void ModeEditTerrain::on_left_button_down(const vec2&) {
 
+	float depth = brush_radius / 4;
+	if (session->win->is_key_pressed(xhui::KEY_SHIFT))
+		depth = - depth;
+
+	auto t = terrain();
+	if (auto h = multi_view->hover) {
+		if (h->index == index) {
+			int N = (int)(brush_radius / t->pattern.x * 1.5f + 1);
+			vec3 dp = h->tp - data->entity(index)->pos;
+			float x = dp.x / t->pattern.x;
+			float z = dp.z / t->pattern.z;
+
+			int i0 = max((int)x - N, 0);
+			int i1 = min((int)x + N, t->num_x);
+			int j0 = max((int)z - N, 0);
+			int j1 = min((int)z + N, t->num_z);
+			for (int i = i0; i <= i1; i++)
+				for (int j = j0; j <= j1; j++) {
+					float dx = (float)i * t->pattern.x - dp.x;
+					float dz = (float)j * t->pattern.z - dp.z;
+					t->height[i*(t->num_z+1) + j] += depth * expf( -2 * (dx*dx + dz*dz) / (brush_radius * brush_radius));
+				}
+			t->update(i0, i1, j0, j1, -1);
+			t->changed = true;
+		}
+	}
 }
 
 void ModeEditTerrain::on_left_button_up(const vec2&) {
@@ -81,7 +111,7 @@ void ModeEditTerrain::on_draw_win(const yrenderer::RenderParams& params, MultiVi
 			session->line_helper->set_color(DrawingHelper::COLOR_X);
 			session->line_helper->set_line_width(DrawingHelper::LINE_THIN);
 			session->line_helper->set_z_test(false);
-			session->line_helper->draw_circle(h->tp, n, 100);
+			session->line_helper->draw_circle(h->tp, n, brush_radius);
 			session->line_helper->set_z_test(true);
 		}
 	}
