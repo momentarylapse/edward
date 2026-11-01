@@ -11,11 +11,12 @@ namespace xhui {
 
 class Slider : public Control {
 public:
-	explicit Slider(const string& id);
+	explicit Slider(const string& id, float value);
 	void _draw(Painter* p) override;
 
 	void set_float(float f) override;
 	float get_float() override;
+	void set_string(const string& s) override;
 
 	float mouse_to_value(const vec2& m) const;
 

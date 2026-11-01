@@ -3,13 +3,12 @@
 //
 
 #include "Slider.h"
-
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/xhui.h>
 
 namespace xhui {
 
-Slider::Slider(const string& id) : Control(id) {
+Slider::Slider(const string& id, float _value) : Control(id) {
 	can_grab_focus = true;
 	size_mode_x = SizeMode::Fill;
 	size_mode_y = SizeMode::Shrink;
@@ -20,6 +19,7 @@ Slider::Slider(const string& id) : Control(id) {
 	max = 1;
 	step = 0;
 	button_radius = 7;
+	value = _value;
 }
 
 
@@ -30,6 +30,10 @@ float Slider::get_float() {
 void Slider::set_float(float f) {
 	value = f;
 	request_redraw();
+}
+
+void Slider::set_string(const string& s) {
+	set_float(s._float());
 }
 
 void Slider::on_left_button_down(const vec2& m) {

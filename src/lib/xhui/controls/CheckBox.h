@@ -22,6 +22,8 @@ public:
 
 	void _draw(Painter *p) override;
 
+	void set_option(const string& key, const string& value) override;
+
 	bool checked = false;
 	enum class State {
 		DEFAULT,

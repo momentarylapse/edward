@@ -340,7 +340,7 @@ xfer<Control> create_raw_control(const string& type, const string& title, const 
 	if (type == "Separator")
 		return new Separator(id, Orientation::VERTICAL);
 	if (type == "Slider")
-		return new Slider(id);
+		return new Slider(id, title._float());
 	if (type == "SpinButton")
 		return new SpinButton(id, title._float());
 	if (type == "TabControl")

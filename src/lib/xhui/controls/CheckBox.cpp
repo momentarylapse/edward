@@ -99,4 +99,11 @@ void CheckBox::_draw(Painter *p) {
 	label._draw(p);
 }
 
+void CheckBox::set_option(const string& key, const string& value) {
+	if (key == "checked") {
+		check(true);
+	} else {
+		Control::set_option(key, value);
+	}
+}
 }
