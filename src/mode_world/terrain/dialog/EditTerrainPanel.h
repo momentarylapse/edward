@@ -17,6 +17,7 @@ public:
 
 	void update_ui();
 	void on_edit_texture_map();
+	void on_radius_changed();
 
 	ModeEditTerrain* mode_terrain;
 	bool user_editing = false;

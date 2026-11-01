@@ -10,10 +10,11 @@
 #include <lib/image/image.h>
 #include <storage/Storage.h>
 #include <view/dialogs/CommonDialogs.h>
-#include <world/Terrain.h>
+#include <y/world/Terrain.h>
 #include <y/EngineData.h>
-
-#include "helper/ResourceManager.h"
+#include <y/helper/ResourceManager.h>
+#include <view/multiview/MultiView.h>
+#include <cmath>
 
 EditTerrainPanel::EditTerrainPanel(ModeEditTerrain* mode) : Node<xhui::Panel>("edit-terrain-panel") {
 	mode_terrain = mode;
@@ -22,9 +23,15 @@ Dialog edit-terrain-panel ''
 	Grid ? '' margin=7
 		Label ? 'Terrain' big center
 		---|
-		Grid ? '' class=card
+		Grid ? '' class=card vertical
 			Group ? 'Brush'
 				ListView add-list 'a' nobar cangrabfocus=no noexpandy height=220
+			Grid ? ''
+				RadioButton radius-mode:fixed 'Fixed radius'
+				SpinButton radius '0.0' range=::0.1 expandx disabled
+				---|
+				RadioButton radius-mode:zoom 'Relative' checked
+				Slider radius-relative '0.5'
 		---|
 		Grid ? '' class=card
 			Group ? 'Texture mapping'
@@ -85,6 +92,9 @@ Dialog edit-terrain-panel ''
 		}
 	});
 	event("save-as", save_as);
+	event("radius-relative", [this] {
+		on_radius_changed();
+	});
 
 	for (int i=0; i<2; i++) {
 		event(format("tex%d-scale", i), [this] { on_edit_texture_map(); });
@@ -92,10 +102,15 @@ Dialog edit-terrain-panel ''
 	}
 
 	update_ui();
+	on_radius_changed();
 
 	mode_terrain->data->out_terrain_changed >> create_data_sink<const Terrain*>([this] (const Terrain*) {
 		if (!user_editing)
 			update_ui();
+	});
+
+	mode_terrain->multi_view->view_port.out_changed >> create_sink([this] {
+		on_radius_changed();
 	});
 }
 
@@ -118,5 +133,11 @@ void EditTerrainPanel::on_edit_texture_map() {
 	}
 	mode_terrain->data->edit_terrain_meta_data(t, t->pattern, texture_scale);
 	user_editing = false;
+}
+
+void EditTerrainPanel::on_radius_changed() {
+	const float factor = powf(get_float("radius-relative"), 2) + 0.05f;
+	mode_terrain->brush_radius = mode_terrain->multi_view->view_port.radius * 0.1f * factor;
+	set_float("radius", mode_terrain->brush_radius);
 }
 
