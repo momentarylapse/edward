@@ -329,7 +329,7 @@ void MultiView::on_left_button_up(const vec2& m) {
 
 
 void MultiView::on_mouse_wheel(const vec2& m, const vec2& d) {
-	view_port.zoom(exp(d.y * 0.1f), cursor_pos_3d(m));
+	view_port.zoom(expf(d.y * 0.03f), cursor_pos_3d(m));
 }
 
 void MultiView::on_key_down(int key) {

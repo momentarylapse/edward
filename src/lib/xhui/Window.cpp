@@ -276,6 +276,22 @@ void Window::_scroll_callback(GLFWwindow *window, double xoffset, double yoffset
 	//std::cout << "scroll " << xoffset << " " << yoffset << "\n";
 	auto w = (Window*)glfwGetWindowUserPointer(window);
 
+	// wheel/trackpad filter (-_-)'
+	static os::Timer timer;
+	static bool from_wheel = true;
+	float dt = timer.get();
+	if (yoffset == (int)yoffset and xoffset == 0) {
+		// integers? -> might be a trackpad...
+		if (dt > 0.5f)
+			// more likely if we haven"t seen a fraction for a while
+			from_wheel = true;
+	} else {
+		// fractions? -> wheel!
+		from_wheel = false;
+	}
+	if (from_wheel)
+		yoffset *= 5;
+
 	Event e;
 	e.type = Event::Type::Scroll;
 	e.param1 = {(float)xoffset, (float)yoffset};
