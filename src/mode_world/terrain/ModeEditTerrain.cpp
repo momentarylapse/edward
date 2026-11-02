@@ -54,7 +54,7 @@ void ModeEditTerrain::on_leave() {
 
 void ModeEditTerrain::on_key_down(int key) {
 	if (key == xhui::KEY_ESCAPE) {
-		doc->set_mode(mode_world);
+		request_mode_end();
 	}
 }
 

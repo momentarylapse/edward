@@ -51,6 +51,7 @@
 
 #include "lib/xhui/Menu.h"
 #include "lib/yrenderer/helper/LineHelper.h"
+#include "stuff/PluginManager.h"
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);
@@ -820,6 +821,10 @@ void ModeWorld::on_key_down(int key) {
 			set_view_mode(ViewMode::Default);
 		else
 			set_view_mode(ViewMode::Physical);
+	}
+	if (key == xhui::KEY_CONTROL + xhui::KEY_T) {
+		if (auto m = session->plugin_manager->create_mode("world/ModeTest", this))
+			doc->set_mode(m);
 	}
 }
 

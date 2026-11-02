@@ -1,0 +1,57 @@
+class extern MultiViewWindow
+
+
+
+class MultiView
+
+	enum Action
+		SELECT
+		MOVE
+		ROTATE
+		ROTATE_2D
+		SCALE
+		SCALE_2D
+		MIRROR
+		ONCE
+
+	enum ActionConstraints
+		NONE
+		X
+		Y
+		Z
+		XY
+		XZ
+		YZ
+
+	class ActionController
+##		func extern start_action(win: MultiView.Window, m: vec3, constraints: ActionConstraints)
+##		func extern update_action()
+##		func extern update_param(param: vec3)
+##		func extern end_action(set: bool)
+		var pos: vec3
+
+	class Window
+		var local_ang: Quaternion
+
+	struct Camera
+		var pos: vec3
+		var ang: Quaternion
+
+	# "des Pudels Kern", don't change!!!!!!!
+	struct SingleData
+		var view_stage: i32
+		var is_selected, m_delta, m_old, is_special: bool
+		var pos: vec3
+
+
+	#extern void on_mouse_move()
+	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
+	var action_con: ActionController&
+	var mouse_win: MultiView.Window&
+	var active_win: MultiView.Window&
+	var cam: MultiView.Camera
+##	func extern cam_move(dpos: vec3)
+##	func extern cam_rotate(dq: quaternion, cam_center: bool)
+##	func extern cam_zoom(factor: float, mouse_rel: bool)
+
+

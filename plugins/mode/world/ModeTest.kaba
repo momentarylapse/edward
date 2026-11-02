@@ -1,0 +1,17 @@
+use image.Painter
+use xhui
+use edward.*
+
+class ModeTest extends SubMode
+	func override __init__(m: Mode&)
+		super.__init__(m)
+
+	func override on_enter()
+		session.info("Test enter")
+
+	func override on_draw_post(out p: Painter)
+		draw_info(p, "this is a custom mode written in kaba!")
+
+	func override on_key_down(k: i32)
+		if k == xhui.KEY_ESCAPE
+			request_mode_end()

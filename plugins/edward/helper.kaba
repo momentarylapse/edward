@@ -1,14 +1,14 @@
 # b = q*a
-func rot_onto(a: vec3, b: vec3) -> quaternion
+func rot_onto(a: vec3, b: vec3) -> Quaternion
 	var n = vec3.cross(a, b)
 	n /= len(n)
 	var e1 = a / len(a)
 	var e2 = vec3.cross(e1, n)
 	let ang = atan2(vec3.dot(b, e2), vec3.dot(b, e1))
-	return quaternion(n, ang).bar()
+	return Quaternion(n, ang).bar()
 
 func __main()
-	var qq = quaternion(vec3(0.2, 0.5, -0.4))
+	var qq = Quaternion(vec3(0.2, 0.5, -0.4))
 	var a = vec3(7,-2,4)
 	var b = qq*a
 	var q = rot_onto(a, b)

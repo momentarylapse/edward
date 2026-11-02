@@ -1,0 +1,45 @@
+
+class shader
+	enum Type
+		FLOAT
+		INT
+		VEC2
+		VEC3
+		COLOR
+		LITERAL # ...
+		TEXT
+
+	class BuilderContext
+#		func extern create_temp(source: Node, port: int, type: Type) -> string
+#		func extern create_out(source: Node, port: int) -> string
+#		func extern find_temp(source: Node, port: int, wanted_type: int) -> string
+#		func extern build_value(n: Node, i: int, internal: string) -> string
+#		func value(n: Node, i: int) -> string
+#			return build_value(n, i, "")
+#		func extern build_const(n: Node, i: int) -> string
+
+	class Node extends Object
+#		func extern __init__(t: string)
+#		func extern override __delete__()
+		func __assign__(n: Node)
+			pass
+		var x, y: i32
+		var type: string
+
+		struct Parameter
+			var type: Type
+			var name: string
+			var value: string
+			var options: string
+		var params: Parameter[]
+
+
+		struct Port
+			var type: Type
+			var name: string
+		var output: Port[]
+
+#		func extern virtual dependencies() -> string[]
+#		func extern virtual uniform_dependencies() -> string[]
+#		func extern virtual code_pixel_pre(out ctx: BuilderContext) -> string
+#		func extern virtual code_pixel(out ctx: BuilderContext) -> string

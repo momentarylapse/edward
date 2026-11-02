@@ -16,6 +16,7 @@ namespace kaba {
 }
 
 class Session;
+class Mode;
 
 namespace edward {
 
@@ -51,6 +52,8 @@ public:
 
 	void execute(const Path &filename);
 
+	const kaba::Class* find_class(const Path &filename, const string &parent);
+	Mode* create_mode(const string& id, Mode* parent);
 	void* create_instance(const Path &filename, const string &parent);
 	Array<const kaba::Class*> enumerate_classes(const string& full_base_class);
 	//Array<plugin::InstanceData> enumerate_classes(const string& full_base_class);

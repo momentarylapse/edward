@@ -1,0 +1,346 @@
+use os
+use gl
+use .common.*
+use .multiview.*
+
+
+# effects
+enum FxKind
+	Script,
+	Light,
+	Fog,
+	Sound,
+	ForceField
+
+class y
+	class Material
+		var shader: void*#gl.Shader*
+	class Terrain
+	class Model
+
+
+struct Edge extends MultiView.SingleData
+	#int NormalMode;
+	var vertex: i32[2]
+	var ref_count: i32
+	var triangle, side: i32[2]
+	var is_round: bool
+	var weight: f32
+
+	# constraints:
+	#  Vertex[0] = surf.Triangle[Triangle[0]].Vertex[Side[0]]
+	#  Vertex[1] = surf.Triangle[Triangle[0]].Vertex[(Side[0] + 1) % 3]
+	#  same for Triangle/Side[1] but Vertex[0 <-> 1]
+
+struct Mesh
+	struct Vertex extends MultiView.SingleData
+		var normal_mode: i32
+		var bone_index: i32
+
+		var normal_dirty: bool
+		var ref_count: i32
+		var surface: i32
+
+	struct Polygon extends MultiView.SingleData
+		struct Side
+			var vertex: i32
+			var edge: i32
+			var edge_direction: i32
+			var skin_vertex: vec3[MAX_TEXTURES]
+			var normal_index: i32
+			var normal: vec3
+			var triangulation: i8[3]
+		var side: Side[]
+		var temp_normal: vec3
+		var normal_dirty, triangulation_dirty: bool
+		var material: i32
+		func __init__()
+
+	func extern __init__()
+	func extern __delete__()
+	func extern mut __assign__(o: Mesh)
+	func extern mut add(o: Mesh)
+	func extern transform(matrix: mat4) -> Mesh
+	func extern invert() -> Mesh
+
+	var vertices: Vertex[]
+	var polygons: Polygon[]
+
+#	var balls: Ball[]
+#	var edge: Edge[]
+#	var is_closed: bool
+
+##	func extern static subtract(a: Geometry, b: Geometry, out _out: Geometry) -> int
+##	func extern static and(a: Geometry, b: Geometry, out _out: Geometry) -> int
+
+	enum EndMode
+		OPEN
+		FLAT
+		ROUND
+		LOOP
+
+	func static extern create_ball(pos: vec3, radius: f32, num_x: i32, num_y: i32) -> Mesh
+	func static extern create_cube(box: Box, slices: ivec3) -> Mesh
+#
+#	class Cylinder extends Geometry
+#		func extern __init__(pos1: vec3, pos2: vec3, radius: float, rings: int, edges: int, end_mode: EndMode)
+#
+#	class CylinderComplex extends Geometry
+#		func extern __init__(pos: vec3[], radius: float[], rings: int, edges: int, end_mode: EndMode)
+
+	func static extern create_sphere(pos: vec3, radius: f32, num: i32) -> Mesh
+	func static extern create_torus(pos: vec3, axis: vec3, radius1: f32, radius2: f32, num_x: i32, num_y: i32) -> Mesh
+	func static extern create_torus_knot(pos: vec3, axis: vec3, radius1: f32, radius2: f32, radius3: f32, turns: i32, twists: i32, rings: i32, edges: i32) -> Mesh
+	func static extern create_plane(r: Rect, slices: ivec2) -> Mesh
+	func static extern create_platonic(pos: vec3, radius: f32, type: i32) -> Mesh
+
+
+struct SurfacePoint
+	var pos, normal: vec3
+
+func extern mesh_surface_points(mesh: Mesh, radius: f32) -> SurfacePoint[]
+
+
+class DataModel extends Data
+	let MAX_POLY_VERTICES_PER_FACE = 16
+	let MAX_POLY_FACES = 32
+	let MAX_POLY_EDGES = 32 * 4
+
+
+	struct Material
+		var filename: os.Path
+		var material: y.Material&
+		var num_textures: i32
+		var texture: gl.Texture&[MAX_TEXTURES]
+		var texture_file: string[MAX_TEXTURES]
+
+		var user_transparency: bool
+		var transparency_mode: i32
+		var alpha_source, alpha_destination: i32
+		var alpha_factor: f32
+		var alpha_z_buffer: bool
+
+		var user_color: bool
+		var ambient: Color
+		var diffuse: Color
+		var specular: Color
+		var emission: Color
+		var shininess: f32
+		func __assign__(other: Material)
+
+	struct Effect
+		var kind, surface, vertex: i32
+		var size, speed, intensity: i32
+		var colors: Color[3]
+		var inv_quad: bool
+		var file: string
+		func __assign__(other: Effect)
+			pass
+
+
+	# only for use in MultiView...
+	struct SkinVertexDummy extends MultiView.SingleData
+
+	struct Ball extends MultiView.SingleData
+		var index: i32
+		var radius: f32
+
+
+	# TODO: dynamical!
+	struct Polyhedron extends MultiView.SingleData
+		struct Face
+			var num_vertices: i32
+			var index: i32[MAX_POLY_VERTICES_PER_FACE]
+			var plane: Plane
+		var num_faces: i32
+		var face: Face[MAX_POLY_FACES]
+		var num_svertices: i32
+		var sindex: i32[MAX_POLY_FACES * MAX_POLY_VERTICES_PER_FACE]
+
+		# non redundant edge list!
+		var num_edges: i32
+		var edge_index: i32[DataModel.MAX_POLY_EDGES * 2]
+
+		# "topology"
+		var edge_on_face: bool[DataModel.MAX_POLY_EDGES * DataModel.MAX_POLY_FACES] # [edge * NumFaces + face]
+		var faces_joining_edge: i32[DataModel.MAX_POLY_FACES * DataModel.MAX_POLY_FACES] # [face1 * NumFaces + face2]
+
+
+
+	struct Triangle extends MultiView.SingleData
+		var vertex: i32[3]
+		#int[3] edge
+		#int[3] edge_direction # which no of triangle in edge's list are we?
+		var skin_vertex: vec3[MAX_TEXTURES][3]
+		var normal_index: i32[3]
+		var normal: vec3[3]
+		var temp_normal: vec3
+		var normal_dirty: bool
+		var material: i32
+
+
+	# triangles belonging to one material
+	struct SubSkin
+		var num_textures: i32
+
+		# triangles
+		var triangles: Triangle[]
+
+
+	# geometry
+	struct Skin
+		# general properties
+		var normal_mode_all: i32
+
+		# vertices
+		var vertex: Mesh.Vertex[]
+
+		# sub skins
+		var sub: SubSkin[]
+
+	struct Bone extends MultiView.SingleData
+		var parent: i32
+		var model_file: string
+####		var model: Model*
+		var const_pos: bool
+
+		# for editing
+		var matrix: mat4
+		func __init__()
+
+
+
+	struct Move
+		enum Type
+			NONE
+			VERTEX
+			SKELETAL
+
+		struct Frame
+			# skeleton animation
+			var skel_dpos: vec3[]
+			var skel_ang: vec3[]
+
+			# vertex animation
+			var dpos: vec3[4][]
+			var vertex_dpos: vec3[]
+			func __assign__(other: Frame)
+
+		var type: i32
+		var frames: Frame[]
+		var frames_per_sec_const, frames_per_sec_factor: f32
+		var name: string
+
+
+#	struct __Surface extends MultiView.SingleData
+#		var polygon: Geometry.Polygon[]
+#		var edge: Edge[]
+#		var vertex: int[]
+#		var is_physical, is_visible: bool
+#		var is_closed: bool
+#
+#		var model: void*
+#		func __init__()
+
+	struct MetaData
+		# level of detail
+		var detail_dist: f32[3]
+		var detail_factor: i32[3]
+		var auto_generate_dists: bool
+		var auto_generate_skin: bool[3]
+
+		# physics
+		var mass: f32
+		var active_physics, passive_physics: bool
+		var auto_generate_tensor: bool
+		var inertia_tensor: mat3
+
+		# object-properties
+		var name, description: string
+		var inventary: os.Path[]
+
+		# script
+		var script_file: os.Path
+		var script_var: f32[]
+		func __assign__(other: MetaData)
+
+	struct Selection
+		var vertex, polygon, edge: i32[]
+
+
+	# properties
+	var bones: Bone[]
+
+
+	# properties
+	var moves: Move[]
+
+#	int CurrentMove,CurrentFrame
+
+#	bool Playing,PlayLoop
+#	float TimeScale,TimeParam,SimFrame
+
+	# geometry
+	var mesh: Mesh&
+	var phys_mesh: Mesh&
+#	MultiViewSingleData SkinVertex[] # only temporary...
+#	int SkinVertMat, SkinVertTL
+
+	# old geometry
+	var skin: Skin[4]
+
+
+	#ModelPolyhedron Poly[]
+
+	# general properties
+	var materials: Material[]
+
+	# effects
+	var fx: Effect[]
+
+	var meta_data: MetaData
+
+##	func extern clear_selection()
+##	func extern selection_from_vertices()
+##	func extern selection_from_polygons()
+	#extern void SelectOnlySurface(ModelSurface s)
+
+	func extern add_vertex(pos: vec3, bone_index: ivec4 = ivec4(0,0,0,0), bone_weight: vec4 = vec4(1,0,0,0), normal_mode: i32 = -1)
+#	func extern add_triangle(a: int, b: int, c: int, material: int) -> Geometry.Polygon&
+#	func extern add_polygon(v: int[], material: int) -> Geometry.Polygon&
+#	func extern delete_polygon(index: int)
+
+#	func extern delete_selection(s: Selection, greedy: bool)
+#	func extern invert_polygons(s: Selection)
+#	func extern subtract_selection()
+##	extern void CutOutSelection()
+#	func extern convert_selection_to_triangles()
+##	extern void AlignToGridSelection(float grid_d)
+#	extern void NearifySelectedVertices()
+#	extern void CollapseSelectedVertices()
+#	func extern bevel_selected_vertices(radius: float)
+#	extern void FlattenSelectedVertices()
+#	func extern triangulate_selected_vertices()
+#	func extern extrude_selected_polygons(offset: float)
+#	extern void AutoWeldSelectedSurfaces(float d)
+#	extern void SetNormalModeSelection(int mode)
+#	extern void SetNormalModeAll(int mode)
+#	extern void SetMaterialSelection(int material)
+#	extern void Easify(float factor)
+	func extern paste_mesh(m: Mesh, default_material: i32 = 0)
+
+#	func extern add_animation(index: int, type: Move.Type)
+#	func extern duplicate_animation(source: int, target: int)
+#	func extern delete_animation(index: int)
+#	func extern animation_set_data(index: int, name: string, fps_const: float, fps_factor: float)
+#	func extern animation_add_frame(index: int, frame: int, f: Move.Frame)
+#	func extern animation_delete_frame(index: int, frame: int)
+#	func extern animation_set_frame_duration(index: int, frame: int, duration: float)
+#	func extern animation_set_bone(move: int, frame: int, bone: int, dpos: vec3, ang: vec3)
+
+	func __assign__(other: DataModel)
+
+
+#class ModeModel extends Mode
+#	var data: DataModel&
+

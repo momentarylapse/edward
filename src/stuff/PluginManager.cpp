@@ -62,6 +62,8 @@
 #include <lib/net/_kaba_export.h>
 #include <lib/profiler/_kaba_export.h>
 
+#include "view/DrawingHelper.h"
+
 
 Session* cur_session = nullptr;
 
@@ -298,14 +300,86 @@ void PluginManager::link_plugins() {
 	ext->link_class_func("World.add_new_terrain", &DataWorld::add_new_terrain);
 #endif
 
+
+	{
+		Mode mode(nullptr);
+		ext->declare_class_size("Mode", sizeof(Mode));
+		ext->declare_class_element("Mode.menu_id", &Mode::menu_id);
+		ext->declare_class_element("Mode.toolbar_id", &Mode::toolbar_id);
+		ext->declare_class_element("Mode.doc", &Mode::doc);
+		ext->declare_class_element("Mode.session", &Mode::session);
+		ext->declare_class_element("Mode.multi_view", &Mode::multi_view);
+		ext->declare_class_element("Mode.out_redraw", &Mode::out_redraw);
+		ext->link_class_func("Mode.__init__", &kaba::generic_init_ext<Mode, DocumentSession*>);
+		ext->link_class_func("Mode.draw_info", &Mode::draw_info);
+		ext->link_class_func("Mode.is_ancestor_of", &Mode::is_ancestor_of);
+
+		ext->link_virtual("Mode.on_enter_rec", &Mode::on_enter_rec, &mode);
+		ext->link_virtual("Mode.on_connect_events_rec", &Mode::on_connect_events_rec, &mode);
+		ext->link_virtual("Mode.on_leave_rec", &Mode::on_leave_rec, &mode);
+		ext->link_virtual("Mode.on_enter", &Mode::on_enter, &mode);
+		ext->link_virtual("Mode.on_connect_events", &Mode::on_connect_events, &mode);
+		ext->link_virtual("Mode.on_leave", &Mode::on_leave, &mode);
+		ext->link_virtual("Mode.on_command", &Mode::on_command, &mode);
+		ext->link_virtual("Mode.on_update_menu", &Mode::on_update_menu, &mode);
+		ext->link_virtual("Mode.on_mouse_move", &Mode::on_mouse_move, &mode);
+		ext->link_virtual("Mode.on_mouse_leave", &Mode::on_mouse_leave, &mode);
+
+		ext->link_virtual("Mode.on_left_button_down", &Mode::on_left_button_down, &mode);
+		ext->link_virtual("Mode.on_left_button_up", &Mode::on_left_button_up, &mode);
+		ext->link_virtual("Mode.on_key_down", &Mode::on_key_down, &mode);
+		ext->link_virtual("Mode.on_prepare_scene", &Mode::on_prepare_scene, &mode);
+		ext->link_virtual("Mode.on_draw_background", &Mode::on_draw_background, &mode);
+		ext->link_virtual("Mode.on_draw_win", &Mode::on_draw_win, &mode);
+		ext->link_virtual("Mode.on_draw_shadow", &Mode::on_draw_shadow, &mode);
+		ext->link_virtual("Mode.on_draw_post", &Mode::on_draw_post, &mode);
+
+		ext->link_virtual("Mode.get_parent", &Mode::get_parent, &mode);
+		ext->link_virtual("Mode.get_filename", &Mode::get_filename, &mode);
+		ext->link_virtual("Mode.is_save_state", &Mode::is_save_state, &mode);
+		ext->link_virtual("Mode.is_undoable", &Mode::is_undoable, &mode);
+		ext->link_virtual("Mode.is_redoable", &Mode::is_redoable, &mode);
+	}
+
+	{
+		SubMode mode(nullptr);
+		ext->declare_class_size("SubMode", sizeof(SubMode));
+		ext->declare_class_element("SubMode._parent", &SubMode::_parent);
+		ext->link_class_func("SubMode.__init__", &kaba::generic_init_ext<SubMode, Mode*>);
+		ext->link_class_func("SubMode.request_mode_end", &SubMode::request_mode_end);
+
+		ext->link_virtual("SubMode.get_parent", &SubMode::get_parent, &mode);
+
+		ext->link_virtual("SubMode.on_command", &SubMode::on_command, &mode);
+		ext->link_virtual("SubMode.on_update_menu", &SubMode::on_update_menu, &mode);
+		ext->link_virtual("SubMode.on_connect_events_rec", &SubMode::on_connect_events_rec, &mode);
+
+		ext->link_virtual("SubMode.on_prepare_scene", &SubMode::on_prepare_scene, &mode);
+		ext->link_virtual("SubMode.on_draw_background", &SubMode::on_draw_background, &mode);
+		ext->link_virtual("SubMode.on_draw_win", &SubMode::on_draw_win, &mode);
+		ext->link_virtual("SubMode.on_draw_shadow", &SubMode::on_draw_shadow, &mode);
+	}
+
+
+	ext->declare_class_size("DrawingHelper", sizeof(DrawingHelper));
+
+
 	ext->declare_class_size("Session", sizeof(Session));
+	ext->declare_class_element("Session.ctx", &Session::ctx);
+	ext->declare_class_element("Session.drawing_helper", &Session::drawing_helper);
+	ext->declare_class_element("Session.line_helper", &Session::line_helper);
 	ext->declare_class_element("Session.win", &Session::win);
+	ext->link_class_func("Session.info", &Session::info);
+	ext->link_class_func("Session.warning", &Session::warning);
+	ext->link_class_func("Session.error", &Session::error);
+
 
 	ext->declare_class_size("DocumentSession", sizeof(DocumentSession));
 	ext->declare_class_element("DocumentSession.mode_model", &DocumentSession::mode_model);
 	ext->declare_class_element("DocumentSession.mode_world", &DocumentSession::mode_world);
 	ext->declare_class_element("DocumentSession.mode_material", &DocumentSession::mode_material);
 	ext->declare_class_element("DocumentSession.session", &DocumentSession::session);
+	ext->link_class_func("DocumentSession.set_mode", &DocumentSession::set_mode);
 
 #if 0
 	ShaderNode node("");
@@ -378,7 +452,7 @@ void PluginManager::load_project_stuff(const Path &dir) {
 }
 
 void PluginManager::find_plugins() {
-	Path dir0 = (PluginManager::directory | "shader graph").absolute();
+	Path dir0 = (directory | "shader graph").absolute();
 	auto list = os::fs::search(dir0, "*", "fd");
 	for (auto &e: list) {
 		Path dir = dir0 | e;
@@ -397,14 +471,37 @@ void PluginManager::find_plugins() {
 	}
 }
 
-void *PluginManager::create_instance(const Path &filename, const string &parent) {
+const kaba::Class* PluginManager::find_class(const Path &filename, const string &parent) {
 	//kaba::config.directory = "";
 	auto s = session->kaba_ctx->_load_module_throw(filename, false);
-	for (auto c: s->classes()){
-		if (c->is_derived_from_s(parent)) {
-			return c->create_instance();
-		}
+	for (auto c: s->classes())
+		if (c->is_derived_from_s(parent))
+			return c;
+
+	//throw Exception(format("no class derived from '%s' defined", parent));
+	return nullptr;
+}
+
+Mode* PluginManager::create_mode(const string& id, Mode* parent) {
+	if (auto c = session->plugin_manager->find_class(session->plugin_manager->directory | "mode" | id + ".kaba", "edward.SubMode")) {
+		for (auto ff: c->get_constructors())
+			if (ff->num_params == 2) {
+				auto m = (SubMode*)malloc(c->size);
+				typedef void con_func(void *, void*);
+				if (const auto f = reinterpret_cast<con_func*>(ff->address)) {
+					f(m, parent);
+					return m;
+				}
+			}
 	}
+	return nullptr;
+}
+
+void *PluginManager::create_instance(const Path &filename, const string &parent) {
+	//kaba::config.directory = "";
+	if (auto c = find_class(filename, parent))
+		return c->create_instance();
+
 	throw Exception(format("no class derived from '%s' defined", parent));
 	return nullptr;
 }

@@ -13,7 +13,8 @@
 
 Mode::Mode(DocumentSession* _doc) {
 	doc = _doc;
-	session = doc->session;
+	if (doc)
+		session = doc->session;
 	multi_view = nullptr;
 }
 
@@ -83,10 +84,13 @@ void Mode::redo() {
 }*/
 
 
-SubMode::SubMode(Mode* parent) : Mode(parent->doc) {
+SubMode::SubMode(Mode* parent) : Mode(parent ? parent->doc : nullptr) {
 	_parent = parent;
-	menu_id = parent->menu_id;
-	toolbar_id = parent->toolbar_id;
+	if (parent) {
+		generic_data = parent->generic_data;
+		menu_id = parent->menu_id;
+		toolbar_id = parent->toolbar_id;
+	}
 }
 
 void SubMode::on_command(const string& id) {

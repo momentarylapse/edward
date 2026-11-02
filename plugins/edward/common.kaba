@@ -1,0 +1,38 @@
+use os
+
+let MAX_TEXTURES = 8
+
+struct ivec2
+	var x, y: i32
+struct ivec3
+	var x, y, z: i32
+struct ivec4
+	var x, y, z, w: i32
+struct vec4
+	var x, y, z, w: f32
+
+class Observable
+	var dummy: int
+
+class Observer
+	#virtual void OnUpdate(Observable o)
+
+
+class Data extends Observable
+	var filename: os.Path
+	var file_time: i32
+	var binary_file_format: bool
+	var type: i32
+	func extern begin_action(name: string)
+	func extern end_action()
+
+
+
+
+#let TransparencyModeDefault = -1
+#let TransparencyModeNone = 0
+#let TransparencyModeFunctions = 1
+#let TransparencyModeColorKeyHard = 2
+#let TransparencyModeColorKeySmooth = 3
+#let TransparencyModeFactor = 4
+
