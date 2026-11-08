@@ -357,6 +357,8 @@ void PluginManager::link_plugins() {
 	ext->declare_class_element("MultiView.hover", &MultiView::hover);
 	ext->declare_class_element("MultiView.cam", &MultiView::view_port);
 	ext->declare_class_element("MultiView.view_port", &MultiView::view_port);
+	ext->declare_class_element("MultiView.active_window", &MultiView::active_window);
+	ext->declare_class_element("MultiView.hover_window", &MultiView::hover_window);
 	ext->link_class_func("MultiView.set_allow_action", &MultiView::set_allow_action);
 	ext->link_class_func("MultiView.set_allow_select", &MultiView::set_allow_select);
 	ext->link_class_func("MultiView.set_f_hover", &MultiViewWrapper::set_f_hover);

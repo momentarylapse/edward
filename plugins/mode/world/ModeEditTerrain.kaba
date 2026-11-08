@@ -151,6 +151,9 @@ class ModeEditTerrain extends SubMode
 	var override data: DataWorld&
 	var brush_radius: f32
 	var index = 0 # param
+	var brush_terrain: yengine.Terrain* = nil
+	var brush_offset = 0.0
+	var brush_prev_point: vec3
 
 
 	func override __init__(m: Mode&)
@@ -196,29 +199,55 @@ class ModeEditTerrain extends SubMode
 
 
 	func override on_left_button_down(m: vec2)
+		for mut t in terrain(),  h in multi_view!.hover
+				if h.index == index
+					let p = h.tp - data.entity(index)!.pos
+					do_brush_step(t, p)
+					brush_terrain = &t
+					brush_offset = 0.0
+					brush_prev_point = p
+
+
+	func override on_left_button_up(m: vec2)
+		brush_terrain = nil
+
+
+	func override on_mouse_move(m: vec2, d: vec2)
+		for win in multi_view!.hover_window
+			multi_view!.hover = get_hover([&win, m])
+
+		for mut t in brush_terrain,  h in multi_view!.hover
+				if h.index == index
+					let p = h.tp - data.entity(index)!.pos
+					brush_offset += len(p - brush_prev_point)
+					# TODO interpolate
+					if brush_offset > brush_radius
+						do_brush_step(t, p)
+						brush_offset = 0
+					brush_prev_point = p
+
+
+	func mut do_brush_step(out t: yengine.Terrain, p: vec3)
 		let depth = if session.win.is_key_pressed(xhui.KEY_SHIFT)
 			- brush_radius / 4
 		else
 			brush_radius / 4
 
-		for mut t in terrain(),  h in multi_view!.hover
-				if h.index == index
-					let N = i32(brush_radius / t.pattern.x * 1.5 + 1)
-					let dp = h.tp - data.entity(index)!.pos
-					let x = dp.x / t.pattern.x
-					let z = dp.z / t.pattern.z
+		let N = i32(brush_radius / t.pattern.x * 1.5 + 1)
+		let x = p.x / t.pattern.x
+		let z = p.z / t.pattern.z
 
-					let i0 = max(i32(x) - N, 0)
-					let i1 = min(i32(x) + N, t.num_x)+1
-					let j0 = max(i32(z) - N, 0)
-					let j1 = min(i32(z) + N, t.num_z)+1
-					for i in i0:i1
-						for j in j0:j1
-							let dx = f32(i) * t.pattern.x - dp.x
-							let dz = f32(j) * t.pattern.z - dp.z
-							t.height[i*(t.num_z+1) + j] += depth * exp( -2 * (dx^2 + dz^2) / brush_radius^2)
-					t.update(i0, i1, j0, j1, -1)
-					t.changed = true
+		let i0 = max(i32(x) - N, 0)
+		let i1 = min(i32(x) + N, t.num_x)+1
+		let j0 = max(i32(z) - N, 0)
+		let j1 = min(i32(z) + N, t.num_z)+1
+		for i in i0:i1
+			for j in j0:j1
+				let dx = f32(i) * t.pattern.x - p.x
+				let dz = f32(j) * t.pattern.z - p.z
+				t.height[i*(t.num_z+1) + j] += depth * exp( -2 * (dx^2 + dz^2) / brush_radius^2)
+		t.update(i0, i1, j0, j1, -1)
+		t.changed = true
 
 
 	func override on_draw_win(params: yrenderer.RenderParams, out win: MultiViewWindow)

@@ -88,6 +88,9 @@ class extern MultiView
 	#var active_win: MultiView.Window&
 	var view_port: MultiView.ViewPort
 	var cam: MultiView.ViewPort
+
+	var active_window: MultiViewWindow*
+	var hover_window: MultiViewWindow*
 	var hover: Hover?
 ##	func extern cam_move(dpos: vec3)
 ##	func extern cam_rotate(dq: quaternion, cam_center: bool)
