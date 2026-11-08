@@ -570,6 +570,7 @@ void ModeWorld::on_draw_win(const yrenderer::RenderParams& params, MultiViewWind
 	draw_cameras(win);
 	draw_lights(win);
 	draw_links(win);
+	draw_user_components(win);
 }
 
 void ModeWorld::on_draw_shadow(const yrenderer::RenderParams& params, yrenderer::RenderViewData& rvd) {
@@ -667,8 +668,8 @@ void draw_tangent_circle(MultiViewWindow *win, const vec3 &p, const vec3 &c, con
 		p, c - sinf(w) * e1 - cosf(w) * e2}, false);
 }
 
-const float LIGHT_RADIUS_FACTOR_HI = 0.03f;
-const float LIGHT_RADIUS_FACTOR_LO = 0.15f;
+static constexpr float LIGHT_RADIUS_FACTOR_HI = 0.03f;
+static constexpr float LIGHT_RADIUS_FACTOR_LO = 0.15f;
 
 void ModeWorld::draw_lights(MultiViewWindow *win) {
 	auto lh = session->line_helper;
@@ -679,10 +680,11 @@ void ModeWorld::draw_lights(MultiViewWindow *win) {
 		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
 		lh->set_color(DrawingHelper::COLOR_X);
-		lh->set_line_width(DrawingHelper::LINE_THICK);
+		lh->set_line_width(DrawingHelper::LINE_MEDIUM);
 		if (sel.contains(i)) {
 			lh->set_color(Red);
-			lh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
+			lh->set_line_width(DrawingHelper::LINE_THICK);
+			//lh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
 		}
 
 		const vec3 pos = l->owner->pos;
@@ -713,10 +715,10 @@ void ModeWorld::draw_links(MultiViewWindow *win) {
 		int i = l->owner->get_component<EdwardTag>()->entity_index;
 
 		lh->set_color(DrawingHelper::COLOR_X);
-		lh->set_line_width(DrawingHelper::LINE_THICK);
+		lh->set_line_width(DrawingHelper::LINE_MEDIUM);
 		if (sel.contains(i)) {
 			lh->set_color(Red);
-			lh->set_line_width(DrawingHelper::LINE_EXTRA_THICK);
+			lh->set_line_width(DrawingHelper::LINE_THICK);
 		}
 
 		const vec3 pos = l->owner->pos;
@@ -724,6 +726,24 @@ void ModeWorld::draw_links(MultiViewWindow *win) {
 			lh->draw_lines({pos, a->pos}, false);
 		if (auto b = data->entity(l->b))
 			lh->draw_lines({pos, b->pos}, false);
+	}
+}
+
+void ModeWorld::draw_user_components(MultiViewWindow *win) {
+	auto lh = session->line_helper;
+	const auto& sel = multi_view->selection[MultiViewType::WORLD_ENTITY];
+	for (auto t: data->entity_manager->component_manager->all_types()) {
+		if (t == Light::_class or t == Camera::_class)
+			continue;
+		for (const auto& e: t->elements)
+			if (e.name == "radius" and e.type == kaba::common_types.f32) {
+				for (const auto c: data->entity_manager->component_manager->_get_list(t)) {
+					lh->set_color(DrawingHelper::COLOR_X);
+					lh->set_line_width(DrawingHelper::LINE_MEDIUM);
+					float radius = *(float*)((char*)c + e.offset);
+					lh->draw_circle(c->owner->pos, win->direction(), radius);
+				}
+			}
 	}
 }
 

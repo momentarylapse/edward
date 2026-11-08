@@ -259,7 +259,7 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 	ext->declare_enum("CullMode.FRONT", CullMode::FRONT);
 
 	ext->declare_enum("Alpha.ZERO", Alpha::ZERO);
-	ext->declare_enum("Alpha.ZERO", Alpha::ONE);
+	ext->declare_enum("Alpha.ONE", Alpha::ONE);
 	ext->declare_enum("Alpha.SOURCE_COLOR", Alpha::SOURCE_COLOR);
 	ext->declare_enum("Alpha.SOURCE_INV_COLOR", Alpha::SOURCE_INV_COLOR);
 	ext->declare_enum("Alpha.SOURCE_ALPHA", Alpha::SOURCE_ALPHA);
