@@ -1,4 +1,5 @@
 use os
+use obs
 
 let MAX_TEXTURES = 8
 
@@ -11,18 +12,26 @@ struct ivec4
 struct vec4
 	var x, y, z, w: f32
 
-class Observable
-	var dummy: int
 
-class Observer
-	#virtual void OnUpdate(Observable o)
+enum extern DataType
+	MODEL
+	MATERIAL
+	WORLD
+	TERRAIN
+	TEMPLATE
+	SCRIPT
+	TEXTURE
+	SHADER
+	SOUND
+	FILE
+	PROJECT
 
 
-class Data extends Observable
+class extern Data as obs.Node
 	var filename: os.Path
 	var file_time: i32
-	var binary_file_format: bool
-	var type: i32
+	var type: DataType
+	var out_changed: obs.Source
 	func extern begin_action(name: string)
 	func extern end_action()
 

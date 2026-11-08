@@ -823,8 +823,7 @@ void ModeWorld::on_key_down(int key) {
 			set_view_mode(ViewMode::Physical);
 	}
 	if (key == xhui::KEY_CONTROL + xhui::KEY_T) {
-		if (auto m = session->plugin_manager->create_mode("world/ModeTest", this))
-			doc->set_mode(m);
+		doc->set_sub_mode("world/ModeTest", Any::Dict{{{"a", Any(13) }}});
 	}
 }
 

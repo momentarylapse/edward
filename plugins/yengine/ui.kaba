@@ -1,0 +1,200 @@
+use image.Painter
+use .gfx.*
+use .common.*
+use .model.*
+use kaba
+
+
+enum Button
+	LEFT
+	MIDDLE
+	RIGHT
+
+
+class extern Node as Sharable
+	enum SizeMode
+		SHRINK
+		EXPAND
+		FILL
+
+	func extern __init__()
+	func extern virtual __delete__()
+	func extern mut __del_override__()
+
+	func extern mut add(n: shared![Node])
+	func extern mut add_from_source(s: string) -> Node*
+	func extern mut remove_all_children()
+	func extern mut remove(n: Node&)
+	func extern selfref _get(id: string) -> Node*
+	func selfref get[X](id: string) -> X*
+		return _get(id) as X*
+
+	func extern virtual mut set_option(key: string, value: string)
+	func extern virtual get_content_min_size() -> vec2
+	func extern virtual selfref get_children(_filter=0) -> Node&[]
+	func extern virtual mut negotiate_content_area(available: Rect)
+
+	func extern virtual mut on_iterate(dt: f32)
+	func extern virtual mut on_enter(m: vec2)
+	func extern virtual mut on_leave()
+	func extern virtual mut on_left_button_down(m: vec2)
+	func extern virtual mut on_left_button_up(m: vec2)
+	func extern virtual mut on_middle_button_down(m: vec2)
+	func extern virtual mut on_middle_button_up(m: vec2)
+	func extern virtual mut on_right_button_down(m: vec2)
+	func extern virtual mut on_right_button_up(m: vec2)
+
+
+	var id: string
+	var width, height: f32
+	func extern mut set_pos(pos: vec2)
+	func extern mut set_area(r: Rect)
+	var area: Rect
+	var margin, padding: Rect
+	var dz: f32
+	var color: Color
+	var align: vec2
+	var size_mode_x, size_mode_y: SizeMode
+#	var non_square: bool
+	var visible: bool
+	var allow_hover: bool
+	var children: shared![Node][]
+
+
+class extern HBox extends Node
+	func extern override __init__()
+	func extern override get_content_min_size() -> vec2
+	func extern override negotiate_content_area(available: Rect)
+	func extern override set_option(k: string, v: string)
+
+
+class extern VBox extends Node
+	func extern override __init__()
+	func extern override get_content_min_size() -> vec2
+	func extern override negotiate_content_area(available: Rect)
+	func extern override set_option(k: string, v: string)
+
+
+class extern Picture extends Node
+	func extern override __init__()
+	func extern __init__(r: Rect, tex: shared[Texture], source=Rect.ID)
+	func extern override __delete__()
+	func extern override set_option(k: string, v: string)
+	var source: Rect
+	var texture: shared[Texture]
+	var blur: f32
+	var angle: f32
+	var shader: shared[Shader]
+	var shader_data: Any
+
+
+class extern Label extends Picture
+	func extern override __init__()
+	func extern __init__(t: string, font_size: f32, p: vec2 = vec2.0)
+	func extern override __delete__()
+	func extern override get_content_min_size() -> vec2
+	func extern override set_option(k: string, v: string)
+	var text: string
+	var font_size: f32
+
+
+class extern Picture3d extends Node
+	var model: Model*
+	var matrix: mat4
+	var world_3d: bool
+	var lighting: bool
+	func __init__(m: Model*, mat: mat4, z: f32)
+		#super.__init__(Rect.ID)
+		model = m
+		self.matrix = mat
+
+
+class extern Canvas extends Node
+	func extern override __init__()
+	func extern override __delete__()
+	func virtual mut on_draw(out p: Painter)
+	func extern static set_texture(out p: Painter, t: Texture*)
+
+
+var extern static toplevel: Node&
+func extern static key_state(k: Key) -> bool
+func extern static key_down(k: Key) -> bool
+func extern static key_up(k: Key) -> bool
+func extern static button(b: Button) -> bool
+
+var extern static mouse, dmouse, scroll: vec2
+
+var extern static link_mouse_and_keyboard_into_pad: bool
+
+
+class extern Gamepad as Sharable
+	enum Button
+		CROSS, CIRCLE, SQUARE, TRIANGLE
+		L1, R1
+		OPTIONS, SHARE, PS
+		L3, R3
+		UP, RIGHT, DOWN, LEFT
+	var deadzone: f32
+
+	func extern is_present() -> bool
+	func extern name() -> string
+	func extern axis(a: i32) -> f32
+	func extern button(b: Button) -> bool
+	func extern clicked(b: Button) -> bool
+
+func extern static get_pad(index: i32 = -1) -> shared![Gamepad]
+
+var extern static vr_active: bool
+
+
+# FIXME kaba link sub classes (VrDevice.Role) (-_-)
+enum extern VrDeviceRole
+	NONE = -1
+	CONTROLLER_RIGHT
+	CONTROLLER_LEFT
+	HEADSET
+	LIGHTHOUSE0
+	LIGHTHOUSE1
+
+
+struct extern VrDevice
+	enum Button
+		TRIGGER = 0
+		TRACKPAD = 1
+		JOYSTICK = 2
+		SYSTEM = 3
+		A = 4
+		B = 5
+		MENU = 6
+		GRIP = 7
+
+	enum Axis
+		TRIGGER = 1
+		TRACKPAD_H = 2
+		TRACKPAD_V = 3
+		MIDDLE_FINGER_PROXIMITY = 4
+		RING_FINGER_PROXIMITY = 5
+		PINKY_FINGER_PROXIMITY = 6
+		TRIGGER_FINGER_PROXIMITY = 7
+		GRIP_FORCE = 8
+		TRACKPAD_FORCE = 9
+		JOYSTICK_H = 10
+		JOYSTICK_V = 11
+
+
+	var name: string
+	var role: VrDeviceRole
+	var pos: vec3
+	var ang: Quaternion
+	var aim_pos: vec3
+	var aim_ang: Quaternion
+	var vibration: f32
+	func extern button(b: Button) -> bool
+	func extern clicked(b: Button) -> bool
+	func extern touch(b: Button) -> bool
+	func extern axis(a: Axis) -> f32
+
+
+func extern static globalref get_vr_device(role: VrDeviceRole) -> VrDevice*
+
+

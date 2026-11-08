@@ -1,0 +1,40 @@
+use .ecs.*
+use os
+
+class extern AudioBuffer
+	# hidden stuff
+
+class extern AudioStream
+	# hidden stuff
+
+class extern SoundSource extends Component
+	func extern pause(pause: bool)
+	func extern play()
+	func extern stop()
+	func extern update()
+	func extern set_buffer(buffer: AudioBuffer&)
+	func extern set_stream(stream: AudioStream&)
+	func extern __del_override__()
+	
+	var loop, suicidal: bool
+	var volume, speed: f32
+	var min_distance, max_distance: f32
+
+
+class extern AudioManager extends System
+	let FILTER = SoundSource
+	var volume_music: f32
+	var volume_sounds: f32
+
+
+func extern load_buffer(filename: os.Path) -> AudioBuffer&
+func extern create_buffer(samples: f32[], sample_rate: f32) -> AudioBuffer&
+
+func extern load_audio_stream(filename: os.Path) -> AudioStream&
+func extern create_audio_stream(f: i32->f32[], sample_rate: f32) -> AudioStream&
+
+
+class extern Listener extends Component
+
+
+#void save_sound(Path filename, float[] buf_r, float[] buf_l, int freq, int channels, int bits)

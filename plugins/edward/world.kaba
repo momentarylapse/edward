@@ -1,33 +1,33 @@
 use os
+use obs
+use yengine
 use .common.*
 use .multiview.*
 
 
-class DataWorld extends Data
+class extern DataWorld extends Data
+
+	class extern Terrain extends Data
+	#	var show_texture: i32
+	#	var changed: bool
+		var terrain: yengine.Terrain*
+		func extern override __init__()
 
 
-	struct Terrain extends MultiView.SingleData
-		var filename: os.Path
-		#WorldTerrainVertex Vertex[]
-		var vertex_buffer_single: i32
-		var show_texture: i32
-		var changed: bool
-		var terrain: y.Terrain*
-		func __init__()
+	#struct Object extends MultiView.SingleData
+	#	var filename: string
+	#	var name: string
+	#	var object: y.Model*
+	#	var ang: vec3
+	#	func __init__()
 
 
-	struct Object extends MultiView.SingleData
-		var filename: string
-		var name: string
-		var object: y.Model*
-		var ang: vec3
-		func __init__()
+	var out_terrain_changed: obs.XSource[yengine.Terrain&]
 
-
-	var objects: Object[]
-	var terrains: Terrain[]
+	func extern selfref entity(index: i32) -> yengine.Entity*
 
 	# actions
 #	func extern add_object(filename: os.Path, pos: vec3) -> Object&
 #	func extern add_terrain(filename: os.Path, pos: vec3) -> Terrain&
 #	func extern add_new_terrain(pos: vec3, size: vec3, num_x: int, num_z: int) -> Terrain&
+	func extern mut edit_terrain_meta_data(t: yengine.Terrain*, pattern: vec3, texture_scale: vec3[8])

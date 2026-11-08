@@ -50,7 +50,8 @@ Dialog terrain-panel ''
 		data->entity_edit_component(e, TerrainRef::_class, {"", "", {{"material", str(data->session->resource_manager->filename(m))}}});
 	});
 	event("edit-terrain", [this] {
-		data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
+		//data->doc->set_mode(new ModeEditTerrain(data->doc->mode_world.get(), index));
+		data->doc->set_sub_mode("world/ModeEditTerrain", Any::Dict{{{"index", index}}});
 	});
 	event("new-terrain", [this, e] {
 		auto t = data->session->resource_manager->create_terrain(64, 64, vec3(100, 0, 100));

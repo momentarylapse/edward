@@ -1,0 +1,8 @@
+use yengine.*
+
+class WireframeDebugger extends System
+	func override on_key_down(k: Key)
+		if k == Key.W + Key.CONTROL #and key_state(KEY_CONTROL)
+			var r = engine.camera_renderers[0].render_path
+			r.wireframe = not r.wireframe
+			

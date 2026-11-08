@@ -5,6 +5,7 @@
 #pragma once
 
 #include <lib/base/base.h>
+#include <lib/base/pointer.h>
 #include <lib/math/vec2.h>
 #include <lib/obs/Observable.h>
 
@@ -80,12 +81,12 @@ public:
 	/*virtual void undo();
 	virtual void redo();*/
 
-	xhui::Panel* dialog = nullptr;
-	xhui::Panel* overlay_panel = nullptr;
-	void set_overlay_panel(xhui::Panel* p);
+	shared<xhui::Panel> dialog;
+	shared<xhui::Panel> overlay_panel;
+	void set_overlay_panel(shared<xhui::Panel> p);
 
-	xhui::Panel* side_panel = nullptr;
-	void set_side_panel(xhui::Panel* p);
+	shared<xhui::Panel> side_panel;
+	void set_side_panel(shared<xhui::Panel> p);
 };
 
 class SubMode : public Mode {

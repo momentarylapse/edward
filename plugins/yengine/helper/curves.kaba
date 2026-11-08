@@ -1,0 +1,49 @@
+use yengine.*
+
+class Curve extends UserMesh
+	var points: vec3[]
+	var width = 1.0
+	var color = Color.WHITE
+	var visible = true
+	func override __init__()
+		vertex_buffer = new VertexBuffer("3f,f,4f")
+		topology = PrimitiveTopology.LINESTRIP
+		vertex_shader_module = "lines"
+		geometry_shader_module = "lines"
+		material := load_material("points")
+	func mut add_absolute(p: vec3)
+		points.add(p - owner.pos)
+		update_vb()
+	func mut add(p: vec3)
+		points.add(p)
+		update_vb()
+		
+	func mut update_vb()
+		var v: PointVertex[]
+		
+		if len(points) < 2
+			return
+			
+		for p in points
+			v.add([p, width, color])
+			
+		for mut vb in vertex_buffer
+			vb.update(v)
+
+	func mut set_contiguous(contiguous: bool)
+		if contiguous
+			topology = PrimitiveTopology.LINESTRIP
+		else
+			topology = PrimitiveTopology.LINES
+	
+func mut create_curve(w: f32, col: Color) -> Curve&
+	var e = world.create_entity(vec3.0, Quaternion.ID)
+	var c = e.add_component[Curve]("")
+	c.width = w
+	c.color = col
+	return c	
+		
+func mut remove_curves(c: Curve)
+	#for i=>cc in curves
+	#	if cc == &c
+	#		curves.remove(i)

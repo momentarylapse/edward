@@ -39,7 +39,7 @@ void ModeProject::on_enter() {
 }
 
 void ModeProject::on_leave() {
-	delete dialog;
+	dialog = nullptr;
 }
 
 void ModeProject::on_command(const string& id) {

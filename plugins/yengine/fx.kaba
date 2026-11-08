@@ -1,0 +1,59 @@
+use .ecs.*
+use .gfx.*
+
+class extern LegacyParticle extends Component
+	var vel: vec3
+	var radius = 1.0
+	var time_to_live = 2.0
+	var texture: shared![Texture]
+	var color = Color.WHITE
+	var source = Rect.ID
+	var enabled = true
+	#func extern __init__(p: vec3, r: float, t: shared![Texture], ttl: float)
+	func extern override __init__()
+	func extern override __delete__()
+
+class extern LegacyBeam extends LegacyParticle
+	var length = vec3.EZ
+	#func extern __init__(p: vec3, l: vec3, r: float, t: shared![Texture], ttl: float)
+
+
+class extern Particle
+	var pos, vel: vec3
+	var radius: f32
+	var time_to_live: f32
+	var suicidal: bool
+	var color: Color
+	var enabled: bool
+
+class extern Beam extends Particle
+	var length: vec3
+
+
+class extern ParticleGroup extends Component
+#	var update_dt = 0.1
+	var texture: shared![Texture]
+	#var texture: Texture&
+	var source: Rect
+	
+	func extern override __init__()
+	func extern mut emit(pos: vec3, col: Color, radius: f32, ttl: f32) -> Particle&
+	func extern mut emit_beam(pos: vec3, length: vec3, col: Color, radius: f32, ttl: f32) -> Beam&
+	func extern mut iterate_particles(dt: f32)
+	func extern override mut on_iterate(dt: f32)
+	func extern virtual mut on_iterate_particle(out p: Particle, dt: float)
+	func extern virtual mut on_iterate_beam(out p: Beam, dt: float)
+
+class extern ParticleEmitter extends ParticleGroup
+	var spawn_beams: bool
+	var spawn_dt: f32
+	var spawn_time_to_live: f32
+#	var update_dt = 0.1
+#	var texture: shared![Texture]
+#	var radius = 10.0
+	
+	func extern override __init__()
+	func extern mut iterate_emitter(dt: f32)
+	func extern override mut on_iterate(dt: f32)
+	func extern virtual mut on_init_particle(out p: Particle)
+	func extern virtual mut on_init_beam(out p: Beam)

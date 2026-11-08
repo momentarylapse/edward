@@ -1,0 +1,336 @@
+use os
+use out .gfx.*
+
+
+enum extern LightType
+	DIRECTIONAL
+	POINT
+	CONE
+	AMBIENT
+
+
+struct extern YLight
+	func extern mut init(type: LightType, c: Color, theta: f32 = -1.0)
+	func extern suggest_shadow_projection(cam: CameraParams, shadow_box_size: f32) -> mat4
+	var type: LightType
+	var pos: vec3
+	var ang: Quaternion
+	var color: Color
+	var power: f32
+	var theta: f32
+	var harshness: f32
+	var enabled: bool
+	var allow_shadows: bool
+	var user_shadow_control: bool
+	var user_shadow_theta: f32
+	var shadow_dist_min: f32
+	var shadow_dist_max: f32
+
+
+enum extern TransparencyMode
+	NONE
+	FUNCTIONS
+	COLOR_KEY_HARD
+	COLOR_KEY_SMOOTH
+
+class extern Material
+	var albedo: Color
+	var roughness: f32
+	var metal: f32
+	var emission: Color
+	var textures: shared![Texture][]
+	var shader_data: Any
+	var cast_shadow: bool
+	struct extern Pass as @noauto
+		shader_path: os.Path
+		cull_mode: CullMode
+		wire_mode: bool
+		z_write, z_test: bool
+		mode: TransparencyMode
+		source: Alpha
+		destination: Alpha
+	var pass0: Pass
+	struct extern Friction as @noauto
+		sliding: f32
+		_static: f32
+		rolling: f32
+		jump: f32
+	var friction: Friction
+	func extern mut __init__()
+	func extern __delete__()
+#	func extern mut add_uniform(name: string, p: float*, size: int)
+
+
+struct extern CameraParams
+	var pos: vec3
+	var ang: Quaternion
+
+	var fov: f32
+	var min_depth, max_depth: f32
+	func extern projection_matrix(aspect_ratio: f32) -> mat4
+	func extern view_matrix() -> mat4
+
+
+class extern TextureManager
+#	func extern __init__(ctx: GfxContext, dir: os.Path[])
+class extern ShaderManager
+	var default_shader: string
+#	func extern __init__(ctx: GfxContext, dir: os.Path[])
+	func extern mut add_directory(dir: os.Path)
+	func extern mut load_shader_module(filename: os.Path) -> result[void]
+class extern MaterialManager
+#	func extern __init__(tm: TextureManager, dir: os.Path[])
+
+
+#---------------------------
+# context
+
+# "yrenderer.Context"
+class extern Context as @noauto
+	var context: GfxContext& # "ygfx.Context"
+	var texture_manager: TextureManager*
+	var shader_manager: ShaderManager*
+	var material_manager: MaterialManager*
+	var tex_white: shared![Texture]
+	func extern create_managers(texture_dirs: os.Path[], shader_dirs: os.Path[], material_dirs: os.Path[])
+	func extern load_material(path: os.Path) -> Material&
+	func extern create_internal_material() -> Material&
+	func extern load_texture(path: os.Path) -> result[shared![Texture]]
+	func extern load_shader(path: os.Path) -> result[shared![Shader]]
+	func extern create_shader(source: string) -> result[shared![Shader]]
+	func extern load_surface_shader(path: os.Path, render_path: string, vertex_module: string, geometry_module: string) -> result[shared![Shader]]
+	func extern load_shader_module(path: os.Path) -> result[void]
+
+
+func extern api_init_glfw(window: void*) -> xfer[Context] # p: GLFWwindow*
+func extern api_init_xhui(p: void*) -> xfer[Context] # p: xhui.Painter*
+
+
+struct extern RenderParams
+	var desired_aspect_ratio: f32
+	var target_is_window: bool
+	var frame_buffer: FrameBuffer*
+	var area: Rect
+	func extern __assign__(o: RenderParams)
+
+class extern RenderData as @noauto
+	func extern draw_triangles(params: RenderParams, vb: VertexBuffer&)
+	func extern draw_instanced(params: RenderParams, vb: VertexBuffer&, count: i32)
+	func extern draw(params: RenderParams, vb: VertexBuffer&, topology: PrimitiveTopology)
+
+class extern RenderViewData
+	func extern __init__(ctx: Context&)
+	func extern set_view(params: RenderParams, cam: CameraParams, proj=(nil as mat4*))
+	func extern get_shader(material: Material*, pass_no: i32, vertex_shader_module: string, geometry_shader_module="", tessellation_module="") -> Shader&
+	func extern start(params: RenderParams, matrix: mat4, shader: Shader*, material: Material*, pass_no: i32, top: PrimitiveTopology, vb: VertexBuffer*) -> RenderData&
+
+class extern LineHelper
+	func extern mut __init__()
+	func extern mut __delete__()
+	func extern mut start_frame(ui_scale=1.0)
+	func extern mut begin_draw(params: RenderParams, rvd: RenderViewData)
+	func extern mut set_color(c: Color)
+	func extern mut set_z_test(enabled: bool)
+	func extern mut set_line_width(w: f32)
+	func extern mut draw_lines(points: vec3[], contiguous=true)
+	func extern mut draw_circle(center: vec3, axis: vec3, radius: f32)
+
+func extern apply_shader_data(params: RenderParams, s: Shader*, shader_data: Any)
+
+
+#---------------------------
+# interfaces
+
+class extern Renderer
+	func extern mut add_child(r: Renderer&)
+	func extern virtual mut __delete__()
+	func extern virtual mut prepare(params: RenderParams)
+	func extern virtual mut draw(params: RenderParams)
+
+
+class extern RenderTask extends Renderer
+	var active: bool
+	func virtual mut render(params: RenderParams)
+
+
+class extern ComputeTask extends RenderTask
+	nx: i32
+	ny: i32
+	nz: i32
+	shader_data: Any
+	func extern __init__(ctx: Context&, name: string, shader: shared![Shader], n: i32[])
+	func override extern render(params: RenderParams)
+	func extern mut bind_texture(index: i32, tex: Texture&)
+	func extern mut bind_image(index: i32, tex: Texture&)
+	func extern mut bind_uniform_buffer(index: i32, buf: UniformBuffer&)
+	func extern mut bind_storage_buffer(index: i32, buf: ShaderStorageBuffer&)
+
+
+class extern ComputeScheduler
+	func extern mut __init__(ctx: Context&)
+	func extern mut __delete__()
+	func extern mut start() -> RenderParams
+	func extern mut submit(block=true)
+	func extern mut wait()
+
+#---------------------------
+# targets
+
+# glfw
+class extern WindowRenderer extends Renderer
+	func extern __init__(ctx: Context&, window: void*)
+	func extern mut start_frame() -> bool
+	func extern mut end_frame(params: RenderParams)
+	func extern mut create_params(aspect_ration: f32) -> RenderParams
+
+
+class extern XhuiRenderer extends RenderTask
+	func extern __init__(ctx: Context&)
+	func extern mut before_draw(p: void*) # xhui.Painter*
+	func extern mut draw(p: void*) # xhui.Painter*
+	func extern extract_params(p: void*) -> RenderParams
+
+
+class extern TextureRenderer extends Renderer
+	func extern __init__(ctx: Context&, name: string, textures: shared![Texture][], options: string[])
+	func extern mut set_area(area: Rect)
+	var clear_z: bool
+	var clear_colors: Color[]
+
+
+#---------------------------
+# scene
+
+class extern MeshEmitter extends Object as shared
+	func extern __init__(ctx: Context&, name: string)
+	func extern virtual mut prepare(params: RenderParams)
+	func extern virtual mut emit(params: RenderParams, rvd: RenderViewData, shadow_pass: bool)
+	var ctx: Context&
+
+
+class extern CubeEmitter extends MeshEmitter
+	func extern __init__(ctx: Context&)
+	func extern mut set_cube(cube: Box)
+	var material: owned![Material]
+	var matrix: mat4
+
+
+class extern SceneRenderer extends Renderer
+	func extern mut __init__(ctx: Context&, type: i32, scene_view: SceneView&)
+	func extern mut set_view(params: RenderParams, cam: CameraParams, proj=(nil as mat4*))
+	func extern mut add_emitter(emitters: shared![MeshEmitter])
+
+	var background_color: Color?
+
+
+#class extern ShadowRenderer
+#	struct Cascade
+#		depth_buffer: DepthBuffer&
+#	cascades: Cascade[2]
+
+struct extern RayTracingData
+	buffer_meshes: UniformBuffer*
+	num_meshes: i32
+
+class extern SceneView
+	var main_camera_params: CameraParams
+	var shadow_indices: i32[] # read-only
+	var lights: YLight&[] # read-only
+	var shadow_box_size: f32
+	var surfel_buffer: owned[ShaderStorageBuffer]
+	var num_surfels: i32
+	var probe_cells: ivec3
+	var probe_min: vec3
+	var probe_max: vec3
+	var ray_tracing_data: RayTracingData*
+	var fog_enabled: bool
+	var fog_density: f32
+	var fog_color: Color
+	func extern __init__()
+	func extern __delete__()
+#	func extern shadow_projection() -> mat4
+	func extern mut choose_lights(lights: YLight&[])
+	func extern mut choose_shadows()
+
+
+#---------------------------
+# path
+
+class extern RenderPath extends Renderer
+	var wireframe: bool
+	var scene_view: SceneView
+	var view: CameraParams
+	var ambient_occlusion_radius: f32
+	var background_color: Color?
+#	var shadow_renderer: owned![ShadowRenderer]
+
+	static light_sources_module: string
+	static lighting_method: string
+	static shadow_method: string
+
+
+	#func extern virtual render_into_texture(fb: FrameBuffer, cam: Camera)
+	#func extern render_into_cubemap(db: DepthBuffer, cube: CubeMap, pos: vector)
+
+	func extern mut set_lights(lights: YLight&[])
+	func extern mut set_view(view: CameraParams)
+	func extern virtual mut remove_all_emitters()
+	func extern virtual mut add_background_emitter(emitter: shared![MeshEmitter])
+	func extern virtual mut add_opaque_emitter(emitter: shared![MeshEmitter])
+	func extern virtual mut add_transparent_emitter(emitter: shared![MeshEmitter])
+
+
+class extern RenderPathForward extends RenderPath
+	func extern mut __init__(ctx: Context&, shadow_resolution: i32)
+
+
+class extern RenderPathDeferred extends RenderPath
+	func extern mut __init__(ctx: Context&, width: i32, height: i32, shadow_resolution: i32)
+
+
+#---------------------------
+# other...
+
+class extern RegionRenderer
+	struct extern Region
+		var dest: Rect
+		var z: int
+		var renderer: Renderer&
+	var regions: Region[]
+	func extern add_region(r: Renderer&, dest: Rect, z: i32)
+	func extern remove_region(r: Renderer*)
+	func extern selfref get_region(r: Renderer*) -> Region*
+
+class extern LightMeter
+	var active: bool
+	var buffer: ShaderStorageBuffer&
+	func extern read_histogram() -> i32[]
+
+
+class extern HDRResolver extends Renderer
+	func extern mut __init__(ctx: Context&)
+	func extern mut set_resolution(width: i32, height: i32)
+	var texture: shared![Texture]
+	var depth_buffer: shared![DepthBuffer]
+	var exposure: f32
+	var bloom_factor: f32
+
+	class extern BloomLevel
+		tex_out: shared![Texture]
+	var bloom_levels: BloomLevel[4]
+
+	var light_meter: LightMeter&
+
+
+#class extern PostProcessor
+#	var fb1, fb2: FrameBuffer&
+#	func extern next_fb(cur: FrameBuffer) -> FrameBuffer&
+#	func extern process(source: Texture*[], target: FrameBuffer, shader: Shader)
+#	func extern mut add_stage(name: string, on_prepare: void->void, on_draw: void->void)
+
+
+#class extern CubeMapSource
+#	var min_depth, max_depth: f32
+#	var cube_map: shared[CubeMap]
+#	var resolution: i32
+#	var update_rate: i32

@@ -1,0 +1,47 @@
+font.name = "CAC Champagne"
+font.size = 10.0
+spacing = 8
+focus-frame-width = 2.0
+
+[window]
+	margin = 10
+	radius = 10
+	shadow-radius = 12
+	shadow-color = "#00000066"
+[headerbar]
+	height = 50
+
+
+[colors]
+	background = "#242424"
+	background-button = "#393939"
+	background-button-hover = "#404040"
+	background-button-primary = "#3584e4"
+	background-button-primary-hover = "#4990e7"
+	background-button-primary-active = "#2a6ab6"
+	background-header = "#303030"
+	background-header-button = "#444444"
+	background-low = "#1e1e1e"
+	background-low-hover = "#272727"
+	background-low-selected = "#23374f"
+
+	background-hover = "#404040"
+	background-active = "#4d4d4d"
+	text = "#fefefe"
+	text-disabled = "#929292"
+	text-label = "#fefefe"
+
+	border = "#454545"
+
+
+[label]
+	margin-vertical = 7
+	margin-horizontal = 7
+
+[button]
+	margin-vertical = 10
+	margin-horizontal = 18
+	radius = 7
+
+[edit]
+	margin-horizontal = 7

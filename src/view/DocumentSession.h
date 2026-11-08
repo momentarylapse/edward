@@ -11,6 +11,7 @@
 #include <lib/os/path.h>
 #include <lib/obs/Observable.h>
 
+class Any;
 class Session;
 class Mode;
 
@@ -41,8 +42,7 @@ public:
 	string grid_id;
 
 	void set_mode(Mode* m);
-	void set_mode_now(Mode* m);
-	Mode* get_mode(int type);
+	void set_sub_mode(const string &id, const Any& params);
 
 	Path filename() const;
 	int file_type() const;
@@ -58,11 +58,6 @@ public:
 	//ModeAdministration* mode_admin;
 	Mode* cur_mode = nullptr;
 	Array<Mode*> mode_queue;
-	Mode* find_mode_base(const string &name);
-	template<class M>
-	M* find_mode(const string &name) {
-		return static_cast<M*>(find_mode_base(name));
-	}
 
 	int _last_usage_counter = -1;
 
@@ -71,6 +66,9 @@ public:
 	void event(const string &id, const std::function<void()>& f);
 	void enter();
 	void leave();
+
+private:
+	void set_mode_now(Mode* m);
 };
 
 /*class DocumentPanel : public xhui::Panel {

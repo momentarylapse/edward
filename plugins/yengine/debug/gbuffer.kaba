@@ -1,0 +1,19 @@
+use ..yengine.*
+
+class GBufferDebugger extends System
+	var pic: shared![Picture][]
+
+	func override on_finished_loading()
+		for i=>tex in engine.camera_renderers[0].get_gbuffer()
+			pic.add(new Picture([0.0,0.2, 0.2*i, 0.2+0.2*i], tex))
+			#	for d in gbuf.depth_buffer()
+			#		pic.add(new Picture([0.0,0.2, 0.8, 1.0], d))
+
+		for p in pic
+			toplevel.add(p)
+
+
+	func override on_draw_pre()
+		for mut p in pic
+			p.source = [0,engine.resolution_scale.x, 0,engine.resolution_scale.y]
+

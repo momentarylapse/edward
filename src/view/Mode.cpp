@@ -23,9 +23,9 @@ void Mode::draw_info(Painter* p, const string& msg) {
 	drawing2d::draw_boxed_str(p, pos, msg);
 }
 
-void Mode::set_side_panel(xhui::Panel* p) {
+void Mode::set_side_panel(shared<xhui::Panel> p) {
 	if (side_panel)
-		doc->base_panel->unembed(side_panel);
+		doc->base_panel->unembed(side_panel.get());
 	side_panel = p;
 	if (side_panel) {
 		side_panel->min_width_user = 360;
@@ -35,9 +35,9 @@ void Mode::set_side_panel(xhui::Panel* p) {
 	}
 }
 
-void Mode::set_overlay_panel(xhui::Panel* p) {
+void Mode::set_overlay_panel(shared<xhui::Panel> p) {
 	if (overlay_panel)
-		doc->document_panel->unembed(overlay_panel);
+		doc->document_panel->unembed(overlay_panel.get());
 	overlay_panel = p;
 	if (overlay_panel) {
 		doc->document_panel->embed("overlay-button-grid-left", 0, 0, overlay_panel);
@@ -88,6 +88,7 @@ SubMode::SubMode(Mode* parent) : Mode(parent ? parent->doc : nullptr) {
 	_parent = parent;
 	if (parent) {
 		generic_data = parent->generic_data;
+		multi_view = parent->multi_view;
 		menu_id = parent->menu_id;
 		toolbar_id = parent->toolbar_id;
 	}

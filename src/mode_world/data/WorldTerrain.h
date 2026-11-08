@@ -26,7 +26,6 @@ public:
 struct WorldTerrain : history::Data {
 
 	DocumentSession* doc;
-	Path filename;
 	//Array<WorldTerrainVertex> Vertex;
 	int VertexBufferSingle = -1;
 	int ShowTexture = -1;

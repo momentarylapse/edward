@@ -1,8 +1,43 @@
+use obs
+use .common.*
+
 class extern MultiViewWindow
 
+enum extern MultiViewType
+	MODEL_SURFACE
+	MODEL_VERTEX
+	MODEL_SKIN_VERTEX
+	MODEL_POLYGON
+	MODEL_EDGE
+	MODEL_BALL
+	MODEL_CYLINDER
+	MODEL_POLYHEDRON
+	SKELETON_BONE
+	WORLD_ENTITY
+	WORLD_TERRAIN
+	WORLD_TERRAIN_VERTEX
+	WORLD_LINK
+	WORLD_SCRIPT
+	WORLD_CAM_POINT
+	WORLD_CAM_POINT_VEL
+	ACTION_MANAGER
+	GRID
+	_NUM
+
+struct extern Hover
+	var type: MultiViewType
+	var index: i32
+	var tp: vec3
 
 
-class MultiView
+struct extern Selection
+	# = map[MultiViewType, set[i32]]
+	func extern mut __init__()
+	func extern mut __delete__()
+	func extern mut __assign__(o: Selection)
+
+
+class extern MultiView
 
 	enum Action
 		SELECT
@@ -33,9 +68,11 @@ class MultiView
 	class Window
 		var local_ang: Quaternion
 
-	struct Camera
+	class extern ViewPort as obs.Node
 		var pos: vec3
 		var ang: Quaternion
+		var radius: f32
+		var out_changed: obs.Source
 
 	# "des Pudels Kern", don't change!!!!!!!
 	struct SingleData
@@ -46,12 +83,21 @@ class MultiView
 
 	#extern void on_mouse_move()
 	#extern void set_mouse_action(string name, int type, bool locked) #"ActionModelAnimationTransformBones", mouse_action, false);
-	var action_con: ActionController&
-	var mouse_win: MultiView.Window&
-	var active_win: MultiView.Window&
-	var cam: MultiView.Camera
+	#var action_con: ActionController&
+	#var mouse_win: MultiView.Window&
+	#var active_win: MultiView.Window&
+	var view_port: MultiView.ViewPort
+	var cam: MultiView.ViewPort
+	var hover: Hover?
 ##	func extern cam_move(dpos: vec3)
 ##	func extern cam_rotate(dq: quaternion, cam_center: bool)
 ##	func extern cam_zoom(factor: float, mouse_rel: bool)
+
+	func extern mut set_allow_select(s: bool)
+	func extern mut set_allow_action(a: bool)
+	func extern mut set_f_hover(f: (MultiViewWindow&,vec2)->Hover?)  # FIXME kaba syntax for callables!!!!!!
+	func extern mut set_f_select(f: (MultiViewWindow&,Rect)->Selection)
+	func extern mut set_f_make_selection_consistent(f: Selection&->void)
+	func extern mut set_f_get_selection_box(f: Selection->Box?)
 
 

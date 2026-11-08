@@ -1,0 +1,74 @@
+use os
+use .yrenderer.*
+use image.Image
+
+class extern EngineData as @noauto
+	var context: Context&
+	var debug: bool
+	var show_timings: bool
+	var console_enabled: bool
+	#bool wire_mode
+	var resetting_game, game_running, first_frame: bool
+	var physical_aspect_ratio: f32
+
+	var detail_level: f32
+
+	var elapsed: f32
+	var elapsed_rt: f32
+	var time_scale: f32
+
+	var fps_min, fps_max: f32
+	var resolution_scale: vec2
+
+	var initial_world_file, second_world_file: os.Path
+	#Font* default_font
+	var renderer: Renderer&
+	var region_renderer: RegionRenderer&
+	var camera_renderers: FullCameraRenderer&[]
+
+	func extern add_render_task(task: xfer[RenderTask], priority: i32)
+
+	func extern exit()
+
+
+var extern engine: EngineData
+
+func extern screenshot(out im: Image)
+
+var extern tex_white: shared![Texture] # TODO use engine.context.tex_white?
+
+func extern load_shader(filename: os.Path) -> shared![Shader]
+func extern create_shader(source: string) -> xfer[Shader]
+func extern load_texture(filename: os.Path) -> shared![Texture]
+
+
+enum extern RenderPathType
+	DIRECT
+	FORWARD
+	DEFERRED
+	PATHTRACING
+
+class extern FullCameraRenderer extends Renderer
+	var type: RenderPathType
+	var render_path: RenderPath&
+	var hdr_resolver: HDRResolver*
+	var light_meter: LightMeter*
+	# debugging
+	func extern get_gbuffer() -> shared![Texture][]
+	func extern get_shadow_map() -> shared![DepthBuffer][]
+	func extern get_cubemap() -> CubeMap*
+
+
+struct extern RayRequest
+	p0: vec3
+	p1: vec3
+
+struct extern RayReply
+	p, n: vec3
+	f, g, t: f32
+	index, mesh: i32
+
+func extern rt_setup(sv: SceneView)
+func extern rt_update_frame(sv: SceneView)
+func extern rt_vtrace(sv: SceneView, requests: RayRequest[]) -> RayReply[]
+

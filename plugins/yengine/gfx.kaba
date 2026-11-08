@@ -1,0 +1,107 @@
+use image.Image
+use os
+
+enum Api
+	NONE
+	OPEN_GL
+	VULKAN
+
+func extern api() -> Api
+
+
+struct ivec3
+	x, y, z: i32
+
+
+enum extern PrimitiveTopology
+	TRIANGLES
+	LINES
+	LINESTRIP
+	POINTS
+	PATCHES
+
+enum extern CullMode
+	NONE
+	FONT
+	BACK
+
+enum extern Alpha
+	ZERO
+	ONE
+	SOURCE_COLOR
+	SOURCE_INV_COLOR
+	SOURCE_ALPHA
+	SOURCE_INV_ALPHA
+	DEST_COLOR
+	DEST_INV_COLOR
+	DEST_ALPHA
+	DEST_INV_ALPHA
+
+struct extern Vertex
+	var p, n: vec3
+	var u, v: f32
+
+struct extern VertexFx
+	pos: vec3
+	color: Color
+	u, v: f32
+
+struct extern PointVertex
+	pos: vec3
+	radius: f32
+	color: Color
+
+class extern FrameBuffer
+	var width, height: i32
+	func extern __init__(att: shared![Texture][])
+	func extern selfref depth_buffer() -> shared[DepthBuffer]
+	func extern selfref color_attachments() -> shared![Texture][]
+
+class extern Shader as Sharable
+	func extern set_float(name: string, f: f32)
+	func extern set_floats(name: string, f: f32&, num: i32)
+
+class extern Texture as Sharable
+	var width, height, depth: i32
+	func extern __init__(w: i32, h: i32, format: string = "rgba:i8")
+	func extern __delete__()
+	func extern mut write(im: Image)
+	func extern mut write_float(data: @DynamicArray)
+	func extern mut read(out im: Image)
+	func extern mut set_options(op: string)
+
+class extern CubeMap extends Texture
+	func extern __init__(size: i32, format: string)
+class extern DepthBuffer extends Texture
+	func extern override __init__(w: i32, h: i32, format: string)
+class extern StorageTexture extends Texture
+	func extern __init__(nx: i32, ny: i32, nz: i32, format: string)
+class extern VolumeTexture extends Texture
+	func extern __init__(nx: i32, ny: i32, nz: i32, format: string)
+
+
+
+class extern Buffer
+	func extern mut update(data: @DynamicArray)
+	func extern mut update_chunk(data: void*, size: i32)
+	func extern mut read(mut data: @DynamicArray)
+	func extern mut read_chunk(data: void*, size: i32)
+
+class extern VertexBuffer
+	func extern __init__(format: string = "3f,3f,2f")
+	func extern mut update(data: @DynamicArray)
+	func extern mut create_quad(d: Rect, s = Rect.ID)
+
+class extern DynamicVertexBuffer extends VertexBuffer
+	func extern override __init__(format: string = "3f,3f,2f")
+
+class extern UniformBuffer extends Buffer
+	func extern __init__(size: i32)
+
+class extern ShaderStorageBuffer extends Buffer
+	func extern __init__(size: i32)
+
+
+class extern GfxContext
+	func extern make_public()
+

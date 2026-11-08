@@ -1,0 +1,72 @@
+use os
+use .yrenderer.*
+use .ecs.*
+
+func extern load_material(filename: os.Path) -> Material&
+func extern make_material_unique(m: Material&) -> Material&
+
+class extern Model
+	class extern Mesh as Sharable
+		struct extern Sub
+			var num_triangles: i32
+			var triangle_index: i32[]
+			var skin_vertex: f32[]
+			var normal: vec3[]
+		var bone_index: i32[]
+		var vertex: vec3[]
+		var sub: Sub[]
+#	var matrix: matrix
+###	var name: string
+	var radius: f32
+	var min, max: vec3
+
+	var materials: Material&[]
+
+	var mesh: shared![Mesh][3]
+
+	func extern __init__()
+	func extern __delete__()
+
+	func extern mut make_editable()
+	func extern mut begin_edit(detail: i32)
+	func extern mut end_edit(detail: i32)
+
+	func extern get_vertex(index: i32) -> vec3
+
+
+
+class extern ModelRef extends Component
+	let PARAMETERS = "model,materials"
+	var model: Model*
+	var materials: Material&[]
+	func extern globalref get_material(index: i32) -> Material&
+	func extern mut set_material(index: i32, m: Material&)
+	func mut make_material_editable(index: i32)
+		set_material(index, make_material_unique(get_material(index)))
+
+
+class extern Skeleton extends Component
+	var bones: Entity&[]
+	var pos0, dpos: vec3[]
+	var parents: i32[]
+	func extern mut reset()
+
+
+class extern Animator extends Component
+	#let REQUIRES = [ModelRef, Skeleton]
+	let REQUIRES = Skeleton
+
+	enum Operation
+		SET           # overwrite
+		SET_NEW_KEYED # overwrite, if current doesn't equal 0
+		SET_OLD_KEYED # overwrite, if last equals 0
+		ADD_1_FACTOR  # w = w_old         + w_new * f
+		MIX_1_FACTOR  # w = w_old * (1-f) + w_new * f
+		MIX_2_FACTOR  # w = w_old * a     + w_new * b
+	func extern mut reset()
+	func extern mut add_x(op: Operation, p1: f32, p2: f32, move: i32, out t: f32, dt: f32, vel_param: f32 = 1.0, loop: bool = true) -> bool
+	func extern mut add(op: Operation, move: i32, out t: f32, dt: f32, loop: bool = true) -> bool
+	func extern mut is_done(op_no: i32) -> bool
+
+
+func extern load_model(filename: os.Path) -> Model&

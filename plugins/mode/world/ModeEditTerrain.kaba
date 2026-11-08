@@ -1,0 +1,236 @@
+use xhui
+use obs
+use image
+use yengine
+use yrenderer
+use edward.*
+use .ModeWorld.*
+
+
+class EditTerrainPanel extends xhui.Panel as obs.Node
+	var mode_terrain: ModeEditTerrain&
+	var user_editing = false
+
+	func mut __init__(mode: ModeEditTerrain&)
+		super.__init__("edit-terrain-panel")
+		mode_terrain := mode
+		from_source("
+Dialog edit-terrain-panel ''
+	Grid ? '' margin=7
+		Label ? 'Terrain' big center
+		---|
+		Grid ? '' class=card vertical
+			Group ? 'Brush'
+				ListView add-list 'a' nobar cangrabfocus=no noexpandy height=220
+			Grid ? ''
+				RadioButton radius-mode:fixed 'Fixed radius'
+				SpinButton radius '0.0' range=::0.1 expandx disabled
+				---|
+				RadioButton radius-mode:zoom 'Relative' checked
+				Slider radius-relative '0.5'
+		---|
+		Grid ? '' class=card
+			Group ? 'Texture mapping'
+				Grid ? ''
+					SpinButton tex0-scale '' tooltip='Texture scale layer #0' range=-999:999:0.01 expandx
+					SpinButton tex0-rotation '' tooltip='Texture rotation layer #0' range=-999:999:0.1 expandx
+					---|
+					SpinButton tex1-scale '' tooltip='Texture scale layer #1' range=-999:999:0.01
+					SpinButton tex1-rotation '' tooltip='Texture rotation layer #1' range=-999:999:0.1
+		---|
+		Grid ? '' class=card
+			Group ? 'Operations'
+				Grid ? ''
+					Button resize 'Resize...'
+					---|
+					Button load-heightmap 'Load heightmap...'
+					---|
+					Button save '' image=hui:save tooltip='Save'
+					Button save-as '' image=hui:save-as tooltip='Save as'
+")
+
+		event("resize", on_resize)
+		event("load-heightmap", on_load_heightmap)
+		event("save", save)
+		event("save-as", save_as)
+		event("radius-relative", on_radius_changed)
+
+		for i in 0:2
+			let _ = event("tex{{i}}-scale", on_edit_texture_map)
+			let __ = event("tex{{i}}-rotation", on_edit_texture_map)
+
+
+		update_ui()
+		on_radius_changed()
+
+		mode_terrain.data.out_terrain_changed >> create_data_sink[yengine.Terrain&](func(t: yengine.Terrain&)
+			if !user_editing
+				update_ui()
+		end)
+
+		mode_terrain.multi_view!.view_port.out_changed >> create_sink(on_radius_changed)
+
+
+	func mut update_ui()
+		for t in mode_terrain.terrain()
+			print("...")
+			for i in 0:2
+				print(t.texture_scale[i])
+				set_float("tex{{i}}-scale", t.texture_scale[i].x)
+				set_float("tex{{i}}-rotation", t.texture_scale[i].y / pi * 180)
+
+
+	func mut on_edit_texture_map()
+		user_editing = true
+		for t in mode_terrain.terrain()
+			var texture_scale: vec3[8]
+			for mut s in texture_scale
+				s = [0,0,0]
+			for i in 0:2
+				texture_scale[i].x = get_float("tex{{i}}-scale")
+				texture_scale[i].y = get_float("tex{{i}}-rotation") * pi / 180
+			mode_terrain.data.edit_terrain_meta_data(&t, t.pattern, texture_scale)
+		user_editing = false
+
+
+	func mut on_radius_changed()
+		let factor = pow(get_float("radius-relative"), 2) + 0.05
+		mode_terrain.brush_radius = mode_terrain.multi_view!.view_port.radius * 0.1 * factor
+		set_float("radius", mode_terrain.brush_radius)
+
+
+	func mut on_resize()
+		for mut t in mode_terrain.terrain()
+			IntPairDialog.ask(self, "New terrain size", t.num_x, t.num_z).then(func(size: IntPair)
+				pass#mode_terrain.data.execute(new ActionWorldResizeTerrain(mode_terrain.index, size.a, size.b))
+			end)
+
+
+	static ppp: ComplexPath # :P
+
+	func mut on_load_heightmap()
+		mode_terrain.session.storage.file_dialog(DataType.TEXTURE, false, false).then(func(path: ComplexPath)
+			ppp = path
+			FloatDialog.ask(self, "Maximum height", 10.0).then(func(scale: f32)
+				for mut t in mode_terrain.terrain()
+					#for im in image.Image.load(path.complete)
+					let im = image.Image.load(ppp.complete)!
+					for i in 0:t.num_x
+						for j in 0:t.num_z
+							#t.height[i * (t.num_z+1) + j] = im.get_pixel(i % im.width, j % im.height).brightness() * scale
+							t.height[i * (t.num_z+1) + j] = im.get_pixel(i % im.width, j % im.height).r * scale
+					t.update(-1, -1, -1, -1, -1)#TerrainUpdateAll)
+			end)
+		end)
+
+
+	static ttt: DataWorld.Terrain # :P
+
+	func save()
+		for t in mode_terrain.terrain()
+			if mode_terrain.session.resource_manager.is_from_file(&t)
+				ttt.terrain = &t
+				print(mode_terrain.session.resource_manager.filename(&t))
+				if mode_terrain.session.storage.save(mode_terrain.session.resource_manager.filename(&t), &ttt)
+					mode_terrain.session.info("saved: terrain")
+			else
+				save_as()
+
+
+	func save_as()
+		for t in mode_terrain.terrain()
+			ttt.terrain = &t
+			mode_terrain.session.storage.save_as(&ttt).then(func()
+				#mode_terrain.session.info("saved: {{ttt.terrain!.filename_rel}}")
+				mode_terrain.session.info("saved: terrain")
+			end)
+
+
+class ModeEditTerrain extends SubMode
+	var override parent: ModeWorld*
+	var override data: DataWorld&
+	var brush_radius: f32
+	var index = 0 # param
+
+
+	func override __init__(m: Mode&)
+		super.__init__(m)
+
+
+	func selfref terrain() -> yengine.Terrain*
+		for e in data.entity(index)
+			for tr in e.get_component[yengine.TerrainRef]()
+				return tr.terrain
+		return nil
+
+
+	func override on_enter()
+		multi_view!.set_allow_select(false)
+		multi_view!.set_allow_action(true)
+		multi_view!.set_f_hover(get_hover)
+		multi_view!.set_f_select(nil)
+		multi_view!.set_f_get_selection_box(nil)
+	#	multi_view!.set_f_create_action(nil)
+	#	multi_view.data_sets = [
+	#		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}
+	#	]
+
+		set_side_panel(new shared EditTerrainPanel(&self))
+
+
+	func override on_leave()
+		set_side_panel(nil)
+
+	#	data.unsubscribe(&self)
+
+
+	func get_hover(ccc: (MultiViewWindow&,vec2)) -> Hover?
+		return parent!.get_hover_terrains(ccc[0], ccc[1])
+	#func get_hover(win: MultiViewWindow, m: vec2) -> Hover?
+	#	return parent!.get_hover_terrains(win, m)
+
+
+	func override on_key_down(key: i32)
+		if key == xhui.KEY_ESCAPE
+			request_mode_end()
+
+
+	func override on_left_button_down(m: vec2)
+		let depth = if session.win.is_key_pressed(xhui.KEY_SHIFT)
+			- brush_radius / 4
+		else
+			brush_radius / 4
+
+		for mut t in terrain(),  h in multi_view!.hover
+				if h.index == index
+					let N = i32(brush_radius / t.pattern.x * 1.5 + 1)
+					let dp = h.tp - data.entity(index)!.pos
+					let x = dp.x / t.pattern.x
+					let z = dp.z / t.pattern.z
+
+					let i0 = max(i32(x) - N, 0)
+					let i1 = min(i32(x) + N, t.num_x)+1
+					let j0 = max(i32(z) - N, 0)
+					let j1 = min(i32(z) + N, t.num_z)+1
+					for i in i0:i1
+						for j in j0:j1
+							let dx = f32(i) * t.pattern.x - dp.x
+							let dz = f32(j) * t.pattern.z - dp.z
+							t.height[i*(t.num_z+1) + j] += depth * exp( -2 * (dx^2 + dz^2) / brush_radius^2)
+					t.update(i0, i1, j0, j1, -1)
+					t.changed = true
+
+
+	func override on_draw_win(params: yrenderer.RenderParams, out win: MultiViewWindow)
+		parent!.on_draw_win(params, win)
+
+		for t in terrain(),  h in multi_view!.hover
+			if h.index == index
+				var n: vec3
+				n = [0,1,0]
+			#	t.gimme_height_n(data.entity(index), h.tp, n)
+				session.line_helper.set_color(DrawingHelper.COLOR_X)
+				session.line_helper.set_line_width(DrawingHelper.LINE_THIN)
+				session.line_helper.set_z_test(false)
+				session.line_helper.draw_circle(h.tp, n, brush_radius)
+				session.line_helper.set_z_test(true)

@@ -1,0 +1,29 @@
+use ..yengine.*
+use image.Painter
+
+
+class HDRDisplay extends Canvas
+	func override on_draw(out p: Painter)
+		for hdr in engine.camera_renderers[0].hdr_resolver
+			set_texture(p, hdr.texture)
+			p.draw_rect([0.8,1.0, 0.8, 1.0])
+			var y0 = 1.0
+			var h = 0.2
+			for i=>bloom in hdr.bloom_levels
+#				set_source(p, [0,engine.resolution_scale.x, 0,engine.resolution_scale.y])
+				set_texture(p, bloom.tex_out)
+				p.draw_rect([1.0,1.0+h, y0-h, y0])
+				y0 -= h
+				h *= 0.5
+
+#		for lm in engine.camera_renderers[0].light_meter
+#			p.set_font_size(0.03)
+#			p.draw_str([1.0, 0.0], "max brightness: {{lm.brightness|.3}}")
+
+
+class HDRDebugger extends System
+	func override on_finished_loading()
+		toplevel.add(new HDRDisplay())
+
+
+

@@ -32,7 +32,7 @@ ModeEditTerrain::ModeEditTerrain(ModeWorld* _mode_world, int _index) : SubMode(_
 void ModeEditTerrain::on_enter() {
 	multi_view->set_allow_select(false);
 	multi_view->set_allow_action(true);
-	multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
+	/*multi_view->f_hover = [this] (MultiViewWindow* win, const vec2& m) {
 		return mode_world->get_hover_terrains(win, m);
 	};
 	multi_view->f_select = nullptr;
@@ -40,7 +40,7 @@ void ModeEditTerrain::on_enter() {
 	multi_view->f_create_action = nullptr;
 	multi_view->data_sets = {
 		{MultiViewType::WORLD_ENTITY, &data->dummy_entities}
-	};
+	};*/
 
 	set_side_panel(new EditTerrainPanel(this));
 }

@@ -1,0 +1,45 @@
+use yengine.*
+use helper.curves.*
+
+class ShadowDebugger extends System
+	var pic: shared![Picture][]
+	var lines: Curve&
+
+	func override on_finished_loading()
+		lines := create_curve(50, Color.RED)
+
+		for i=>db in engine.camera_renderers[0].get_shadow_map()
+			pic.add(new Picture([1.2,1.4, 0.6 + i*0.2, 0.8+i*0.2], db))
+
+		for p in pic
+			toplevel.add(p)
+
+
+#	func override on_draw_pre()
+#		for p in pic
+#			p.source = [0,engine.resolution_scale.x, 0,engine.resolution_scale.y]
+
+
+	func override on_iterate(dt: f32)
+		var scene = &engine.camera_renderers[0].render_path.scene_view
+		if len(scene.shadow_indices) == 0
+			return
+		let proj = scene.lights[scene.shadow_indices[0]].suggest_shadow_projection(scene.main_camera_params, scene.shadow_box_size)
+		let ii = proj.inverse()
+	#	print(ii)
+		var p: vec3[]
+		p.resize(8)
+		for i in 0:8
+			p[i].x = (i & 1)*2-1
+			p[i].y = (i & 2)-1
+			p[i].z = (i & 4) / 4
+		let kk = [0,1,3,2,0,4,5,7,6,4,5,1,3,7,6,2]
+	#	let pp = [for q in p  q*100]
+	#	let pp = [for q in p  ii.project(q)]
+		let pp = [for k in kk  ii.project(p[k])]
+#		let pp = p |> (func(q: vec3) ii.project(q))
+
+		lines.points = pp
+
+
+		lines.update_vb()

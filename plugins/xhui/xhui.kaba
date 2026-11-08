@@ -1,0 +1,462 @@
+use image
+use os
+use async.*
+
+
+class extern Painter extends image.Painter as @noauto
+	var _area: Rect
+	var native_area: Rect
+	var ui_scale: f32
+	func extern override __delete__()
+
+
+enum extern FontFlags
+	NONE
+	BOLD
+	ITALIC
+
+
+struct extern TextLayout
+	var box: Rect
+	func extern mut __init__()
+	func extern mut __delete__()
+	func extern mut __assign__(o: TextLayout)
+	func extern static from_format_string(p: image.Painter, s: string, font_size=-1.0, align=-1) -> TextLayout
+
+
+# base line will be at y = (pos.y + font_size)
+func extern draw_text_layout(out p: image.Painter, pos: vec2, l: TextLayout, bg: Color)
+func extern draw_text_layout_with_box(out p: image.Painter, pos: vec2, l: TextLayout, fg: Color, bg: Color, padding=7.0, roundness=7.0)
+
+
+class extern Menu extends Object as Sharable
+	func extern override __init__() #(p: Panel*)
+	func extern mut popup(p: Panel*)
+	func extern mut add(name: string, id: string)
+#	func extern mut add_with_image(name: string, image: string, id: string)
+#	func extern mut add_checkable(name: string, id: string)
+#	func extern mut add_separator()
+#	func extern mut add_sub_menu(name: string, id: string, sub_menu: xfer[Menu])
+	func extern mut enable(id: string, enabled: bool)
+#	func extern mut check(id: string, enabled: bool)
+
+
+class extern Toolbar extends Object
+	func extern mut set_by_id(id: string)
+#	func extern mut from_source(source: string)
+
+
+
+# exposed mostly for internal development convenience
+class extern Control extends Object as Sharable
+	var area: Rect
+	var id: string
+#	func extern override __delete__()
+	func extern mut request_redraw()
+	func extern virtual mut add_child(c: shared![Control], x: i32, y: i32)
+	func extern virtual mut remove_child(c: void*)
+	func extern virtual mut set_string(s: string)
+	func extern virtual mut add_string(s: string)
+	func extern virtual mut set_cell(row: i32, col: i32, s: string)
+	func extern virtual mut reset()
+	func extern virtual mut set_int(i: i32)
+	func extern virtual mut set_float(f: f32)
+	func extern virtual mut check(checked: bool)
+	func extern virtual mut expand(expanded: bool)
+	func extern virtual mut set_color(c: Color)
+	func extern virtual get_string() -> string
+	func extern virtual get_cell(row: i32, col: i32)
+	func extern virtual get_int() -> i32
+	func extern virtual get_float() -> f32
+	func extern virtual is_checked() -> bool
+	func extern virtual get_color() -> Color
+	func extern virtual get_selection() -> i32[]
+	func extern virtual mut enable(enabled: bool)
+	func extern virtual mut set_option(key: string, valu: string)
+	func extern virtual get_children(_filter: i32) -> Control&[]
+
+	func extern virtual mut on_mouse_move(m: vec2)
+	func extern virtual mut on_mouse_wheel(d: vec2)
+	func extern virtual mut on_mouse_enter(m: vec2)
+	func extern virtual mut on_mouse_leave(m: vec2)
+	func extern virtual mut on_left_button_down(m: vec2)
+	func extern virtual mut on_middle_button_down(m: vec2)
+	func extern virtual mut on_right_button_down(m: vec2)
+	func extern virtual mut on_left_button_up(m: vec2)
+	func extern virtual mut on_middle_button_up(m: vec2)
+	func extern virtual mut on_right_button_up(m: vec2)
+	func extern virtual mut on_left_double_click(m: vec2)
+#	func extern virtual mut on_close_request()
+	func extern virtual mut on_key_down(key: i32)
+	func extern virtual mut on_key_up(key: i32)
+	func extern virtual mut on_key_char(character: i32)
+
+	func extern virtual _draw(p: image.Painter)
+	func extern virtual get_content_min_size() -> vec2
+	func extern virtual mut negotiate_area(available: Rect)
+
+	func extern selfref get_window() -> Window*
+
+
+enum CursorMovingMode
+	DEFAULT
+	SELECTING
+	SHOW_CONTEXT
+
+
+class extern MultilineEdit extends Control
+	var text: string
+	class extern Cache
+		var lines: string[]
+		var line_first_index: i32[]
+		var line_num_characters: i32[]
+	var cache: Cache
+	var cursor_pos: i32
+	var selection_start: i32
+	func extern mut clear_history()
+	func extern mut set_save_state()
+	func extern is_save_state() -> bool
+	func extern is_undoable() -> bool
+	func extern is_redoable() -> bool
+	func extern mut undo()
+	func extern mut redo()
+	func extern mut set_cursor_pos(pos: i32, mode = CursorMovingMode.DEFAULT)
+	func extern mut replace_range(i0: i32, i1: i32, by: string)
+
+	struct extern Markup
+		var i0, i1: i32
+		var flags: FontFlags
+		var color: Color
+	func extern mut clean_markup(i0: i32, i1: i32)
+	func extern mut add_markup(m: Markup)
+	struct extern LinePos
+		var line: i32
+		var offset: i32
+	func extern index_to_line_pos(i: i32) -> LinePos
+	func extern line_pos_to_index(lp: LinePos) -> i32
+
+	func extern find_word_start(i0: i32) -> i32
+	func extern find_word_end(i0: i32) -> i32
+
+
+class extern ListView extends Control
+	class ColumnFactory
+		func extern mut set_create(f: string->Control&)
+		func extern mut set_set(f: (Control&,string)->void)
+		func extern mut set_select(f: (Control&,bool)->void)
+	func extern selfref column_factory(i: i32) -> ColumnFactory&
+
+
+func extern create_control(type: string, title: string, id: string) -> Control&
+
+
+
+class extern Panel extends Control
+#	var win: Window*
+	var propagate_events: bool
+	func extern mut __init__(id: string)
+	func extern override __delete__()
+#	func extern mut set_border_width(width: i32)
+#	func extern mut set_decimals(decimals: i32)
+	func extern mut activate(id: string)
+#	func extern is_active(id: string) -> bool
+
+
+
+	func extern mut event(id: string, f: void->void) -> i32
+	func extern mut event_x(id: string, msg: string, f: void->void) -> i32
+	func extern mut event_x(id: string, msg: string, f: image.Painter->void) -> i32
+#	func extern mut event_xp(id: string, msg: string, f: image.Painter->void) -> i32
+	func extern mut remove_event_handler(uid: i32)
+
+	func extern mut from_source(source: string)
+	func extern mut add_control(type: string, title: string, x: i32, y: i32, id: string)
+	func extern mut embed(target: string, x: i32, y: i32, panel: shared[Panel])
+	func extern mut unembed(panel: Panel*)
+	func extern mut set_target(id: string)
+	func extern mut set_string(id: string, s: string)
+	func extern mut add_string(id: string, s: string)
+	func extern get_string(id: string) -> string
+	func extern mut set_float(id: string, f: f32)
+	func extern get_float(id: string) -> f32
+	func extern mut enable(id: string, enabled: bool)
+#	func extern is_enabled(id: string) -> bool
+	func extern mut check(id: string, checked: bool)
+	func extern is_checked(id: string) -> bool
+	func extern mut set_visible(id: string, visible: bool)
+#	func extern mut delete_control(id: string)
+	func extern mut set_int(id: string, i: i32)
+	func extern get_int(id: string) -> i32
+	func extern mut set_color(id: string, c: Color)
+	func extern get_color(id: string) -> Color
+#	func extern mut set_selection(id: string, sel: i32[])
+#	func extern get_selection(id: string) -> i32[]
+#	func extern mut set_image(id: string, image: string)
+#	func extern mut set_cell(id: string, row: i32, column: i32, s: string)
+#	func extern get_cell(id: string, row: i32, column: i32) -> string
+	func extern mut set_options(id: string, options: string)
+	func extern mut reset(id: string)
+#	func extern redraw(id: string)
+#	func extern mut expand(id: string, row: i32, expand: bool)
+#	func extern mut expand(id: string, expand: bool)
+#	func extern is_expanded(id: string, row: i32 = -1) -> bool
+	func extern selfref get_control(id: string) -> Control*
+	func extern mut open_dialog(dlg: shared![Dialog])-> future[void]
+
+
+	func extern override _draw(p: image.Painter)
+	func extern override negotiate_area(available: Rect)
+	func extern override get_content_min_size() -> vec2
+	func extern override get_children(f: i32) -> Control&[]
+	func extern override add_child(c: shared![Control], x: i32, y: i32)
+	func extern override set_option(key: string, value: string)
+
+
+class extern Window extends Panel
+	class extern Drag
+		title: string
+		payload: string
+	var drag: Drag
+	func extern mut __init__(title: string, width: i32, height: i32)
+	func extern override __delete__()
+#	func extern mut run()
+	func extern mut destroy()
+#	func extern mut show()
+#	func extern mut hide()
+#	func extern mut set_menu(menu: xfer[Menu])
+#	func extern mut toolbar(index: i32) -> Toolbar*
+	func extern redraw(id: string)
+	func extern mut set_maximized(max: bool)
+	func extern is_maximized() -> bool
+#	func extern is_minimized() -> bool
+#	func extern mut set_id(id: string)
+#	func extern mut set_fullscreen(fullscreen: bool)
+	func extern mut set_title(title: string)
+	func extern mut set_position(x: i32, y: i32)
+#	func extern mut set_size(x: i32, y: i32)
+#	func extern get_size(out x: i32, out y: i32)
+#	func extern mut set_cursor_pos(x: i32, y: i32)
+#	func extern get_mouse(out x: i32, out y: i32, button: i32, change: i32) -> bool
+#	func extern get_key(key: i32) -> bool
+	func extern set_mouse_mode(mode: i32)
+	func extern is_key_pressed(key: i32) -> bool
+	func extern get_mouse_position() -> vec2
+	func extern get_mouse_delta() -> vec2
+	func extern get_scroll() -> vec2
+	func extern get_key_code() -> i32
+	func extern left_button() -> bool  # TODO better interface...
+	func extern middle_button() -> bool
+	func extern right_button() -> bool
+#	func extern virtual mut on_draw(p: image.Painter)
+	func extern mut set_key_code(id: string, key_code: i32)
+	func extern mut request_destroy()
+	func extern mut start_drag(title: string, payload: string)
+
+
+enum DialogFlags
+	NONE = 0
+	NO_HEADER = 1
+	CLOSE_BY_ESCAPE = 2
+
+class extern Dialog extends Panel
+	func extern mut __init__(title: string, width: i32, height: i32, parent: Panel*, flags: DialogFlags)
+	func extern override __delete__()
+	func extern mut request_destroy()
+	func extern mut set_title(title: string)
+
+
+# user interface
+#func extern set_idle_function(f: void->void)
+func extern run_later(dt: f32, f: void->void) -> i32
+func extern run_repeated(dt: f32, f: void->void) -> i32
+func extern cancel_runner(id: i32)
+func extern run()
+func extern fly(win: shared[Window]) -> future[void]
+func extern fly_and_wait(win: shared[Window])
+## add_key_code(...)
+#func extern get_event() -> Event&
+#func extern do_single_main_loop()
+func extern set_property(key: string, value: string)
+#func extern file_dialog_open(root: Window*, title: string, dir: os.Path, params: string[]) -> future[os.Path]
+#func extern file_dialog_save(root: Window*, title: string, dir: os.Path, params: string[]) -> future[os.Path]
+#func extern file_dialog_dir(root: Window*, title: string, dir: os.Path, params: string[]) -> future[os.Path]
+func extern file_dialog(parent: Panel*, title: string, dir: os.Path, params: string[]) -> future[os.Path]
+#func extern question_box(root: Window*, title: string, text: string, allow_cancel: bool) -> future[bool]
+#func extern info_box(root: Window*, title: string, text: string) -> future[void]
+#func extern error_box(root: Window*, title: string, text: string) -> future[void]
+func extern color_dialog(parent: Panel*, title: string, col: Color, params: string[]) -> future[Color]
+#func extern create_menu_from_source(source: string, panel: Panel*) -> xfer[Menu]
+#func extern get_key_name(id: i32) -> string
+## func extern get_key_char(id: i32) -> string
+#func extern open_document(filename: os.Path)
+#func extern make_gui_image(image: image.Image) -> string
+
+
+class clipboard
+	func static extern paste() -> future[string]
+	func static extern copy(text: string)
+
+
+class extern Event
+	var id: string
+	var message: string
+	var mouse: vec2
+	var dmouse: vec2
+	var pressure: f32
+	var scroll: vec2
+	var key: i32
+	var width: i32
+	var height: i32
+	var button_l: bool
+	var button_m: bool
+	var button_r: bool
+	var row: i32
+	var column: i32
+#	func __delete__()
+
+
+
+struct extern Resource
+	var type: string
+	var id: string
+	var title: string
+	var tooltip: string
+	var options: string[]
+	var x, y: i32
+	var children: Resource[]
+	#void reset()
+	func __init__() # workaround for arm64 ... prevents complex default constructor using stack parameters
+	func extern show(indent: i32)
+	func extern str(indent: i32) -> string
+
+func extern parse_resource(buffer: string, literally: bool) -> Resource
+
+# key ids (int)
+# enum... FIXME
+let KEY_CONTROL = 1<<8
+let KEY_SHIFT = 1<<9
+let KEY_ALT = 1<<10
+let KEY_META = 1<<11
+let KEY_SUPER = 1<<12
+let KEY_HYPER = 1<<13
+
+let KEY_LEFT_CONTROL = 0
+let KEY_RIGHT_CONTROL = 1
+let KEY_LEFT_SHIFT = 2
+let KEY_RIGHT_SHIFT = 3
+let KEY_LEFT_ALT = 4
+let KEY_RIGHT_ALT = 5
+let KEY_PLUS = 6
+let KEY_MINUS = 7
+let KEY_FENCE = 8
+let KEY_END = 9
+let KEY_PAGE_UP = 10
+let KEY_PAGE_DOWN = 11
+let KEY_UP = 12
+let KEY_DOWN = 13
+let KEY_LEFT = 14
+let KEY_RIGHT = 15
+let KEY_RETURN = 16
+let KEY_ESCAPE = 17
+let KEY_INSERT = 18
+let KEY_DELETE = 19
+let KEY_SPACE = 20
+let KEY_F1 = 21
+let KEY_F2 = 22
+let KEY_F3 = 23
+let KEY_F4 = 24
+let KEY_F5 = 25
+let KEY_F6 = 26
+let KEY_F7 = 27
+let KEY_F8 = 28
+let KEY_F9 = 29
+let KEY_F10 = 30
+let KEY_F11 = 31
+let KEY_F12 = 32
+let KEY_0 = 33
+let KEY_1 = 34
+let KEY_2 = 35
+let KEY_3 = 36
+let KEY_4 = 37
+let KEY_5 = 38
+let KEY_6 = 39
+let KEY_7 = 40
+let KEY_8 = 41
+let KEY_9 = 42
+let KEY_A = 43
+let KEY_B = 44
+let KEY_C = 45
+let KEY_D = 46
+let KEY_E = 47
+let KEY_F = 48
+let KEY_G = 49
+let KEY_H = 50
+let KEY_I = 51
+let KEY_J = 52
+let KEY_K = 53
+let KEY_L = 54
+let KEY_M = 55
+let KEY_N = 56
+let KEY_O = 57
+let KEY_P = 58
+let KEY_Q = 59
+let KEY_R = 60
+let KEY_S = 61
+let KEY_T = 62
+let KEY_U = 63
+let KEY_V = 64
+let KEY_W = 65
+let KEY_X = 66
+let KEY_Y = 67
+let KEY_Z = 68
+let KEY_BACKSPACE = 69
+let KEY_TAB = 70
+let KEY_HOME = 71
+let KEY_NUM_0 = 72
+let KEY_NUM_1 = 73
+let KEY_NUM_2 = 74
+let KEY_NUM_3 = 75
+let KEY_NUM_4 = 76
+let KEY_NUM_5 = 77
+let KEY_NUM_6 = 78
+let KEY_NUM_7 = 79
+let KEY_NUM_8 = 80
+let KEY_NUM_9 = 81
+let KEY_NUM_ADD = 82
+let KEY_NUM_SUBTRACT = 83
+let KEY_NUM_MULTIPLY = 84
+let KEY_NUM_DIVIDE = 85
+let KEY_NUM_COMMA = 86
+let KEY_NUM_ENTER = 87
+let KEY_COMMA = 88
+let KEY_DOT = 89
+let KEY_LESS = 90
+let KEY_SZ = 91
+let KEY_AE = 92
+let KEY_OE = 93
+let KEY_UE = 94
+let KEY_GRAVE = 95
+let KEY_LWINDOWS = 96
+let KEY_RWINDOWS = 97
+let NUM_KEYS = 98
+let KEY_ANY = 99
+
+
+class extern Theme as @noauto
+	font_size, font_size_small, font_size_big: f32
+	background, background_button: Color
+	background_button_primary, background_button_primary_hover, background_button_primary_active: Color
+	background_button_danger, background_button_danger_hover, background_button_danger_active: Color
+	background_header, background_header_button: Color
+	background_hover, background_active: Color
+	background_low, background_low_hover, background_low_selected: Color
+	text, text_label, text_disabled: Color
+	text_link: Color
+	border: Color
+	func background_raised() -> Color
+
+
+var extern theme: Theme
+
+
+#var extern app_config: os.Configuration

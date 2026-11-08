@@ -1,0 +1,15 @@
+use net
+use .ecs.*
+
+class extern Connection
+	var s: owned![net.Socket]
+	var buffer: owned![net.BinaryBuffer]
+	func extern mut start_block(id: string)
+	func extern mut end_block()
+	func extern mut send()
+
+class extern NetworkManager extends System
+	var cur_con: Connection&
+	func extern mut connect_to_host(host: string) -> Connection*
+	func extern mut event(id: string, e: BaseClass, f: void->void)
+

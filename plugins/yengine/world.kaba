@@ -1,0 +1,253 @@
+use os
+use kaba
+use .yrenderer.*
+use .fx.*
+use .ecs.*
+use .model.*
+use .audio.*
+
+
+class extern RigidBody extends Component
+	let PARAMETERS = "mass,theta,dynamic,g_factor"
+	var vel: vec3 # world frame
+	var rot: vec3 # world frame
+	var mass: f32
+	var theta: mat3 # local frame
+	var dynamic: bool
+	var g_factor: f32
+
+	# all parameters in world frame!
+	func extern mut add_force(f: vec3, rho: vec3 = vec3.0)
+	func extern mut add_impulse(p: vec3, rho: vec3 = vec3.0)
+	func extern mut add_torque(t: vec3)
+	func extern mut add_torque_impulse(l: vec3)
+
+	func extern mut update_mass()
+	func extern mut update_motion(mask: i32)
+
+
+class extern Collider extends Component
+class extern MeshCollider extends Collider
+	let REQUIRES = RigidBody
+class extern TerrainCollider extends Collider
+	let REQUIRES = RigidBody
+
+
+class extern BoxCollider extends Collider
+	let REQUIRES = RigidBody
+	let PARAMETERS = "min,max"
+	var min, max: vec3
+
+class extern SphereCollider extends Collider
+	let REQUIRES = RigidBody
+	let PARAMETERS = "radius"
+	var radius: f32
+
+
+class extern EgoMarker extends Component
+
+
+class extern MultiInstance extends Component
+	var model: Model*
+	var matrices: mat4[]
+
+
+class extern Terrain
+	var pattern: vec3
+	var num_x, num_z: i32
+	var height: f32[]
+	var vertex_shader_module: string
+	var texture_scale: vec3[8]
+	var changed: bool
+	func extern get_height(e: Entity&, p: vec3) -> f32
+	func extern mut update(x1: i32, x2: i32, y1: i32, y2: i32, mask: i32)
+	# ...
+
+
+class extern Light extends Component
+	let PARAMETERS = "type,color,power,theta,harshness,enabled,allow_shadows"
+	var type: i32#LightType
+	var color: Color
+	var power: f32
+	var theta: f32
+	var harshness: f32
+	var enabled: bool
+	var allow_shadows: bool
+	var user_shadow_control: bool
+	var user_shadow_theta: f32
+	var shadow_dist_min: f32
+	var shadow_dist_max: f32
+	func extern mut set_direction(dir: vec3)
+
+
+func extern ref attach_light_parallel(e: Entity, c: Color) -> Light&
+func extern ref attach_light_point(e: Entity, c: Color, radius: f32) -> Light&
+func extern ref attach_light_cone(e: Entity, c: Color, radius: f32, theta: f32) -> Light&
+
+
+class extern Camera extends Component
+	let PARAMETERS = "min_depth,max_depth,exposure,fov"
+	var exposure: f32
+	var bloom_radius: f32
+	var bloom_factor: f32
+
+	var focus_enabled: bool
+	var focal_length: f32
+	var focal_blur: f32
+
+	var fov: f32
+	var min_depth, max_depth: f32
+
+	var show, enabled: bool
+
+	func extern project(p: vec3) -> vec3
+	func extern unproject(p: vec3) -> vec3
+	func extern mut update_matrix_cache(aspect_ratio: f32)
+
+
+class extern CubeMapSource extends Component
+	var min_depth, max_depth: f32
+	var cube_map: shared[CubeMap]
+	var resolution: i32
+	var update_rate: i32
+
+
+class extern NameTag extends Component
+	let PARAMETERS = "name"
+	var name: string
+
+
+class extern TerrainRef extends Component
+	let PARAMETERS = "terrain,material"
+	var terrain: Terrain*
+	var material: Material&
+
+
+struct extern Template
+	# opaque data...
+
+class extern TemplateRef extends Component
+	let PARAMETERS = "template"
+	var template: Template*
+
+
+class extern Fog
+	var color: Color
+	var distance: f32
+	var enabled: bool
+
+
+enum LinkType
+	NONE
+	SOCKET as "socket"
+	HINGE as "hinge"
+	UNIVERSAL as "universal"
+	SPRING as "spring"
+	SLIDER as "slider"
+
+class extern Link extends Component
+	let PARAMETERS = "type,a,b"
+	var type: LinkType
+	var a, b: i32
+	func extern mut set_motor(v: f32, max: f32)
+#	extern void mut set_axis(vector v)
+	func extern mut set_frame(n: i32, q: Quaternion)
+
+
+
+class extern Physics extends System
+	let PARAMETERS = "enabled,mode,gravity"
+	enum Mode
+		NONE
+		SIMPLE
+		FULL_INTERNAL
+		FULL_EXTERNAL
+	var mode: Mode
+	var gravity: vec3
+	var enabled: bool
+	var collisions_enabled: bool
+	func extern get_g(pos: vec3) -> vec3
+	func extern mut set_dynamic(out e: Entity, dynamic: bool)
+
+
+class extern AnimationManager extends System
+class extern ParticleManager extends System
+
+
+enum TraceMode
+	PHYSICAL = 1
+	VISIBLE = 2
+	SIMPLE = 4
+
+
+class extern World
+	var background: Color
+	var skyboxes: ModelRef&[]
+
+	var fog: Fog # deprecated
+
+	func extern mut load_soon(filename: os.Path)
+
+	func extern mut selfref create_light_parallel(ang: Quaternion, c: Color) -> Light&
+	func extern mut selfref create_light_point(pos: vec3, c: Color, radius: f32) -> Light&
+	func extern mut selfref create_light_cone(pos: vec3, ang: Quaternion, c: Color, radius: f32, theta: f32) -> Light&
+
+	func extern mut selfref create_link_socket(a: Entity&, b: Entity*, pos: vec3) -> Link&
+	func extern mut selfref create_link_hinge(a: Entity&, b: Entity*, pos: vec3, axis: vec3) -> Link&
+
+	#func extern mut selfref add_particle(p: xfer[LegacyParticle]) -> LegacyParticle&
+	func extern mut selfref _add_particle(type: kaba.Class*, pos: vec3, radius: f32, c: Color, tex: shared![Texture], ttl: f32 = -1.0) -> LegacyParticle&
+	func mut selfref create_particle[T](pos: vec3, radius: f32, c: Color = Color.WHITE, tex: shared![Texture] = tex_white, ttl: f32 = -1.0) -> T&
+		return _add_particle(T, pos, radius, c, tex, ttl) as T&
+
+
+	func extern emit_sound(buffer: AudioBuffer&, pos: vec3, radius1: f32) -> SoundSource&
+	func extern emit_sound_file(filename: os.Path, pos: vec3, radius1: f32) -> SoundSource&
+	func extern emit_sound_stream(stream: AudioStream&, pos: vec3, radius1: f32) -> SoundSource&
+
+	func extern mut selfref load_template(filename: os.Path, pos: vec3, ang: Quaternion = Quaternion.ID) -> Entity&
+#	func extern mut selfref create_object(filename: os.Path, pos: vec3, ang: Quaternion) -> Model&
+	func extern mut selfref create_object_multi(filename: os.Path, pos: vec3[], ang: Quaternion[]) -> MultiInstance&
+	func extern mut selfref create_terrain(filename: os.Path, pos: vec3) -> TerrainRef&
+	func extern mut selfref create_camera(pos: vec3, ang: Quaternion) -> Camera&
+	func extern mut selfref create_entity(pos: vec3, ang: Quaternion = Quaternion.ID) -> Entity&
+	func extern mut selfref attach_model(e: Entity&, filename: os.Path) -> ModelRef&
+	func extern mut shift_all(dpos: vec3)
+	func extern globalref trace(p1: vec3, p2: vec3, mode: TraceMode = TraceMode.PHYSICAL, ignore: Entity* = (nil as Entity*)) -> CollisionData?
+
+	func extern selfref entity(index: i32) -> Entity*
+
+	func selfref objects() -> ModelRef&[]&
+		return get_component_family_list[ModelRef]()
+	func selfref terrains() -> TerrainRef&[]&
+		return get_component_family_list[TerrainRef]()
+	func selfref lights() -> Light&[]&
+		return get_component_family_list[Light]()
+
+	func extern selfref ego() -> Entity*
+	func selfref find_by_name(name: string) -> Entity*
+		for n in get_component_list[NameTag]()
+			if n.name == name
+				return n.owner
+		return nil
+
+#	func extern delete(o: void*)
+	func extern delete_entity(e: Entity*)
+
+	class extern MessageData
+		var e: Entity*
+		var v: vec3
+	var msg_data: MessageData
+
+	func extern mut subscribe(msg: string, f: void->void)
+
+
+func ref get_model(out e: Entity) -> Model*
+	for mut mr in e.get_component[ModelRef]()
+		return mr.model
+	return nil
+#func body(e: Entity) -> RigidBody*
+#	var b: RigidBody* = e.get_component(RigidBody)
+#	return b
+
+var extern world: World&

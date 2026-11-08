@@ -1,0 +1,6 @@
+use edward.*
+
+
+class ModeWorld extends Mode
+	func extern get_hover(win: MultiViewWindow, m: vec2) -> Hover?
+	func extern get_hover_terrains(win: MultiViewWindow, m: vec2) -> Hover?

@@ -412,14 +412,13 @@ void export_world(kaba::IExporter* ext) {
 
 
 	ext->declare_class_size("Terrain", sizeof(Terrain));
-	//ext->declare_class_element("Terrain.pos", &Terrain::pos);
-	//ext->declare_class_element("Terrain.material", &Terrain::material);
 	ext->declare_class_element("Terrain.height", &Terrain::height);
 	ext->declare_class_element("Terrain.vertex", &Terrain::vertex);
 	ext->declare_class_element("Terrain.normal", &Terrain::normal);
 	ext->declare_class_element("Terrain.pattern", &Terrain::pattern);
 	ext->declare_class_element("Terrain.num_x", &Terrain::num_x);
 	ext->declare_class_element("Terrain.num_z", &Terrain::num_z);
+	ext->declare_class_element("Terrain.changed", &Terrain::changed);
 	ext->declare_class_element("Terrain.vertex_shader_module", &Terrain::vertex_shader_module);
 	ext->declare_class_element("Terrain.texture_scale", &Terrain::texture_scale);
 	ext->link_class_func("Terrain.update", &Terrain::update);

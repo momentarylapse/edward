@@ -3,11 +3,12 @@ use xhui
 use edward.*
 
 class ModeTest extends SubMode
-	func override __init__(m: Mode&)
-		super.__init__(m)
+	var a: i32
+#	func override __init__(m: Mode&)
+#		super.__init__(m)
 
 	func override on_enter()
-		session.info("Test enter")
+		session.info("Test enter {{a}}")
 
 	func override on_draw_post(out p: Painter)
 		draw_info(p, "this is a custom mode written in kaba!")

@@ -1,0 +1,36 @@
+use os
+use kaba
+use image.Image
+use out .common.*
+use out .yrenderer.*
+use out .ecs.*
+use out .model.*
+use out .audio.*
+use out .ui.*
+use out .engine.*
+use out .fx.*
+use out .world.*
+use out .networking.*
+
+
+class extern UserMesh extends Component
+	vertex_buffer: owned[VertexBuffer]
+	topology: PrimitiveTopology
+	material: Material&
+	vertex_shader_module: string = "default"
+	geometry_shader_module: string
+	tessellation_shader_module: string
+
+
+class extern Scheduler
+	func extern __init__()
+	func extern __delete__()
+	func extern mut later(dt: f32, f: void->void)
+	func extern mut repeat(dt: f32, f: void->void)
+	func extern mut clear()
+
+
+func extern create_camera_renderer(ctx: Context&, cam: Camera&) -> xfer[FullCameraRenderer]
+
+
+var extern cam: Camera&

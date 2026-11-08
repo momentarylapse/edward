@@ -9,10 +9,12 @@
 #include <lib/kaba/kaba.h>
 #include <lib/os/filesystem.h>
 #include <lib/plugin/PluginManager.h>
+#include <lib/xhui/_kaba_export.h>
 #include <view/EdwardWindow.h>
 #include <Session.h>
 #include <view/Mode.h>
 #include <view/multiview/MultiView.h>
+#include <view/multiview/ViewPort.h>
 #include <view/multiview/ActionController.h>
 #include <view/DocumentSession.h>
 #include <lib/history/Data.h>
@@ -45,9 +47,7 @@
 /*#include "../data/material/ShaderNode.h"
 #include "../data/material/ShaderBuilderContext.h"*/
 
-#include "plugins/PluginManager.h"
-
-#include <string>
+#include <y/plugins/PluginManager.h>
 #include <y/world/components/Camera.h>
 #include <y/world/components/Light.h>
 #include <y/world/components/Link.h>
@@ -61,8 +61,11 @@
 #include <lib/os/msg.h>
 #include <lib/net/_kaba_export.h>
 #include <lib/profiler/_kaba_export.h>
-
-#include "view/DrawingHelper.h"
+#include <lib/kaba/dynamic/dynamic.h>
+#include <lib/kaba/lib/future.h>
+#include <mode_world/data/WorldTerrain.h>
+#include <view/DrawingHelper.h>
+#include <view/dialogs/CommonDialogs.h>
 
 
 Session* cur_session = nullptr;
@@ -97,6 +100,9 @@ void PluginManager::execute(const Path& filename) {
 //hui::Window *GlobalMainWin = ed;
 
 void PluginManager::init_edward() {
+	session->kaba_ctx->register_package_init("xhui", directory.absolute().canonical() | "xhui", &export_package_xhui);
+	session->kaba_ctx->register_package_init("yengine", directory.absolute().canonical() | "yengine", &::PluginManager::export_kaba_package_yengine);
+
 	link_plugins();
 	find_plugins();
 }
@@ -241,9 +247,58 @@ void link_model(kaba::ExternalLinkData* ext) {
 }
 
 void link_world(kaba::ExternalLinkData* ext) {
+	ext->declare_class_size("DataWorld.Terrain", sizeof(WorldTerrain));
+	ext->declare_class_element("DataWorld.Terrain.terrain", &WorldTerrain::terrain);
+	ext->link_class_func("DataWorld.Terrain.__init__", &kaba::generic_init<WorldTerrain>);
+
+
+	ext->declare_class_size("DataWorld", sizeof(DataWorld));
+	ext->declare_class_element("DataWorld.out_terrain_changed", &DataWorld::out_terrain_changed);
+	ext->link_class_func("DataWorld.entity", &DataWorld::entity);
+	ext->link_class_func("DataWorld.edit_terrain_meta_data", &DataWorld::edit_terrain_meta_data);
+
+
 	ext->declare_class_size("ModeWorld", sizeof(ModeWorld));
 	ext->declare_class_element("ModeWorld.data", &ModeWorld::data);
+	ext->link_class_func("ModeWorld.get_hover", &ModeWorld::get_hover);
+	ext->link_class_func("ModeWorld.get_hover_terrains", &ModeWorld::get_hover_terrains);
 }
+
+class MultiViewWrapper: public MultiView {
+public:
+	struct WinVec2 {
+		MultiViewWindow* win;
+		vec2 m;
+	};
+	struct WinRect {
+		MultiViewWindow* win;
+		rect r;
+	};
+	//void set_f_hover(const Callable<base::optional<Hover>(MultiViewWindow*,const vec2&)>& f) {
+	void set_f_hover(const Callable<base::optional<Hover>(const WinVec2& x)>& f) {
+		f_hover = [&f] (MultiViewWindow* win,const vec2& m) {
+			//return f(win, m);
+			return f({win, m});
+		};
+	}
+	//void set_f_select(const Callable<Selection(MultiViewWindow*,const rect&)>& f) {
+	void set_f_select(const Callable<Selection(const WinRect&)>& f) {
+		f_select = [&f] (MultiViewWindow* win,const rect& r) {
+			//return f(win, r);
+			return f({win, r});
+		};
+	}
+	void set_f_make_selection_consistent(const Callable<void(Selection&)>& f) {
+		f_make_selection_consistent = [&f] (Selection& sel) {
+			f(sel);
+		};
+	}
+	void set_f_get_selection_box(const Callable<base::optional<Box>(const Selection&)>& f) {
+		f_get_selection_box = [&f] (const Selection& sel) {
+			return f(sel);
+		};
+	}
+};
 
 void PluginManager::link_plugins() {
 	//GlobalMainWin = ed;
@@ -258,47 +313,48 @@ void PluginManager::link_plugins() {
 
 //	ext->declare_class_element("Edward.cur_mode", &Session::cur_mode);
 
-	//	ext->declare_class_element("Mode.name", &ModeBase::name);
-	//	ext->declare_class_element("Mode.multi_view", &ModeBase::multi_view);
-
 	ext->declare_class_size("Data", sizeof(history::Data));
 	ext->declare_class_element("Data.filename", &history::Data::filename);
 	ext->declare_class_element("Data.file_time", &history::Data::file_time);
 	ext->declare_class_element("Data.type", &history::Data::type);
+	ext->declare_class_element("Data.out_changed", &history::Data::out_changed);
 	ext->link_class_func("Data.begin_action", &history::Data::begin_action_group);
 	ext->link_class_func("Data.end_action", &history::Data::end_action_group);
+
+
+	ext->declare_class_size("Hover", sizeof(Hover));
+	ext->declare_class_element("Hover.type", &Hover::type);
+	ext->declare_class_element("Hover.index", &Hover::index);
+	ext->declare_class_element("Hover.tp", &Hover::tp);
+
+
+	ext->declare_class_size("Selection", sizeof(Selection));
+	ext->link_class_func("Selection.__init__", &kaba::generic_init<Selection>);
+	ext->link_class_func("Selection.__delete__", &kaba::generic_delete<Selection>);
+	ext->link_class_func("Selection.__assign__", &kaba::generic_assign<Selection>);
+
+
+	ext->declare_class_size("MultiView.ViewPort", sizeof(ViewPort));
+	ext->declare_class_element("MultiView.ViewPort.pos", &ViewPort::pos);
+	ext->declare_class_element("MultiView.ViewPort.ang", &ViewPort::ang);
+	ext->declare_class_element("MultiView.ViewPort.radius", &ViewPort::radius);
+	ext->declare_class_element("MultiView.ViewPort.out_changed", &ViewPort::out_changed);
+
 
 	ext->declare_class_size("MultiView.SingleData", sizeof(multiview::SingleData));
 	ext->declare_class_element("MultiView.SingleData.pos", &multiview::SingleData::pos);
 	ext->declare_class_element("MultiView.SingleData.view_stage", &multiview::SingleData::view_stage);
 	ext->declare_class_element("MultiView.SingleData.is_special", &multiview::SingleData::is_special);
 
-	/*ext->declare_class_element("MultiView.action_con", &MultiView::MultiView::action_con);
-	ext->declare_class_element("MultiView.active_win", &MultiView::MultiView::active_win);
-	ext->declare_class_element("MultiView.mouse_win", &MultiView::MultiView::mouse_win);
-	ext->declare_class_element("MultiView.cam", &MultiView::MultiView::cam);
-	ext->link_class_func("MultiView.cam_move", &MultiView::MultiView::cam_move);
-	ext->link_class_func("MultiView.cam_rotate", &MultiView::MultiView::cam_rotate);
-	ext->link_class_func("MultiView.cam_zoom", &MultiView::MultiView::cam_zoom);
-
-	ext->declare_class_element("MultiView.Window.local_ang", &MultiView::Window::local_ang);
-
-	ext->link_class_func("MultiView.ActionController.start_action", &MultiView::ActionController::start_action);
-	ext->link_class_func("MultiView.ActionController.update_action", &MultiView::ActionController::update_action);
-	ext->link_class_func("MultiView.ActionController.update_param", &MultiView::ActionController::update_param);
-	ext->link_class_func("MultiView.ActionController.end_action", &MultiView::ActionController::end_action);
-	ext->declare_class_element("MultiView.ActionController.pos", &MultiView::ActionController::pos);*/
-
-#if 0
-	// world
-	ext->declare_class_size("World", sizeof(DataWorld));
-	ext->declare_class_element("World.terrains", &DataWorld::terrains);
-	ext->declare_class_element("World.objects", &DataWorld::objects);
-	ext->declare_class_element("World.ego_index", &DataWorld::EgoIndex);
-	ext->link_class_func("World.add_object", &DataWorld::add_object);
-	ext->link_class_func("World.add_terrain", &DataWorld::add_terrain);
-	ext->link_class_func("World.add_new_terrain", &DataWorld::add_new_terrain);
-#endif
+	ext->declare_class_element("MultiView.hover", &MultiView::hover);
+	ext->declare_class_element("MultiView.cam", &MultiView::view_port);
+	ext->declare_class_element("MultiView.view_port", &MultiView::view_port);
+	ext->link_class_func("MultiView.set_allow_action", &MultiView::set_allow_action);
+	ext->link_class_func("MultiView.set_allow_select", &MultiView::set_allow_select);
+	ext->link_class_func("MultiView.set_f_hover", &MultiViewWrapper::set_f_hover);
+	ext->link_class_func("MultiView.set_f_select", &MultiViewWrapper::set_f_select);
+	ext->link_class_func("MultiView.set_f_make_selection_consistent", &MultiViewWrapper::set_f_make_selection_consistent);
+	ext->link_class_func("MultiView.set_f_get_selection_box", &MultiViewWrapper::set_f_get_selection_box);
 
 
 	{
@@ -306,13 +362,17 @@ void PluginManager::link_plugins() {
 		ext->declare_class_size("Mode", sizeof(Mode));
 		ext->declare_class_element("Mode.menu_id", &Mode::menu_id);
 		ext->declare_class_element("Mode.toolbar_id", &Mode::toolbar_id);
+		ext->declare_class_element("Mode.dialog", &Mode::dialog);
 		ext->declare_class_element("Mode.doc", &Mode::doc);
 		ext->declare_class_element("Mode.session", &Mode::session);
 		ext->declare_class_element("Mode.multi_view", &Mode::multi_view);
+		ext->declare_class_element("Mode.data", &Mode::generic_data);
 		ext->declare_class_element("Mode.out_redraw", &Mode::out_redraw);
 		ext->link_class_func("Mode.__init__", &kaba::generic_init_ext<Mode, DocumentSession*>);
 		ext->link_class_func("Mode.draw_info", &Mode::draw_info);
 		ext->link_class_func("Mode.is_ancestor_of", &Mode::is_ancestor_of);
+		ext->link_class_func("Mode.set_side_panel", &Mode::set_side_panel);
+		ext->link_class_func("Mode.set_overlay_panel", &Mode::set_overlay_panel);
 
 		ext->link_virtual("Mode.on_enter_rec", &Mode::on_enter_rec, &mode);
 		ext->link_virtual("Mode.on_connect_events_rec", &Mode::on_connect_events_rec, &mode);
@@ -344,7 +404,7 @@ void PluginManager::link_plugins() {
 	{
 		SubMode mode(nullptr);
 		ext->declare_class_size("SubMode", sizeof(SubMode));
-		ext->declare_class_element("SubMode._parent", &SubMode::_parent);
+		ext->declare_class_element("SubMode.parent", &SubMode::_parent);
 		ext->link_class_func("SubMode.__init__", &kaba::generic_init_ext<SubMode, Mode*>);
 		ext->link_class_func("SubMode.request_mode_end", &SubMode::request_mode_end);
 
@@ -364,10 +424,47 @@ void PluginManager::link_plugins() {
 	ext->declare_class_size("DrawingHelper", sizeof(DrawingHelper));
 
 
+	ext->declare_class_size("ResourceManager", sizeof(ResourceManager));
+	ext->link_class_func("ResourceManager.is_from_file:ResourceManager:Terrain*", (bool(ResourceManager::*)(const Terrain*) const)&ResourceManager::is_from_file);
+	ext->link_class_func("ResourceManager.is_from_file:ResourceManager:Material*", (bool(ResourceManager::*)(const yrenderer::Material*) const)&ResourceManager::is_from_file);
+	ext->link_class_func("ResourceManager.filename:ResourceManager:Terrain*", (Path(ResourceManager::*)(const Terrain*) const)&ResourceManager::filename);
+	ext->link_class_func("ResourceManager.filename:ResourceManager:Material*", (Path(ResourceManager::*)(const yrenderer::Material*) const)&ResourceManager::filename);
+
+
+	ext->declare_enum("DataType.WORLD", FD_WORLD);
+	ext->declare_enum("DataType.MATERIAL", FD_MATERIAL);
+	ext->declare_enum("DataType.MODEL", FD_MODEL);
+	ext->declare_enum("DataType.TEMPLATE", FD_TEMPLATE);
+	ext->declare_enum("DataType.TERRAIN", FD_TERRAIN);
+	ext->declare_enum("DataType.TEXTURE", FD_TEXTURE);
+	ext->declare_enum("DataType.SCRIPT", FD_SCRIPT);
+	ext->declare_enum("DataType.SHADER", FD_SHADERFILE);
+	ext->declare_enum("DataType.SOUND", FD_SOUND);
+	ext->declare_enum("DataType.PROJECT", FD_PROJECT);
+	ext->declare_enum("DataType.FILE", FD_FILE);
+
+
+	ext->declare_class_size("ComplexPath", sizeof(ComplexPath));
+	ext->declare_class_element("ComplexPath.complete", &ComplexPath::complete);
+	ext->declare_class_element("ComplexPath.relative", &ComplexPath::relative);
+	ext->declare_class_element("ComplexPath.simple", &ComplexPath::simple);
+	ext->declare_class_element("ComplexPath.type", &ComplexPath::kind);
+
+
+	ext->declare_class_size("Storage", sizeof(Storage));
+	ext->link_class_func("Storage.load", &Storage::load);
+	ext->link_class_func("Storage.save", &Storage::save);
+	ext->link_class_func("Storage.save_as", &Storage::save_as);
+	ext->link_class_func("Storage.auto_save", &Storage::auto_save);
+	ext->link_class_func("Storage.open", &Storage::open);
+	ext->link_class_func("Storage.file_dialog", &Storage::file_dialog);
+
+
 	ext->declare_class_size("Session", sizeof(Session));
 	ext->declare_class_element("Session.ctx", &Session::ctx);
 	ext->declare_class_element("Session.drawing_helper", &Session::drawing_helper);
 	ext->declare_class_element("Session.line_helper", &Session::line_helper);
+	ext->declare_class_element("Session.storage", &Session::storage);
 	ext->declare_class_element("Session.win", &Session::win);
 	ext->link_class_func("Session.info", &Session::info);
 	ext->link_class_func("Session.warning", &Session::warning);
@@ -380,6 +477,19 @@ void PluginManager::link_plugins() {
 	ext->declare_class_element("DocumentSession.mode_material", &DocumentSession::mode_material);
 	ext->declare_class_element("DocumentSession.session", &DocumentSession::session);
 	ext->link_class_func("DocumentSession.set_mode", &DocumentSession::set_mode);
+
+	ext->link("FloatDialog.ask", (void*)&FloatDialog::ask);
+	ext->link("IntPairDialog.ask", (void*)&IntPairDialog::ask);
+
+	ext->link_class_func("future[f32].__delete__", &kaba::generic_delete<base::future<float>>);
+	ext->link_class_func("future[f32].then", &kaba::KabaFuture<float>::kaba_then);
+	ext->link_class_func("future[f32].then_or_fail", &kaba::KabaFuture<float>::kaba_then_or_fail);
+	ext->link_class_func("future[IntPair].__delete__", &kaba::generic_delete<base::future<base::tuple<int,int>>>);
+	ext->link_class_func("future[IntPair].then", &kaba::KabaFuture<base::tuple<int,int>>::kaba_then);
+	ext->link_class_func("future[IntPair].then_or_fail", &kaba::KabaFuture<base::tuple<int,int>>::kaba_then_or_fail);
+	ext->link_class_func("future[ComplexPath].__delete__", &kaba::generic_delete<base::future<ComplexPath>>);
+	ext->link_class_func("future[ComplexPath].then", &kaba::KabaFuture<ComplexPath>::kaba_then);
+	ext->link_class_func("future[ComplexPath].then_or_fail", &kaba::KabaFuture<ComplexPath>::kaba_then_or_fail);
 
 #if 0
 	ShaderNode node("");
@@ -418,7 +528,7 @@ void link_component_x(shared<kaba::Module> mm, const string& name) {
 }
 
 void PluginManager::load_project_stuff(const Path &dir) {
-	session->kaba_ctx->register_package_init("yengine", dir.absolute().canonical() | "Scripts/yengine", &::PluginManager::export_kaba_package_yengine);
+	//session->kaba_ctx->register_package_init("yengine", dir.absolute().canonical() | "Scripts/yengine", &::PluginManager::export_kaba_package_yengine);
 	session->kaba_ctx->register_package_init("profiler", dir.absolute().canonical() | "Scripts/profiler", &export_package_profiler);
 	session->kaba_ctx->register_package_init("net", dir.absolute().canonical() | "Scripts/net", &export_package_net);
 
@@ -482,14 +592,24 @@ const kaba::Class* PluginManager::find_class(const Path &filename, const string 
 	return nullptr;
 }
 
-Mode* PluginManager::create_mode(const string& id, Mode* parent) {
-	if (auto c = session->plugin_manager->find_class(session->plugin_manager->directory | "mode" | id + ".kaba", "edward.SubMode")) {
+void object_set_params(void* o, const kaba::Class* type, const Any& params) {
+	for (const auto& e: type->elements)
+		if (params.has(e.name)) {
+			const auto v = params[e.name];
+			void* p = (char*)o + e.offset;
+			kaba::unwrap_any(v, p, e.type);
+		}
+}
+
+Mode* PluginManager::create_mode(const string& id, Mode* parent, const Any& params) {
+	if (auto c = session->plugin_manager->find_class(directory | "mode" | id + ".kaba", "edward.SubMode")) {
 		for (auto ff: c->get_constructors())
 			if (ff->num_params == 2) {
 				auto m = (SubMode*)malloc(c->size);
 				typedef void con_func(void *, void*);
 				if (const auto f = reinterpret_cast<con_func*>(ff->address)) {
 					f(m, parent);
+					object_set_params(m, c, params);
 					return m;
 				}
 			}
@@ -526,21 +646,28 @@ Array<plugin::InstanceDataVariable> load_variables(const kaba::Class* c, const v
 	return variables;
 }
 
-// seems quick enough
 Array<const kaba::Class*> PluginManager::enumerate_classes(const string& full_base_class) {
 	string base_class = full_base_class.explode(".").back();
 	Array<const kaba::Class*> r;
-	auto files = os::fs::search(session->storage->root_dir_kind[FD_SCRIPT], "*.kaba", "rf");
-	for (auto &f: files) {
-		try {
-			auto s = session->kaba_ctx->_load_module_throw(session->storage->root_dir_kind[FD_SCRIPT] | f, false);//, true);
-			for (auto c: s->classes())
-				if (c->is_derived_from_s(full_base_class) and c->name != base_class)
-					r.add(c);
-		} catch (Exception &e) {
-			msg_error(e.message());
+
+	auto find_classes = [&] (const Path& dir, bool is_edward_dir) {
+		const auto files = os::fs::search(dir, "*.kaba", "rf");
+		for (auto &f: files) {
+			if (f.is_in("yengine") != is_edward_dir)
+				continue;
+			try {
+				auto s = session->kaba_ctx->_load_module_throw(dir | f, false);//, true);
+				for (auto c: s->classes())
+					if (c->is_derived_from_s(full_base_class) and c->name != base_class)
+						r.add(c);
+			} catch (Exception &e) {
+				msg_error(e.message());
+			}
 		}
-	}
+	};
+
+	find_classes(directory, true);
+	find_classes(session->storage->root_dir_kind[FD_SCRIPT], false);
 	return r;
 }
 

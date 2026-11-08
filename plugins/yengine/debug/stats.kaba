@@ -1,0 +1,169 @@
+use yengine.*
+use profiler.*
+use image.*
+
+class FpsPanel extends Label
+	func override __init__()
+		super.__init__("", 0.017, [0.01,0.01])
+		dz = 999
+	func mut update()
+		text = "{{1.0/profiler.avg_frame_time()|0.1}}"
+
+
+#func channel_level(channel: i32) -> i32
+#	let parent = profiler.channels()[channel].parent
+#	if parent < 0
+#		return 0
+#	return channel_level(parent) + 1
+
+
+class ProfilerPanel extends Picture
+	let CHANNEL_HEIGHT = 0.015
+	let DISPLAY_HEIGHT = 0.3
+
+	func override __init__()
+		super.__init__([0,1, 0,DISPLAY_HEIGHT], tex_white)
+		align = [0,0]
+		size_mode_x = Node.SizeMode.FILL
+		color.a = 0
+		visible = false
+
+
+	func mut add_graph(data: profiler.TimingData[], scale: f32, y0: f32, title: string)
+		var started: profiler.TimingData[]
+		var channels = profiler.channels()
+		for t in data
+			if (t.channel & 0x80000000) == 0
+				started.add(t)
+			else
+				let c = t.channel & 0x0000ffff
+				for i=>s in started
+					if s.channel == c
+						let level = len(started) - 1 # channel_level(c)
+						let x = s.offset * scale
+						let dt = t.offset - s.offset
+						let w = dt * scale
+						let y = y0 - CHANNEL_HEIGHT * (level+1)
+						var p = new Picture([x, x + w, y, y + CHANNEL_HEIGHT], tex_white)
+						p.color = Color.hsb(c * 3.4151, 0.3, 0.6, 1.0)
+						add(give(p))
+						if w > 0.02
+							var ll = channels[c].name
+							if w > 0.1
+								ll += " {{dt * 1000|0.2}}"
+							let label = new Label(ll, CHANNEL_HEIGHT*0.6, [x+0.001, y+0.002])
+							add(give(label))
+						started.remove(i)
+						break
+		var label = new Label(title, DISPLAY_HEIGHT*0.15, [engine.physical_aspect_ratio-0.14, y0-DISPLAY_HEIGHT*0.35])
+		label.color.a = 0.3
+		add(give(label))
+
+
+	func mut update()
+		remove_all_children()
+
+		# background
+		for i in 0:2
+			var bg = new Picture([0,1, i*DISPLAY_HEIGHT/2,(i+1)*DISPLAY_HEIGHT/2], tex_white)
+			bg.align = [0,0]
+			bg.size_mode_x = Node.SizeMode.FILL
+			let f = f32(i) * 0.1 + 0.1
+			bg.color = [f,f,f, 0.7]
+			add(give(bg))
+
+		let frame_t = profiler.previous_frame_timing().total_time
+		var scale = engine.physical_aspect_ratio / frame_t
+
+		# ms ticks
+		if frame_t < 0.1
+			var dt = if frame_t > 0.02
+				0.005
+			else
+				0.001
+			for t in dt:frame_t:dt
+				var p = new Picture([t*scale, t*scale+0.002, 0, DISPLAY_HEIGHT], tex_white)
+				p.color = [1,1,1,0.15]
+				add(give(p))
+				var l = new Label(" {{t*1000|0.0}} ms", CHANNEL_HEIGHT, [t*scale,0])
+				l.color.a = 0.5
+				add(give(l))
+
+		add_graph(profiler.previous_frame_timing().cpu0, scale, DISPLAY_HEIGHT, "CPU")
+		add_graph(profiler.previous_frame_timing().gpu, scale, DISPLAY_HEIGHT/2, "GPU")
+
+
+class HistoryPanel extends Picture
+	let W = 256
+	let H = 64
+
+	func override __init__()
+		super.__init__([0,0.4, 0.3,0.4], tex_white)
+		align = [0,0]
+		texture = new Texture(W, H, "rgba:i8")
+		visible = false
+
+	func mut update()
+
+	func override on_iterate(dt: f32)
+		let DT = min(max(profiler.history().total_times[-W:]), 0.05)
+		var im: Image
+		im.create(W, H, Color(0,0,0,0))
+		var yprev = 0
+		for i=>h in profiler.history().total_times[-W:]
+			let y = clamp(i32(h / DT * H), 0, H)
+			for _y in 0:y
+				im.set_pixel(i, H-_y-1, Color.GRAY.with_alpha(0.3))
+			for _y in yprev:y+1
+				im.set_pixel(i, H-_y-1, Color.WHITE)
+			yprev = y
+
+		for i in 0:W
+			let y = i32(0.01 / DT * H)
+			for k in 0:5
+				im.set_pixel(i, H-y*k-1, Color.GRAY)
+
+		texture!.write(im)
+
+
+class ProfilerDisplay extends System
+	var t_fps = 0.0
+	var t_stat: f32?
+	var profiler_panel: shared![ProfilerPanel]
+	var history_panel: shared![HistoryPanel]
+	var fps_panel: shared![FpsPanel]
+
+
+	func override on_finished_loading()
+		profiler_panel = new ProfilerPanel()
+		toplevel.add(profiler_panel)
+		history_panel = new HistoryPanel()
+		toplevel.add(history_panel)
+		fps_panel = new FpsPanel()
+		toplevel.add(fps_panel)
+
+
+	func override on_key_down(k: Key)
+		if k == Key.CONTROL + Key.T
+			profiler_panel.visible = not profiler_panel.visible
+			profiler_panel.update()
+			history_panel.visible = profiler_panel.visible
+			t_stat = 0
+		if k == Key.CONTROL + Key.R
+			profiler_panel.update()
+			t_stat = nil
+
+
+	func override on_iterate(dt: f32)
+		t_fps += engine.elapsed_rt
+		if t_fps > 0.3
+			fps_panel.update()
+			t_fps = 0
+		for t in t_stat
+			t_stat = t + engine.elapsed_rt
+			if t > 1.3
+				if profiler_panel.visible
+					profiler_panel.update()
+					history_panel.update()
+				t_stat = 0
+

@@ -1,12 +1,13 @@
-#use hui
-#use gl
 use image.Painter
 use os
 use obs
-#import x
+use async.*
 use yrenderer
-use .common.*
-use .multiview.*
+use yengine
+use xhui
+use out .common.*
+use out .multiview.*
+use out .world.*
 
 
 
@@ -18,7 +19,7 @@ use .multiview.*
 class extern Mode as obs.Node
 	func extern mut __init__(doc: DocumentSession&)
 
-#	var out_redraw: obs.Source[void]
+	var out_redraw: obs.Source
 
 	# this or a child
 	func virtual extern mut on_enter_rec()
@@ -56,23 +57,23 @@ class extern Mode as obs.Node
 	var doc: DocumentSession&
 	var session: Session&
 	var multi_view: MultiView*
-#	history::Data* generic_data = nullptr;
-#	history::Data* get_data() const { return generic_data; }
+	var data: Data& # override!
+
 	func virtual extern get_filename() -> os.Path
 	func virtual extern is_save_state() -> bool
 	func virtual extern is_undoable() -> bool
 	func virtual extern is_redoable() -> bool
-#
-#	xhui::Panel* dialog = nullptr;
+
+	var dialog: shared[xhui.Panel]
 #	xhui::Panel* overlay_panel = nullptr;
-#	void set_overlay_panel(xhui::Panel* p);
+	func extern set_overlay_panel(p: shared[xhui.Panel])
 
 #	xhui::Panel* side_panel = nullptr;
-#	void set_side_panel(xhui::Panel* p);
+	func extern set_side_panel(p: shared[xhui.Panel])
 
 
 class extern SubMode extends Mode
-	var _parent: Mode*
+	var parent: Mode* # override!
 
 	func extern mut __init__(parent: Mode&)
 
@@ -97,25 +98,58 @@ class extern SubMode extends Mode
 #	var data: DataWorld&
 
 
+class FloatDialog
+	func extern static ask(parent: xhui.Panel, question: string, f: f32) -> future[f32]
+
+struct IntPair
+	var a, b: i32
+
+class IntPairDialog
+	func extern static ask(parent: xhui.Panel, question: string, a: i32, b: i32) -> future[IntPair]
+
+
+class extern ResourceManager #extends yengine.ResourceManager
+	var map_dir: os.Path
+	func extern is_from_file(t: yengine.Terrain*) -> bool
+	func extern is_from_file(t: yrenderer.Material*) -> bool
+	func extern filename(t: yengine.Terrain*) -> os.Path
+	func extern filename(t: yrenderer.Material*) -> os.Path
+
+
 class extern DrawingHelper
+#	let COLOR_X = Color(0.9, 0.6, 0.1, 1).srgb_to_linear()
+	let COLOR_X = Color.WHITE
+	let LINE_THIN = 2.0
+
+
+struct extern ComplexPath
+	var complete: os.Path
+	var relative: os.Path
+	var simple: os.Path #/relative_no_extension
+	var type: DataType
+
+
+class extern Storage
+	func extern load(filename: os.Path, data: Data&, deep=true) -> bool
+	func extern save(filename: os.Path, data: Data&) -> bool
+
+	func extern auto_save(data: Data&) -> future[void]
+	func extern open(data: Data&) -> future[void]
+	func extern save_as(data: Data&) -> future[void]
+	func extern file_dialog(type: DataType, save: bool, force_in_root_dir=true) -> future[ComplexPath]
 
 
 class extern Session
 	var ctx: yrenderer.Context&
-	#var resource_manager: ResourceManager&
+	var resource_manager: ResourceManager&
 	var drawing_helper: DrawingHelper&
 	var line_helper: yrenderer.LineHelper&
+	var storage: Storage&
+	var win: xhui.Window&
 
 	func extern info(message: string)
 	func extern warning(message: string)
 	func extern error(message: string)
-
-
-#	var mode_model: ModeModel*
-#	var mode_material: ModeMaterial*
-#	var mode_world: ModeWorld*
-#	var storage: Storage&
-#	var win: hui.Window&
 
 
 

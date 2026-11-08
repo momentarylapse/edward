@@ -1,0 +1,111 @@
+use kaba
+use .common.*
+
+#class extern Model
+#class extern RigidBody
+
+struct extern BaseClass
+	#func extern __init__()
+	func extern virtual __delete__()
+	func extern virtual mut on_init()
+	func extern virtual mut on_delete()
+	func extern virtual mut on_iterate(dt: float)
+
+struct extern Entity
+	var pos: vec3
+	var ang: Quaternion
+	var parent: Entity*
+	func extern get_matrix() -> mat4
+	func extern __del_override__()
+
+	func extern selfref mut __add_component(t: kaba.Class*, vars: string) -> Component&
+	func extern selfref __get_component(t: kaba.Class*) -> Component*
+	func extern selfref __get_component_derived(t: kaba.Class*) -> Component*
+
+	func selfref mut add_component[T](vars: string = "") -> T&
+		return __add_component(T, vars) as T&
+	func selfref get_component[T]() -> T*
+		return __get_component(T) as T*
+	func selfref get_component_derived[T]() -> T*
+		return __get_component_derived(T) as T*
+
+	func extern mut delete_component(c: Component&)
+
+
+
+struct extern CollisionData
+	var entity: Entity&
+	#var body: RigidBody*
+	var pos, n: vec3
+
+
+# always let the engine create/delete!
+class extern Component
+	func extern __init__()
+	func extern virtual __delete__()
+	func extern virtual mut on_init()
+	func extern virtual mut on_delete()
+	func extern virtual mut on_iterate(dt: float)
+	func extern virtual mut on_collide(col: CollisionData)
+	func extern mut set_variables(vars: string)
+	var owner: Entity&
+	use owner
+
+
+func extern globalref __get_component_list(t: kaba.Class*) -> (Component&)[]&
+func globalref get_component_list[T]() -> (T&)[]&
+	return __get_component_list(T) as (T&)[]&
+func globalref query1[T]() -> (T&)[]&
+	return __get_component_list(T) as (T&)[]&
+
+func extern globalref __get_component_family_list(t: kaba.Class*) -> (Component&)[]&
+func globalref get_component_family_list[T]() -> (T&)[]&
+	return __get_component_family_list(T) as (T&)[]&
+
+func extern globalref __get_component_list2(t1: kaba.Class*, t2: kaba.Class*) -> (Entity&,Component&,Component&)[]&
+func globalref query2[T1,T2]() -> (Entity&,T1&,T2&)[]&
+	return __get_component_list2(T1,T2) as (Entity&,T1&,T2&)[]&
+
+#func ffff()
+#	get_component_list[int]()
+
+
+struct extern ComponentInfo
+	var e: Entity&
+	var c: Component&
+	var type: kaba.Class*
+	func selfref get[T]() -> T*
+		if type == T
+			return c as T*
+		return nil
+
+
+class extern System extends BaseClass
+	func extern override __init__()
+	func extern override __delete__()
+
+	# common
+#	extern virtual void on_iterate(float dt)
+	func extern virtual mut on_finished_loading()
+	func extern virtual mut on_key_down(key: Key)
+	func extern virtual mut on_key_up(key: Key)
+	func extern virtual mut on_left_button_down()
+	func extern virtual mut on_left_button_up()
+	func extern virtual mut on_middle_button_down()
+	func extern virtual mut on_middle_button_up()
+	func extern virtual mut on_right_button_down()
+	func extern virtual mut on_right_button_up()
+	func extern virtual mut on_input()
+	func extern virtual mut on_add_component(out c: ComponentInfo)
+	func extern virtual mut on_remove_component(out c: ComponentInfo)
+
+	# rare
+	func extern virtual mut on_iterate_pre(dt: f32)
+	func extern virtual mut on_draw_pre()
+	func extern virtual mut on_render_inject()
+
+
+func extern globalref __get_system(type: kaba.Class*) -> System*
+func globalref get_system[T]() -> T*
+	return __get_system(T) as T*
+

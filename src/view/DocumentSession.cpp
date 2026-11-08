@@ -16,6 +16,8 @@
 #include <lib/xhui/controls/MenuBar.h>
 #include <lib/xhui/controls/Toolbar.h>
 
+#include "stuff/PluginManager.h"
+
 
 DocumentSession::DocumentSession(Session* _session) {
 	session = _session;
@@ -64,6 +66,13 @@ void DocumentSession::set_mode(Mode *m) {
 			set_mode_now(m);
 		});
 	});
+}
+
+void DocumentSession::set_sub_mode(const string& id, const Any& params) {
+	if (auto m = session->plugin_manager->create_mode(id, cur_mode, params))
+		set_mode(m);
+	else
+		session->error("invalid mode: " + id);
 }
 
 // <to> must be BELOW <from>!

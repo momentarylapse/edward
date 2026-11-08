@@ -1,0 +1,15 @@
+use yengine.*
+
+class ZBufferDebugger extends System
+	var pic: shared![Picture][]
+	func override on_finished_loading()
+		for shared i=>db in engine.camera_renderers[0].get_shadow_map()
+			pic.add(new Picture([0.2,0.4, 0.0+0.2*i,0.2+0.2*i], db, [0,1, 0,1]))
+
+		for p in pic
+			toplevel.add(p)
+
+#	func override on_draw_pre()
+#		for p in pic
+#			p.source = [0,engine.renderer.resolution_scale.x, 1, 1-engine.renderer.resolution_scale.y]
+

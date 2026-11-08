@@ -1,0 +1,17 @@
+use yengine.*
+use os
+use image.Image
+
+
+class VideoCapturer extends System
+	var frame = 0
+
+	func override on_init()
+		os.fs.create_directory("video")!
+
+	func override on_iterate(dt: f32)
+		var im: Image
+		screenshot(im)
+		im.save("video/{{frame|04}}.bmp")
+		frame ++
+
