@@ -34,6 +34,7 @@ void Module::load(const Path &_filename, bool _just_analyse) {
 	just_analyse = _just_analyse;
 
 	filename = absolute_module_path(_filename);
+	msg_write(str(filename));
 
 	tree->base_class->name = filename.basename().replace(".kaba", "");
 

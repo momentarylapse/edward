@@ -775,10 +775,10 @@ void Compiler::_compile() {
 
 	//_expand(Opcode,OpcodeSize);
 
-	if (module->show_compiler_stats) {
+	/*if (module->show_compiler_stats) {
 		msg_write("--------------------------------");
 		msg_write(format("Opcode: %db, Memory: %db", module->opcode_size, module->memory_size));
-	}
+	}*/
 	if (config.allow_output_stage("dasm"))
 		msg_write(Asm::disassemble(module->opcode, module->opcode_size));
 
