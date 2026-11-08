@@ -11,7 +11,6 @@
 #include <y/world/components/Light.h>
 #include <y/ecs/Entity.h>
 #include <stuff/PluginManager.h>
-#include <cmath>
 #include <view/DrawingHelper.h>
 #include <lib/base/iter.h>
 #include <lib/os/msg.h>
@@ -20,6 +19,8 @@
 #include <lib/yrenderer/scene/path/RenderPathForward.h>
 #include <lib/yrenderer/target/XhuiRenderer.h>
 #include <lib/yrenderer/post/HDRResolver.h>
+#include <cmath>
+
 
 class CPEmitter : public yrenderer::MeshEmitter {
 public:

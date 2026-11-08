@@ -566,8 +566,6 @@ add_executable(edward
 	src/mode_world/terrain/action/ActionWorldAddTerrain.cpp
 	src/mode_world/terrain/action/ActionWorldEditTerrainMetaData.cpp
 	src/mode_world/terrain/action/ActionWorldResizeTerrain.cpp
-	src/mode_world/terrain/dialog/EditTerrainPanel.cpp
-	src/mode_world/terrain/ModeEditTerrain.cpp
 	src/mode_world/ModeWorld.cpp
 	src/storage/format/old/LoadModelV11.cpp
 	src/storage/format/old/LoadWorldV9V10.cpp
@@ -580,6 +578,7 @@ add_executable(edward
 	src/storage/format/FormatTerrain.cpp
 	src/storage/format/FormatWorld.cpp
 	src/storage/Storage.cpp
+	src/stuff/export.cpp
 	src/stuff/PluginManager.cpp
 	src/test/MeshTest.cpp
 	src/test/UnitTest.cpp

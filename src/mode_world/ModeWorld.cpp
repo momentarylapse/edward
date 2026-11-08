@@ -3,55 +3,53 @@
 //
 
 #include "ModeWorld.h"
-#include "terrain/ModeEditTerrain.h"
 #include "dialog/WorldSidePanel.h"
 #include "action/ActionWorldMoveSelection.h"
 #include <Session.h>
-#include <lib/base/iter.h>
-#include <lib/kaba/kaba.h>
-#include <lib/os/filesystem.h>
 #include <view/multiview/MultiView.h>
 #include <view/multiview/MultiViewPanel.h>
 #include <view/DocumentSession.h>
 #include "data/DataWorld.h"
+#include <lib/base/iter.h>
+#include <lib/kaba/kaba.h>
+#include <lib/os/filesystem.h>
 #include <lib/yrenderer/Renderer.h>
 #include <lib/yrenderer/scene/RenderViewData.h>
 #include <lib/yrenderer/scene/SceneView.h>
-#include <y/helper/ResourceManager.h>
-#include <lib/yrenderer/Material.h>
-#include <y/world/components/Camera.h>
-#include <y/world/components/Light.h>
-#include <y/world/components/Link.h>
-#include <y/world/components/Animator.h>
-#include <ecs/Entity.h>
-#include <y/world/components/Collider.h>
-#include <y/world/Model.h>
-#include <y/world/ModelManager.h>
-#include <y/world/Terrain.h>
-#include <y/world/World.h>
+#include <lib/xhui/Menu.h>
 #include <lib/ygraphics/graphics-impl.h>
 #include <lib/os/msg.h>
 #include <lib/os/terminal.h>
 #include <lib/xhui/config.h>
 #include <lib/xhui/controls/Toolbar.h>
-#include <storage/Storage.h>
-#include <view/EdwardWindow.h>
-#include <view/multiview/ActionController.h>
-#include <view/DrawingHelper.h>
-#include "dialog/PropertiesDialog.h"
-#include <cmath>
-
+#include <lib/yrenderer/helper/LineHelper.h>
+#include <lib/yrenderer/Material.h>
 #include <lib/polymesh/Polygon.h>
 #include <lib/polymesh/Mesh.h>
 #include <lib/polymesh/create/Sphere.h>
 #include <lib/polymesh/create/Cylinder.h>
+#include <y/world/components/Camera.h>
+#include <y/world/components/Light.h>
+#include <y/world/components/Link.h>
+#include <y/world/components/Animator.h>
+#include <y/ecs/Entity.h>
 #include <y/world/systems/AnimationManager.h>
 #include <y/ecs/EntityManager.h>
 #include <y/ecs/SystemManager.h>
+#include <y/world/components/Collider.h>
+#include <y/world/Model.h>
+#include <y/world/ModelManager.h>
+#include <y/world/Terrain.h>
+#include <y/world/World.h>
+#include <y/helper/ResourceManager.h>
+#include <storage/Storage.h>
+#include <view/EdwardWindow.h>
+#include <view/multiview/ActionController.h>
+#include <view/DrawingHelper.h>
+#include <stuff/PluginManager.h>
+#include "dialog/PropertiesDialog.h"
+#include <cmath>
 
-#include "lib/xhui/Menu.h"
-#include "lib/yrenderer/helper/LineHelper.h"
-#include "stuff/PluginManager.h"
 
 
 yrenderer::Material* create_material(yrenderer::Context* ctx, const color& albedo, float roughness, float metal, const color& emission, bool transparent = false);

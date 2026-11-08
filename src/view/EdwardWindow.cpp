@@ -3,9 +3,19 @@
 //
 
 #include "EdwardWindow.h"
+#include "Mode.h"
+#include "MaterialPreviewManager.h"
+#include "multiview/ActionController.h"
+#include "DrawingHelper.h"
+#include "multiview/MultiView.h"
+#include "DocumentSession.h"
+#include "dialogs/DocumentSwitcher.h"
+#include "dialogs/ProjectPanel.h"
+#include "dialogs/SettingsDialog.h"
+#include <lib/base/iter.h>
 #include <lib/xhui/xhui.h>
 #include <lib/xhui/Painter.h>
-#include <lib/xhui/Context.h>
+//#include <lib/xhui/Context.h>
 #include <lib/xhui/Dialog.h>
 #include <lib/xhui/Theme.h>
 #include <lib/xhui/controls/DrawingArea.h>
@@ -21,24 +31,13 @@
 #include <lib/yrenderer/helper/LineHelper.h>
 #include <lib/ygraphics/ShaderManager.h>
 #include <y/EngineData.h>
-#include "multiview/ActionController.h"
-#include "DrawingHelper.h"
-#include "multiview/MultiView.h"
-#include "DocumentSession.h"
-#include "dialogs/DocumentSwitcher.h"
-#include "dialogs/ProjectPanel.h"
-#include "dialogs/SettingsDialog.h"
 #include <y/helper/ResourceManager.h>
+#include <y/plugins/PluginManager.h>
 #include <storage/Storage.h>
 #include <stuff/PluginManager.h>
-#include "Mode.h"
 #include <lib/history/Data.h>
 #include <Session.h>
 #include <cmath>
-
-#include "MaterialPreviewManager.h"
-#include <lib/base/iter.h>
-#include <plugins/PluginManager.h>
 
 
 extern string AppName;
