@@ -274,7 +274,7 @@ namespace vulkan {
 	}
 
 	void Shader::set_meta(const string& bindings, int _push_size) {
-		push_size = push_size;
+		push_size = _push_size;
 		descr_layouts = DescriptorSet::parse_bindings(bindings);
 	}
 
