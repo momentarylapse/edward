@@ -77,6 +77,8 @@ Face* load_face(FT_Library ft2, const string& name, bool bold, bool italic, cons
 	candidates.add(format("/usr/share/fonts/noto/%s-%s.ttf", name, type));
 	candidates.add(format("/usr/share/fonts/open-sans/%s-%s.ttf", name, type));
 	candidates.add(format("/usr/share/fonts/Adwaita/%s-%s.ttf", name, type));
+	candidates.add(format("/usr/share/fonts/adwaita-sans-fonts/%s-%s.ttf", name, type));
+	candidates.add(format("/usr/share/fonts/adwaita-mono-fonts/%s-%s.ttf", name, type));
 	candidates.add(format("/usr/share/fonts/opentype/cantarell/%s-VF.otf", name));
 	candidates.add(format("/usr/share/fonts/truetype/freefont/%s.ttf", namex.replace(" ", "")));
 	candidates.add(format("/usr/share/fonts/truetype/dejavu/%s.ttf", namex.replace(" ", "-")));
