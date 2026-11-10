@@ -34,9 +34,11 @@ void Module::load(const Path &_filename, bool _just_analyse) {
 	just_analyse = _just_analyse;
 
 	filename = absolute_module_path(_filename);
-	msg_write(str(filename));
 
-	tree->base_class->name = filename.basename().replace(".kaba", "");
+	if (config.show_filenames)
+		msg_write("loading " + str(filename));
+
+	tree->base_class->name = filename.basename_no_ext();
 
 	auto parser = new Parser(tree.get());
 	tree->parser = parser;
@@ -90,8 +92,6 @@ void Module::set_variable(const string &name, void *data) {
 Module::Module(Context *c, const Path &_filename) {
     context = c;
 	filename = _filename;
-
-	show_compiler_stats = !config.compile_silently;
 
 	just_analyse = false;
 

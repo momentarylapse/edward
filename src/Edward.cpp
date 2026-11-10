@@ -199,6 +199,7 @@ int main(const Array<string>& args) {
 
 	profiler::init();
 	kaba::init();
+	kaba::config.show_filenames = true;
 	syntaxhighlight::init();
 	syntaxhighlight::default_theme = syntaxhighlight::get_theme("dark2");
 
