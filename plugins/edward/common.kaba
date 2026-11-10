@@ -32,8 +32,16 @@ class extern Data as obs.Node
 	var file_time: i32
 	var type: DataType
 	var out_changed: obs.Source
-	func extern begin_action(name: string)
-	func extern end_action()
+	func extern mut __init__()
+	func extern virtual mut __delete__()
+	func extern virtual mut reset()
+	func extern mut reset_history()
+	func extern mut begin_action(name: string)
+	func extern mut end_action()
+	func extern mut undo()
+	func extern mut redo()
+	func extern undoable() -> bool
+	func extern redoable() -> bool
 
 
 

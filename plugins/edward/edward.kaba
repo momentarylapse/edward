@@ -146,6 +146,13 @@ class extern Session
 	var line_helper: yrenderer.LineHelper&
 	var storage: Storage&
 	var win: xhui.Window&
+	var cur_doc: DocumentSession&
+
+	func extern mut load_project(dir: os.Path)
+	func extern static guess_root_directory(filename: os.Path) -> os.Path
+	func extern mut universal_new(type: DataType)
+	func extern mut universal_open(type: DataType)
+	func extern mut universal_edit(type: DataType, filename: os.Path, relative: bool)
 
 	func extern info(message: string)
 	func extern warning(message: string)
@@ -155,7 +162,10 @@ class extern Session
 
 class extern DocumentSession
 	var session: Session&
-	func extern set_mode(mode: Mode&)
+	var cur_mode: Mode&
+	func extern mut set_mode(mode: Mode&)
+	func extern mut set_document_panel(panel: shared[xhui.Panel])
+	func extern mut event(id: string, f: void->void)
 
 
 var extern cur_session: Session&

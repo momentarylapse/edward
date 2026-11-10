@@ -1,0 +1,104 @@
+use edward.*
+use codeeditor
+use os
+use obs
+use xhui
+
+
+class CodeData extends Data
+
+
+class ModeCoding extends Mode
+	var _data: owned![CodeData]
+	var override data: CodeData&
+	var editor: shared![codeeditor.CodeEditor]
+
+	var _filename_to_load: os.Path
+	var _requested_offset = 0
+
+
+	func override __init__(_doc: DocumentSession&)
+		super.__init__(_doc)
+		toolbar_id = "coding-toolbar"
+		menu_id = "menu-coding"
+		_data = new CodeData()
+		data := weak(_data)
+		editor = new shared codeeditor.CodeEditor()
+		doc.set_document_panel(editor)
+
+		editor.out_changed >> create_sink(func()
+			data.out_changed()
+		end)
+		editor.out_info >> create_data_sink[string](on_editor_info)
+		editor.out_error >> create_data_sink[string](on_editor_error)
+		editor.out_request_open_file >> create_data_sink[codeeditor.Location](on_editor_request_open_file)
+#		editor.out_info >> create_data_sink[string](func(msg: string)
+#			session.info(msg)
+#		end)
+#		editor.out_error >> create_data_sink[string](func(msg: string)
+#			session.error(msg)
+#		end)
+	#	editor.out_request_open_file >> create_data_sink[codeedit.CodeEditor.Location](func (l: codeedit.CodeEditor.Location l)
+	#		session.universal_edit(DataType.SCRIPT, l.filename, false)
+	#		xhui.run_later(0.1, func()
+	#			auto e =reinterpret_cast<ModeCodingX*>(session->cur_doc->cur_mode)->editor->edit;
+	#			e->set_cursor_pos(l.offset, xhui::CursorMovingMode::ShowContext);
+	#		end)
+	#	end)
+
+	func on_editor_info(msg: string)
+		session.info(msg)
+
+	func on_editor_error(msg: string)
+		session.error(msg)
+
+	func mut on_editor_request_open_file(l: codeeditor.Location)
+		session.universal_edit(DataType.SCRIPT, l.filename, false)
+		_requested_offset = l.offset
+		xhui.run_later(0.1, func()
+			var m = session.cur_doc.cur_mode as ModeCoding&
+			m.editor.set_cursor_pos(_requested_offset)
+		end)
+
+
+	func override on_enter_rec()
+		load(_filename_to_load)
+
+
+	func mut load(_filename: os.Path)
+		let filename = _filename.absolute().canonical()
+		session.load_project(Session.guess_root_directory(filename))
+		editor.load(filename)
+		data.filename = filename
+		data.reset_history()
+		data.out_changed()
+
+
+	func override on_connect_events_rec()
+		doc.event("compile", func()
+			editor.show_errors()
+		end)
+
+
+	func override on_leave_rec()
+
+
+	func override on_command(id: string)
+		match id
+			"new" => session.universal_new(DataType.SCRIPT)
+			"open" => session.universal_open(DataType.SCRIPT)
+			"save" =>
+				editor.save(get_filename())
+				#session.storage.save(get_filename(), data)
+			"undo" => editor.undo()
+			"redo" => editor.redo()
+			else => pass
+
+	func override is_save_state() -> bool
+		return editor.is_save_state()
+
+	func override is_undoable() -> bool
+		return editor.is_undoable()
+
+	func override is_redoable() -> bool
+		return editor.is_redoable()

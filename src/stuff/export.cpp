@@ -31,6 +31,15 @@ namespace edward {
 
 extern Session* cur_session;
 
+class DocumentSessionWrapper: public DocumentSession {
+public:
+	void event_kaba(const string& id, Callable<void()>& f) {
+		event(id, [&f] {
+			f();
+		});
+	}
+};
+
 void link_mesh(kaba::ExternalLinkData* ext) {
 	// TODO use polymesh instead
 
@@ -372,14 +381,29 @@ void link_mode(kaba::ExternalLinkData* ext) {
 }
 
 void link_common(kaba::ExternalLinkData* ext) {
-	ext->declare_class_size("Data", sizeof(history::Data));
-	ext->declare_class_element("Data.filename", &history::Data::filename);
-	ext->declare_class_element("Data.file_time", &history::Data::file_time);
-	ext->declare_class_element("Data.type", &history::Data::type);
-	ext->declare_class_element("Data.out_changed", &history::Data::out_changed);
-	ext->link_class_func("Data.begin_action", &history::Data::begin_action_group);
-	ext->link_class_func("Data.end_action", &history::Data::end_action_group);
-
+	{
+		class XX: public history::Data {
+		public:
+			XX() : Data(0) {}
+			void reset() override {}
+		};
+		XX data;
+		ext->declare_class_size("Data", sizeof(history::Data));
+		ext->declare_class_element("Data.filename", &history::Data::filename);
+		ext->declare_class_element("Data.file_time", &history::Data::file_time);
+		ext->declare_class_element("Data.type", &history::Data::type);
+		ext->declare_class_element("Data.out_changed", &history::Data::out_changed);
+		ext->link_class_func("Data.__init__", &kaba::generic_init<XX>);
+		ext->link_class_func("Data.begin_action", &history::Data::begin_action_group);
+		ext->link_class_func("Data.end_action", &history::Data::end_action_group);
+		ext->link_class_func("Data.undo", &history::Data::undo);
+		ext->link_class_func("Data.redo", &history::Data::redo);
+		ext->link_class_func("Data.undoable", &history::Data::undoable);
+		ext->link_class_func("Data.redoable", &history::Data::redoable);
+		ext->link_class_func("Data.reset_history", &history::Data::reset_history);
+		ext->link_virtual("Data.__delete__", &kaba::generic_virtual<XX>::__delete__, &data);
+		ext->link_virtual("Data.reset", &XX::reset, &data);
+	}
 
 
 
@@ -432,17 +456,24 @@ void link_session(kaba::ExternalLinkData* ext) {
 	ext->declare_class_element("Session.line_helper", &Session::line_helper);
 	ext->declare_class_element("Session.storage", &Session::storage);
 	ext->declare_class_element("Session.win", &Session::win);
+	ext->declare_class_element("Session.cur_doc", &Session::cur_doc);
+	ext->link_class_func("Session.load_project", &Session::load_project);
+	ext->link_class_func("Session.universal_new", &Session::universal_new);
+	ext->link_class_func("Session.universal_open", &Session::universal_open);
+	ext->link_class_func("Session.universal_edit", &Session::universal_edit);
 	ext->link_class_func("Session.info", &Session::info);
 	ext->link_class_func("Session.warning", &Session::warning);
 	ext->link_class_func("Session.error", &Session::error);
+	ext->link("Session.guess_root_directory", (void*)&Session::guess_root_directory);
 
 
 	ext->declare_class_size("DocumentSession", sizeof(DocumentSession));
-	ext->declare_class_element("DocumentSession.mode_model", &DocumentSession::mode_model);
-	ext->declare_class_element("DocumentSession.mode_world", &DocumentSession::mode_world);
-	ext->declare_class_element("DocumentSession.mode_material", &DocumentSession::mode_material);
+	ext->declare_class_element("DocumentSession.root_mode", &DocumentSession::root_mode);
 	ext->declare_class_element("DocumentSession.session", &DocumentSession::session);
+	ext->declare_class_element("DocumentSession.cur_mode", &DocumentSession::cur_mode);
 	ext->link_class_func("DocumentSession.set_mode", &DocumentSession::set_mode);
+	ext->link_class_func("DocumentSession.set_document_panel", &DocumentSession::set_document_panel);
+	ext->link_class_func("DocumentSession.event", &DocumentSessionWrapper::event_kaba);
 
 	ext->link("FloatDialog.ask", (void*)&FloatDialog::ask);
 	ext->link("IntPairDialog.ask", (void*)&IntPairDialog::ask);
@@ -453,6 +484,10 @@ void PluginManager::link_plugins() {
 
 	auto ext = session->kaba_ctx->external.get();
 
+	link_common(ext);
+	link_mode(ext);
+	link_session(ext);
+	link_multiview(ext);
 	link_mesh(ext);
 	link_model(ext);
 	link_world(ext);

@@ -23,7 +23,7 @@ CodeData::CodeData(DocumentSession* doc) : Data(FD_SCRIPT) {
 }
 
 
-ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
+ModeCodingX::ModeCodingX(DocumentSession* doc) : Mode(doc) {
 	editor = new codeedit::CodeEditor();
 	doc->set_document_panel(editor);
 	data = new CodeData(doc);
@@ -44,27 +44,27 @@ ModeCoding::ModeCoding(DocumentSession* doc) : Mode(doc) {
 	editor->out_request_open_file >> create_data_sink<codeedit::CodeEditor::Location>([this] (const codeedit::CodeEditor::Location& l) {
 		session->universal_edit(FD_SCRIPT, l.filename, false);
 		xhui::run_later(0.1f, [l, this] {
-			auto e =reinterpret_cast<ModeCoding*>(session->cur_doc->cur_mode)->editor->edit;
+			auto e =reinterpret_cast<ModeCodingX*>(session->cur_doc->cur_mode)->editor->edit;
 			e->set_cursor_pos(l.offset, xhui::CursorMovingMode::ShowContext);
 		});
 	});
 }
 
-ModeCoding::~ModeCoding() = default;
+ModeCodingX::~ModeCodingX() = default;
 
-void ModeCoding::on_enter_rec() {
+void ModeCodingX::on_enter_rec() {
 }
 
-void ModeCoding::on_connect_events_rec() {
+void ModeCodingX::on_connect_events_rec() {
 	doc->event("compile", [this] {
 		editor->show_errors();
 	});
 }
 
-void ModeCoding::on_leave_rec() {
+void ModeCodingX::on_leave_rec() {
 }
 
-void ModeCoding::on_command(const string& id) {
+void ModeCodingX::on_command(const string& id) {
 	if (id == "new")
 		session->universal_new(FD_SCRIPT);
 	if (id == "open")
@@ -79,10 +79,10 @@ void ModeCoding::on_command(const string& id) {
 		editor->redo();
 }
 
-void ModeCoding::update_menu() {
+void ModeCodingX::update_menu() {
 }
 
-void ModeCoding::load(const Path& _filename) {
+void ModeCodingX::load(const Path& _filename) {
 	auto filename = _filename.absolute().canonical();
 	session->load_project(Session::guess_root_directory(filename));
 	editor->load(filename);
@@ -91,15 +91,15 @@ void ModeCoding::load(const Path& _filename) {
 	data->out_changed();
 }
 
-bool ModeCoding::is_save_state() const {
+bool ModeCodingX::is_save_state() const {
 	return editor->is_save_state();
 }
 
-bool ModeCoding::is_undoable() const {
+bool ModeCodingX::is_undoable() const {
 	return editor->is_undoable();
 }
 
-bool ModeCoding::is_redoable() const {
+bool ModeCodingX::is_redoable() const {
 	return editor->is_redoable();
 }
 

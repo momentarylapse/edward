@@ -68,8 +68,17 @@ void DocumentSession::set_mode(Mode *m) {
 	});
 }
 
+void DocumentSession::set_root_mode(const string& id, const Any& params) {
+	if (auto m = session->plugin_manager->create_root_mode(id, this, params)) {
+		root_mode = m;
+		set_mode(m);
+	} else {
+		session->error("invalid mode: " + id);
+	}
+}
+
 void DocumentSession::set_sub_mode(const string& id, const Any& params) {
-	if (auto m = session->plugin_manager->create_mode(id, cur_mode, params))
+	if (auto m = session->plugin_manager->create_sub_mode(id, cur_mode, params))
 		set_mode(m);
 	else
 		session->error("invalid mode: " + id);

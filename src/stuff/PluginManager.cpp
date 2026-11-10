@@ -10,6 +10,7 @@
 #include <lib/os/filesystem.h>
 #include <lib/plugin/PluginManager.h>
 #include <lib/xhui/_kaba_export.h>
+#include <lib/syntaxhighlight/_kaba_export.h>
 #include <Session.h>
 #include <view/Mode.h>
 #include <mode_model/data/DataModel.h>
@@ -62,6 +63,11 @@ void PluginManager::execute(const Path& filename) {
 //hui::Window *GlobalMainWin = ed;
 
 void PluginManager::init_edward() {
+	msg_error("INIT EDWARD");
+	session->kaba_ctx->register_package_init("codeeditor", directory.absolute().canonical() | "codeeditor", [] (kaba::IExporter* e) {
+		msg_error("INIT CODEEDITOR");
+		_export_package_syntaxhighlight_internal(e);
+	});
 	session->kaba_ctx->register_package_init("xhui", directory.absolute().canonical() | "xhui", &export_package_xhui);
 	session->kaba_ctx->register_package_init("yengine", directory.absolute().canonical() | "yengine", &::PluginManager::export_kaba_package_yengine);
 
@@ -148,7 +154,7 @@ void object_set_params(void* o, const kaba::Class* type, const Any& params) {
 		}
 }
 
-Mode* PluginManager::create_mode(const string& id, Mode* parent, const Any& params) {
+SubMode* PluginManager::create_sub_mode(const string& id, Mode* parent, const Any& params) {
 	if (auto c = session->plugin_manager->find_class(directory | "mode" | id + ".kaba", "edward.SubMode")) {
 		for (auto ff: c->get_constructors())
 			if (ff->num_params == 2) {
@@ -156,6 +162,22 @@ Mode* PluginManager::create_mode(const string& id, Mode* parent, const Any& para
 				typedef void con_func(void *, void*);
 				if (const auto f = reinterpret_cast<con_func*>(ff->address)) {
 					f(m, parent);
+					object_set_params(m, c, params);
+					return m;
+				}
+			}
+	}
+	return nullptr;
+}
+
+Mode* PluginManager::create_root_mode(const string& id, DocumentSession* doc, const Any& params) {
+	if (auto c = session->plugin_manager->find_class(directory | "mode" | id + ".kaba", "edward.Mode")) {
+		for (auto ff: c->get_constructors())
+			if (ff->num_params == 2) {
+				auto m = (Mode*)malloc(c->size);
+				typedef void con_func(void *, void*);
+				if (const auto f = reinterpret_cast<con_func*>(ff->address)) {
+					f(m, doc);
 					object_set_params(m, c, params);
 					return m;
 				}

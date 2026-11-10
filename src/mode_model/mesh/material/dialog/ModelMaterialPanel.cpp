@@ -196,7 +196,7 @@ ModelMaterialPanel::~ModelMaterialPanel() {
 
 
 ModeMesh *ModelMaterialPanel::mode_mesh() {
-	return data->doc->mode_model->mode_mesh.get();
+	return data->doc->root_mode_as<ModeModel>()->mode_mesh.get();
 }
 /*ModeMeshTexture *ModelMaterialPanel::mode_mesh_texture() {
 	return mode_mesh()->mode_mesh_texture;

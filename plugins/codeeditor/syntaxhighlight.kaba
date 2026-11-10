@@ -1,0 +1,77 @@
+use os
+
+enum extern MarkupType
+	WORD
+	SPECIAL
+	COMPILER_FUNCTION
+	OPERATOR_FUNCTION
+	MODIFIER
+	GLOBAL_VARIABLE
+	LOCAL_VARIABLE
+	TYPE
+	LINE_COMMENT
+	COMMENT_LEVEL_1
+	COMMENT_LEVEL_2
+	MACRO
+	SPACE
+	STRING
+	STRING_SUBSTITUTE
+	OPERATOR
+	NUMBER
+	NUM_TYPES
+
+
+struct extern Markup
+	var start, end: i32
+	var type: MarkupType
+
+
+struct extern AutoCompleteData
+	struct extern Item
+		var name, context: string
+	var suggestions: Item[]
+	var offset: i32
+
+
+class extern Parser extends Object
+	struct extern Label
+		var category: string
+		var name: string
+		var line = 0
+		var level = 0
+	struct extern Error
+		var filename: os.Path
+		var message: string
+		var position: i32
+	func extern override __delete__()
+	func extern virtual mut prepare_symbols(text: string, filename: os.Path)
+	func extern virtual mut find_labels(text: string) -> Label[]
+	func extern virtual mut find_errors(text: string) -> Error[]
+	func extern virtual mut word_type(name: string) -> MarkupType
+	func extern virtual mut create_markup(text: string, offset: i32) -> Markup[]
+
+	struct extern SymbolInfo
+		var description: string
+		var filename: os.Path
+		var position: i32
+		var line: i32
+	func extern virtual symbol_info(text: string, offset: i32, length: i32) -> SymbolInfo?
+
+	func extern virtual run_autocomplete(code: string, filename: os.Path, offset: i32) -> AutoCompleteData
+
+
+func extern create_parser(filename: os.Path) -> xfer[Parser]
+
+
+struct extern ThemeContext
+	var fg, bg: Color
+	var set_bg, bold, italic: bool
+
+
+struct extern Theme
+	var name: string
+	var bg: Color
+	var context: ThemeContext[i32(MarkupType.NUM_TYPES)]
+
+
+func extern get_theme() -> Theme&

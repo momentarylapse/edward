@@ -14,11 +14,6 @@
 class Any;
 class Session;
 class Mode;
-
-class ModeModel;
-class ModeMaterial;
-class ModeWorld;
-class ModeCoding;
 class MultiView;
 class DocumentPanel;
 
@@ -42,6 +37,7 @@ public:
 	string grid_id;
 
 	void set_mode(Mode* m);
+	void set_root_mode(const string &id, const Any& params);
 	void set_sub_mode(const string &id, const Any& params);
 
 	Path filename() const;
@@ -49,13 +45,19 @@ public:
 	bool is_save_state() const;
 	string title(bool with_markup = false) const;
 
-	owned<Mode> mode_none;
+	owned<Mode> root_mode;
+	template<class M>
+	M* root_mode_as() {
+		return reinterpret_cast<M*>(root_mode.get());
+	}
+	/*owned<Mode> mode_none;
 	owned<ModeModel> mode_model;
 	owned<ModeMaterial> mode_material;
 	owned<ModeWorld> mode_world;
 	owned<ModeCoding> mode_coding;
 	//ModeFont* mode_font;
-	//ModeAdministration* mode_admin;
+	//ModeAdministration* mode_admin;*/
+
 	Mode* cur_mode = nullptr;
 	Array<Mode*> mode_queue;
 

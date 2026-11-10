@@ -23,10 +23,10 @@ public:
 };
 
 
-class ModeCoding : public Mode {
+class ModeCodingX : public Mode {
 public:
-	explicit ModeCoding(DocumentSession* doc);
-	~ModeCoding() override;
+	explicit ModeCodingX(DocumentSession* doc);
+	~ModeCodingX() override;
 
 	void on_enter_rec() override;
 	void on_leave_rec() override;
