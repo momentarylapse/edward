@@ -46,6 +46,7 @@ class ModeCoding extends Mode
 	#		end)
 	#	end)
 
+
 	func on_editor_info(msg: string)
 		session.info(msg)
 

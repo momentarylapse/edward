@@ -349,6 +349,7 @@ Dialog coding-panel ''
 
 
 	func mut show_errors()
+		parser.prepare_symbols(edit.text, filename)
 		let errors = parser.find_errors(edit.text)
 		if len(errors) > 0
 			let e = errors[0]

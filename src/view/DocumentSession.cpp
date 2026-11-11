@@ -159,7 +159,7 @@ void DocumentSession::set_mode_now(Mode *m) {
 	}
 
 	out_changed();
-	win->request_redraw();
+	session->out_mode_switched();
 }
 
 Path DocumentSession::filename() const {

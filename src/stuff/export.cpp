@@ -333,6 +333,7 @@ void link_mode(kaba::ExternalLinkData* ext) {
 		ext->link_class_func("Mode.set_side_panel", &Mode::set_side_panel);
 		ext->link_class_func("Mode.set_overlay_panel", &Mode::set_overlay_panel);
 
+		ext->link_virtual("Mode.__delete__", &kaba::generic_virtual<Mode>::__delete__, &mode);
 		ext->link_virtual("Mode.on_enter_rec", &Mode::on_enter_rec, &mode);
 		ext->link_virtual("Mode.on_connect_events_rec", &Mode::on_connect_events_rec, &mode);
 		ext->link_virtual("Mode.on_leave_rec", &Mode::on_leave_rec, &mode);

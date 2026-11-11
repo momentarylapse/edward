@@ -18,6 +18,7 @@ use out .world.*
 
 class extern Mode as obs.Node
 	func extern mut __init__(doc: DocumentSession&)
+	func extern virtual mut __delete__()
 
 	var out_redraw: obs.Source
 

@@ -295,13 +295,20 @@ Dialog x x padding=0
 	};
 	update_project_menu();
 	session->out_project_loaded >> create_sink(update_project_menu);
+	session->out_document_switched >> create_sink([this] {
+		update_menu();
+	});
+	session->out_mode_switched >> create_sink([this] {
+		update_menu();
+		request_redraw();
+	});
 
 	project_panel = new ProjectPanel(this);
 	embed("main-grid", 0, 0, project_panel);
 
-	xhui::run_repeated(0.5f, [this] {
+	/*xhui::run_repeated(0.5f, [this] {
 		request_redraw();
-	});
+	});*/
 }
 
 void EdwardWindow::on_key_down(int key) {
