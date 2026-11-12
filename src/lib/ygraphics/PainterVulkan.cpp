@@ -130,6 +130,14 @@ void Painter::draw_rect(const rect& r) {
 	}
 }
 
+void Painter::draw_image(const vec2& p, const ::Image* image) {
+	auto t = aux->get_image_texture(image);
+	t->write(*image);
+
+	auto dset = aux->get_descriptor_set(t);
+	fill_rect(this, {p.x, p.x + image->width, p.y, p.x + image->height}, _color, 0, 0, dset, true);
+}
+
 
 void Painter::set_transform(float rot[], const vec2& _offset) {
 	offset = _offset;

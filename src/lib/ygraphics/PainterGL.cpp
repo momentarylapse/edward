@@ -101,6 +101,21 @@ void Painter::draw_rect(const rect &r) {
 	}
 }
 
+void Painter::draw_image(const vec2& p, const Image* image) {
+	auto t = aux->get_image_texture(image);
+	t->write(*image);
+
+	const auto mat = mat4::translation(vec3(p + offset, 0)) * mat4::scale((float)image->width, (float)image->height, 1);
+	auto s = aux->shader.get();
+	nix::set_shader(s);
+	nix::set_alpha_split(Alpha::SOURCE_ALPHA, Alpha::SOURCE_INV_ALPHA, Alpha::ZERO, Alpha::ONE);
+	s->set_color("color", _color);
+	s->set_matrix("matrix", mat_pixel_to_rel * mat);
+	nix::bind_texture(0, t);
+	nix::draw_triangles(aux->vb);
+	nix::disable_alpha();
+}
+
 
 void Painter::set_transform(float rot[], const vec2& _offset) {
 	offset = _offset;

@@ -187,6 +187,16 @@ VertexBuffer* DrawingHelperData::get_line_vb(bool with_color) {
 	}
 }
 
+Texture* DrawingHelperData::get_image_texture(const Image* image) {
+	if (num_image_textures_used < image_textures.num)
+		return image_textures[num_image_textures_used ++].get();
+
+	auto t = new Texture(image->width, image->height, "rgba:i8");
+	image_textures.add(t);
+	num_image_textures_used ++;
+	return t;
+}
+
 void critical_error(const string& err) {
 	msg_error(err);
 	os::app::exit(1);

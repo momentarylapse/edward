@@ -56,6 +56,10 @@ struct DrawingHelperData {
 	VertexBuffer* get_line_vb(bool with_color = false);
 	const mat4* projection_matrix = nullptr;
 
+	shared_array<Texture> image_textures;
+	int num_image_textures_used = 0;
+	Texture* get_image_texture(const ::Image* image);
+
 	void reset_frame();
 };
 
