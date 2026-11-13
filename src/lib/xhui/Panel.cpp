@@ -178,6 +178,12 @@ void Panel::add_string(const string& id, const string& text) {
 			c->add_string(text);
 }
 
+void Panel::set_cell(const string& id, int row, int col, const string& s) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_cell(row, col, s);
+}
+
 void Panel::set_float(const string& id, float value) {
 	for (auto& c: controls)
 		if (c->id == id)
@@ -202,10 +208,23 @@ void Panel::set_color(const string& id, const color& col) {
 			c->set_color(col);
 }
 
+void Panel::set_selection(const string& id, const Array<int>& sel) {
+	for (auto& c: controls)
+		if (c->id == id)
+			c->set_selection(sel);
+}
+
 string Panel::get_string(const string& id) const {
 	for (auto& c: controls)
 		if (c->id == id)
 			return c->get_string();
+	return "";
+}
+
+string Panel::get_cell(const string& id, int row, int col) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_cell(row, col);
 	return "";
 }
 
@@ -235,6 +254,13 @@ color Panel::get_color(const string& id) const {
 		if (c->id == id)
 			return c->get_color();
 	return Black;
+}
+
+Array<int> Panel::get_selection(const string &id) const {
+	for (auto& c: controls)
+		if (c->id == id)
+			return c->get_selection();
+	return {};
 }
 
 void Panel::reset(const string& id) {

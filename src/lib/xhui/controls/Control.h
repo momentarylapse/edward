@@ -57,6 +57,7 @@ public:
 	virtual bool is_checked() { return false; }
 	virtual color get_color() { return Black; }
 	virtual Array<int> get_selection() { return {}; }
+	virtual void set_selection(const Array<int>& sel) {}
 	virtual void enable(bool enabled);
 	void set_option(const string& key, const string& value) override;
 

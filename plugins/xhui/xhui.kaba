@@ -55,25 +55,26 @@ class extern Control extends Object as Sharable
 	func extern mut request_redraw()
 	func extern virtual mut add_child(c: shared![Control], x: i32, y: i32)
 	func extern virtual mut remove_child(c: void*)
+	func extern virtual get_string() -> string
 	func extern virtual mut set_string(s: string)
 	func extern virtual mut add_string(s: string)
+	func extern virtual get_cell(row: i32, col: i32)
 	func extern virtual mut set_cell(row: i32, col: i32, s: string)
 	func extern virtual mut reset()
-	func extern virtual mut set_int(i: i32)
-	func extern virtual mut set_float(f: f32)
-	func extern virtual mut check(checked: bool)
-	func extern virtual mut expand(expanded: bool)
-	func extern virtual mut set_color(c: Color)
-	func extern virtual get_string() -> string
-	func extern virtual get_cell(row: i32, col: i32)
 	func extern virtual get_int() -> i32
+	func extern virtual mut set_int(i: i32)
 	func extern virtual get_float() -> f32
+	func extern virtual mut set_float(f: f32)
 	func extern virtual is_checked() -> bool
+	func extern virtual mut check(checked: bool)
 	func extern virtual get_color() -> Color
+	func extern virtual mut set_color(c: Color)
 	func extern virtual get_selection() -> i32[]
+	func extern virtual mut set_selection(sel: i32[])
 	func extern virtual mut enable(enabled: bool)
+	func extern virtual mut expand(expanded: bool)
 	func extern virtual mut set_option(key: string, valu: string)
-	func extern virtual get_children(_filter: i32) -> Control&[]
+	func extern virtual selfref get_children(_filter: i32) -> Control&[]
 
 	func extern virtual mut on_mouse_move(m: vec2)
 	func extern virtual mut on_mouse_wheel(d: vec2)
@@ -189,11 +190,11 @@ class extern Panel extends Control
 	func extern get_int(id: string) -> i32
 	func extern mut set_color(id: string, c: Color)
 	func extern get_color(id: string) -> Color
-#	func extern mut set_selection(id: string, sel: i32[])
-#	func extern get_selection(id: string) -> i32[]
+	func extern mut set_selection(id: string, sel: i32[])
+	func extern get_selection(id: string) -> i32[]
 #	func extern mut set_image(id: string, image: string)
-#	func extern mut set_cell(id: string, row: i32, column: i32, s: string)
-#	func extern get_cell(id: string, row: i32, column: i32) -> string
+	func extern mut set_cell(id: string, row: i32, column: i32, s: string)
+	func extern get_cell(id: string, row: i32, column: i32) -> string
 	func extern mut set_options(id: string, options: string)
 	func extern mut reset(id: string)
 #	func extern redraw(id: string)

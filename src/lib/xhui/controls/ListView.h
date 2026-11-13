@@ -4,6 +4,7 @@
 
 #include "Label.h"
 #include "Viewport.h"
+#include <lib/base/set.h>
 
 namespace xhui {
 
@@ -20,10 +21,11 @@ public:
 	string get_cell(int row, int col) override;
 	int get_int() override;
 	Array<int> get_selection() override;
+	void set_selection(const Array<int>& sel) override;
 	void set_option(const string& key, const string& value) override;
 	Array<const Node*> _get_children(ChildFilter f) const override;
 
-	void _update_selection(const Array<int>& sel);
+	void _update_selection(const base::set<int>& sel);
 
 	vec2 get_content_min_size() const override;
 	void negotiate_content_area(const rect& available) override;
@@ -69,7 +71,7 @@ public:
 		Multi
 	} selection_mode;
 
-	Array<int> selected;
+	base::set<int> selected;
 	bool show_headers = true;
 	float selection_radius;
 
@@ -78,6 +80,8 @@ public:
 	vec2 cell_padding;
 
 	int hover_row = -1;
+	int cursor_begin = -1;
+	int cursor = -1;
 
 	string drag_source_id;
 };

@@ -118,7 +118,7 @@ public:
 
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.18");
+	e->package_info("xhui", "0.19");
 
 
 //	e->link_class_func("future[Color].__init__", &kaba::generic_init<kaba::KabaFuture<color>>);
@@ -166,26 +166,32 @@ void export_package_xhui(kaba::IExporter* e) {
 
 		e->link_virtual("Control.add_child", &xhui::Control::add_child, &ctrl);
 		e->link_virtual("Control.remove_child", &xhui::Control::remove_child, &ctrl);
+
+		e->link_virtual("Control.reset", &xhui::Control::reset, &ctrl);
+		e->link_virtual("Control.enable", &xhui::Control::enable, &ctrl);
+		e->link_virtual("Control.expand", &xhui::Control::expand, &ctrl);
+
+		e->link_virtual("Control.is_checked", &xhui::Control::is_checked, &ctrl);
+		e->link_virtual("Control.check", &xhui::Control::check, &ctrl);
+
+		e->link_virtual("Control.get_string", &xhui::Control::get_string, &ctrl);
 		e->link_virtual("Control.set_string", &xhui::Control::set_string, &ctrl);
 		e->link_virtual("Control.add_string", &xhui::Control::add_string, &ctrl);
+
+		e->link_virtual("Control.get_cell", &xhui::Control::get_cell, &ctrl);
 		e->link_virtual("Control.set_cell", &xhui::Control::set_cell, &ctrl);
-		e->link_virtual("Control.reset", &xhui::Control::reset, &ctrl);
+
+		e->link_virtual("Control.get_int", &xhui::Control::get_int, &ctrl);
 		e->link_virtual("Control.set_int", &xhui::Control::set_int, &ctrl);
+
+		e->link_virtual("Control.get_float", &xhui::Control::get_float, &ctrl);
 		e->link_virtual("Control.set_float", &xhui::Control::set_float, &ctrl);
 
-		e->link_virtual("Control.check", &xhui::Control::check, &ctrl);
-		e->link_virtual("Control.expand", &xhui::Control::expand, &ctrl);
-		e->link_virtual("Control.set_color", &xhui::Control::set_color, &ctrl);
-		e->link_virtual("Control.get_string", &xhui::Control::get_string, &ctrl);
-		e->link_virtual("Control.get_cell", &xhui::Control::get_cell, &ctrl);
-		e->link_virtual("Control.get_int", &xhui::Control::get_int, &ctrl);
-		e->link_virtual("Control.get_float", &xhui::Control::get_float, &ctrl);
-		e->link_virtual("Control.is_checked", &xhui::Control::is_checked, &ctrl);
 		e->link_virtual("Control.get_color", &xhui::Control::get_color, &ctrl);
+		e->link_virtual("Control.set_color", &xhui::Control::set_color, &ctrl);
+
 		e->link_virtual("Control.get_selection", &xhui::Control::get_selection, &ctrl);
-		e->link_virtual("Control.enable", &xhui::Control::enable, &ctrl);
-		e->link_virtual("Control.set_float", &xhui::Control::set_float, &ctrl);
-		e->link_virtual("Control.set_float", &xhui::Control::set_float, &ctrl);
+		e->link_virtual("Control.set_selection", &xhui::Control::set_selection, &ctrl);
 
 		e->link_virtual("Control.on_mouse_move", &xhui::Control::on_mouse_move, &ctrl);
 		e->link_virtual("Control.on_mouse_wheel", &xhui::Control::on_mouse_wheel, &ctrl);
@@ -288,11 +294,11 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_class_func("Panel.get_int", &xhui::Panel::get_int);
 		e->link_class_func("Panel.set_color", &xhui::Panel::set_color);
 		e->link_class_func("Panel.get_color", &xhui::Panel::get_color);
-		//	e->link_class_func("Panel.set_selection", &xhui::Panel::set_selection);
-		//	e->link_class_func("Panel.get_selection", &xhui::Panel::get_selection);
+		e->link_class_func("Panel.set_selection", &xhui::Panel::set_selection);
+		e->link_class_func("Panel.get_selection", &xhui::Panel::get_selection);
 		//	e->link_class_func("Panel.set_image", &xhui::Panel::set_image);
-		//	e->link_class_func("Panel.set_cell", &xhui::Panel::set_cell);
-		//	e->link_class_func("Panel.get_cell", &xhui::Panel::get_cell);
+		e->link_class_func("Panel.set_cell", &xhui::Panel::set_cell);
+		e->link_class_func("Panel.get_cell", &xhui::Panel::get_cell);
 		e->link_class_func("Panel.set_options", &xhui::Panel::set_options);
 		e->link_class_func("Panel.reset", &xhui::Panel::reset);
 		//	e->link_class_func("Panel.redraw", &xhui::Panel::redraw);

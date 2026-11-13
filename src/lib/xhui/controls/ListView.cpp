@@ -8,6 +8,14 @@ namespace xhui {
 
 static constexpr float HEADER_DY = 30;
 
+
+base::set<int> create_range_set(int from, int to) {
+	base::set<int> r;
+	for (int i=min(from, to); i<=max(from, to); i++)
+		r.add(i);
+	return r;
+}
+
 ListView::ListView(const string &_id, const string &t) :
 		Control(_id),
 		viewport(_id + ":viewport")
@@ -41,18 +49,42 @@ ListView::ListView(const string &_id, const string &t) :
 void ListView::on_left_button_down(const vec2& m) {
 	owner->get_window()->start_pre_drag(this);
 	hover_row = get_hover(m);
-	if (hover_row >= 0)
-		_update_selection({hover_row});
-	else if (selection_mode != SelectionMode::Single)
-		_update_selection({});
+
+#ifdef OS_MAC
+	constexpr int mod = KEY_SUPER;
+#else
+	constexpr int mod = KEY_CONTROL;
+#endif
+
+	if (get_window()->is_key_pressed(mod)) {
+		if (hover_row >= 0) {
+			auto new_sel = selected;
+			if (selected.contains(hover_row))
+				new_sel.erase(hover_row);
+			else
+				new_sel.add(hover_row);
+			_update_selection(new_sel);
+			cursor_begin = cursor = hover_row;
+		}
+	} else if (get_window()->is_key_pressed(KEY_SHIFT)) {
+		if (hover_row >= 0) {
+			cursor = hover_row;
+			_update_selection(create_range_set(cursor_begin, cursor));
+		}
+	} else {
+		set_selection({hover_row});
+	}
 }
 
-void ListView::_update_selection(const Array<int>& sel) {
+void ListView::_update_selection(const base::set<int>& sel) {
+	if (sel.num == 0 and selection_mode == SelectionMode::Single)
+		return;
+
 	selected = sel;
 
 	if (column_factories[0].f_select)
 		for (const auto& [i,r]: enumerate(cells))
-			column_factories[0].f_select(r[0].control.get(), selected.find(i) >= 0);
+			column_factories[0].f_select(r[0].control.get(), selected.contains(i));
 
 	request_redraw();
 	emit_event(event_id::Select, false);
@@ -80,12 +112,7 @@ void ListView::on_left_double_click(const vec2& m) {
 
 void ListView::on_right_button_down(const vec2& m) {
 	hover_row = get_hover(m);
-	if (selection_mode != SelectionMode::Single)
-		selected = {};
-	if (hover_row >= 0)
-		selected = {hover_row};
-	request_redraw();
-	emit_event(event_id::RightButtonDown, false);
+	set_selection({hover_row});
 }
 
 void ListView::on_right_button_up(const vec2&) {
@@ -113,19 +140,60 @@ void ListView::on_mouse_wheel(const vec2& d) {
 }
 
 void ListView::on_key_down(int key) {
+#ifdef OS_MAC
+	constexpr int key_begin = KEY_UP + KEY_SUPER;
+	constexpr int key_end = KEY_DOWN + KEY_SUPER;
+#else
+	constexpr int key_begin = KEY_HOME;
+	constexpr int key_end = KEY_END;
+#endif
+
 	if (key == KEY_RETURN) {
 		if (selected.num > 0)
 			if (!emit_event(event_id::Activate, true))
 				emit_event(event_id::ActivateDialogDefault, false);
 	} else if (key == KEY_DOWN) {
-		if (selected.num > 0)
-			_update_selection({min(selected[0] + 1, cells.num - 1)});
+		if (cursor >= 0)
+			set_selection({min(cursor + 1, cells.num - 1)});
+		else if (cells.num >= 0)
+			set_selection({0});
 	} else if (key == KEY_UP) {
-		if (selected.num > 0)
-			_update_selection({max(selected[0] - 1, 0)});
+		if (cursor >= 0)
+			set_selection({max(cursor - 1, 0)});
+		else if (cells.num >= 0)
+			set_selection({0});
+	} else if (key == key_begin) {
+		if (cells.num > 0)
+			set_selection({0});
+	} else if (key == key_end) {
+		if (cells.num > 0)
+			set_selection({cells.num - 1});
+	} else if (key == KEY_DOWN + KEY_SHIFT) {
+		if (cursor >= 0) {
+			cursor = min(cursor + 1, cells.num - 1);
+			_update_selection(create_range_set(cursor_begin, cursor));
+		} else if (cells.num >= 0) {
+			set_selection({0});
+		}
+	} else if (key == KEY_UP + KEY_SHIFT) {
+		if (cursor >= 0) {
+			cursor = max(cursor - 1, 0);
+			_update_selection(create_range_set(cursor_begin, cursor));
+		} else if (cells.num >= 0) {
+			set_selection({0});
+		}
+	} else if (key == key_begin + KEY_SHIFT) {
+		if (cells.num > 0 and cursor >= 0) {
+			cursor = 0;
+			_update_selection(create_range_set(cursor_begin, cursor));
+		}
+	} else if (key == key_end + KEY_SHIFT) {
+		if (cells.num > 0 and cursor >= 0) {
+			cursor = cells.num - 1;
+			_update_selection(create_range_set(cursor_begin, cursor));
+		}
 	}
 }
-
 
 
 int ListView::get_hover(const vec2& m) const {
@@ -219,7 +287,7 @@ void ListView::add_string(const string& s) {
 		column_factories[col].f_set(c, t);
 	}
 	if (cells.num == 1 and selection_mode == SelectionMode::Single)
-		selected = {0};
+		set_selection({0});
 	request_redraw();
 }
 
@@ -234,6 +302,7 @@ void ListView::set_cell(int row, int col, const string& s) {
 
 void ListView::reset() {
 	hover_row = -1;
+	cursor_begin = cursor = -1;
 	selected.clear();
 	for (auto c: cell_grid->get_children(ChildFilter::All)) {
 		if (auto p = as_panel(c))
@@ -245,32 +314,41 @@ void ListView::reset() {
 	viewport.offset = vec2::ZERO;
 	request_redraw();
 }
+
 void ListView::set_int(int i) {
-	if (selection_mode != SelectionMode::Single)
-		selected = {};
-	if (i >= 0 and i < cells.num)
-		selected = {i};
-
-	if (column_factories[0].f_select)
-		for (const auto& [i,r]: enumerate(cells))
-			column_factories[0].f_select(r[0].control.get(), selected.find(i) >= 0);
-
-	request_redraw();
+	set_selection({i});
 }
+
+void ListView::set_selection(const Array<int>& sel) {
+	base::set<int> _sel;
+	for (int i: sel)
+		if (i >= 0 and i < cells.num)
+			_sel.add(i);
+	_update_selection(_sel);
+
+	if (_sel.num == 1)
+		cursor_begin = cursor = _sel[0];
+	if (_sel.num == 0 and selection_mode != SelectionMode::Single)
+		cursor_begin = cursor = -1;
+}
+
 string ListView::get_cell(int row, int col) {
 	if (row >= 0 and row < cells.num)
 		if (col >= 0 and col < cells[row].num)
 			return cells[row][col].text;
 	return "";
 }
+
 int ListView::get_int() {
 	if (selected.num > 0)
 		return selected[0];
 	return -1;
 }
+
 Array<int> ListView::get_selection() {
 	return selected;
 }
+
 void ListView::set_option(const string& key, const string& value) {
 	if (key == "bar") {
 		show_headers = value._bool();

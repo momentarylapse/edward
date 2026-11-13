@@ -40,11 +40,15 @@ public:
 	void reset(const string& id);
 	void set_visible(const string& id, bool visible);
 	void activate(const string& id);
+	string get_cell(const string& id, int row, int col) const;
+	void set_cell(const string& id, int row, int col, const string& s);
 	string get_string(const string& id) const;
 	float get_float(const string& id) const;
 	int get_int(const string& id) const;
 	bool is_checked(const string& id) const;
 	color get_color(const string& c) const;
+	Array<int> get_selection(const string& id) const;
+	void set_selection(const string& id, const Array<int>& sel);
 	void set_tooltip(const string& id, const string& tip);
 	void set_options(const string& id, const string& options);
 	void set_option(const string& key, const string& value) override;
