@@ -52,6 +52,8 @@ class extern Control extends Object as Sharable
 	var area: Rect
 	var id: string
 #	func extern override __delete__()
+
+	# interface
 	func extern mut request_redraw()
 	func extern virtual mut add_child(c: shared![Control], x: i32, y: i32)
 	func extern virtual mut remove_child(c: void*)
@@ -73,24 +75,25 @@ class extern Control extends Object as Sharable
 	func extern virtual mut set_selection(sel: i32[])
 	func extern virtual mut enable(enabled: bool)
 	func extern virtual mut expand(expanded: bool)
-	func extern virtual mut set_option(key: string, valu: string)
+	func extern virtual mut set_option(key: string, value: string)
 	func extern virtual selfref get_children(_filter: i32) -> Control&[]
 
-	func extern virtual mut on_mouse_move(m: vec2)
-	func extern virtual mut on_mouse_wheel(d: vec2)
-	func extern virtual mut on_mouse_enter(m: vec2)
-	func extern virtual mut on_mouse_leave(m: vec2)
-	func extern virtual mut on_left_button_down(m: vec2)
-	func extern virtual mut on_middle_button_down(m: vec2)
-	func extern virtual mut on_right_button_down(m: vec2)
-	func extern virtual mut on_left_button_up(m: vec2)
-	func extern virtual mut on_middle_button_up(m: vec2)
-	func extern virtual mut on_right_button_up(m: vec2)
-	func extern virtual mut on_left_double_click(m: vec2)
-#	func extern virtual mut on_close_request()
-	func extern virtual mut on_key_down(key: i32)
-	func extern virtual mut on_key_up(key: i32)
-	func extern virtual mut on_key_char(character: i32)
+	# internal interface for implementations
+	func extern virtual mut _on_mouse_move(m: vec2)
+	func extern virtual mut _on_mouse_wheel(d: vec2)
+	func extern virtual mut _on_mouse_enter(m: vec2)
+	func extern virtual mut _on_mouse_leave(m: vec2)
+	func extern virtual mut _on_left_button_down(m: vec2)
+	func extern virtual mut _on_middle_button_down(m: vec2)
+	func extern virtual mut _on_right_button_down(m: vec2)
+	func extern virtual mut _on_left_button_up(m: vec2)
+	func extern virtual mut _on_middle_button_up(m: vec2)
+	func extern virtual mut _on_right_button_up(m: vec2)
+	func extern virtual mut _on_left_double_click(m: vec2)
+#	func extern virtual mut _on_close_request()
+	func extern virtual mut _on_key_down(key: i32)
+	func extern virtual mut _on_key_up(key: i32)
+	func extern virtual mut _on_key_char(character: i32)
 
 	func extern virtual _draw(p: image.Painter)
 	func extern virtual get_content_min_size() -> vec2

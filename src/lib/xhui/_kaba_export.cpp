@@ -118,7 +118,7 @@ public:
 
 
 void export_package_xhui(kaba::IExporter* e) {
-	e->package_info("xhui", "0.19");
+	e->package_info("xhui", "0.20");
 
 
 //	e->link_class_func("future[Color].__init__", &kaba::generic_init<kaba::KabaFuture<color>>);
@@ -193,20 +193,20 @@ void export_package_xhui(kaba::IExporter* e) {
 		e->link_virtual("Control.get_selection", &xhui::Control::get_selection, &ctrl);
 		e->link_virtual("Control.set_selection", &xhui::Control::set_selection, &ctrl);
 
-		e->link_virtual("Control.on_mouse_move", &xhui::Control::on_mouse_move, &ctrl);
-		e->link_virtual("Control.on_mouse_wheel", &xhui::Control::on_mouse_wheel, &ctrl);
-		e->link_virtual("Control.on_mouse_enter", &xhui::Control::on_mouse_enter, &ctrl);
-		e->link_virtual("Control.on_mouse_leave", &xhui::Control::on_mouse_leave, &ctrl);
-		e->link_virtual("Control.on_left_button_down", &xhui::Control::on_left_button_down, &ctrl);
-		e->link_virtual("Control.on_middle_button_down", &xhui::Control::on_middle_button_down, &ctrl);
-		e->link_virtual("Control.on_right_button_down", &xhui::Control::on_right_button_down, &ctrl);
-		e->link_virtual("Control.on_left_button_up", &xhui::Control::on_left_button_up, &ctrl);
-		e->link_virtual("Control.on_middle_button_up", &xhui::Control::on_middle_button_up, &ctrl);
-		e->link_virtual("Control.on_right_button_up", &xhui::Control::on_right_button_up, &ctrl);
-		e->link_virtual("Control.on_left_double_click", &xhui::Control::on_left_double_click, &ctrl);
-		e->link_virtual("Control.on_key_down", &xhui::Control::on_key_down, &ctrl);
-		e->link_virtual("Control.on_key_up", &xhui::Control::on_key_up, &ctrl);
-		e->link_virtual("Control.on_key_char", &xhui::Control::on_key_char, &ctrl);
+		e->link_virtual("Control._on_mouse_move", &xhui::Control::on_mouse_move, &ctrl);
+		e->link_virtual("Control._on_mouse_wheel", &xhui::Control::on_mouse_wheel, &ctrl);
+		e->link_virtual("Control._on_mouse_enter", &xhui::Control::on_mouse_enter, &ctrl);
+		e->link_virtual("Control._on_mouse_leave", &xhui::Control::on_mouse_leave, &ctrl);
+		e->link_virtual("Control._on_left_button_down", &xhui::Control::on_left_button_down, &ctrl);
+		e->link_virtual("Control._on_middle_button_down", &xhui::Control::on_middle_button_down, &ctrl);
+		e->link_virtual("Control._on_right_button_down", &xhui::Control::on_right_button_down, &ctrl);
+		e->link_virtual("Control._on_left_button_up", &xhui::Control::on_left_button_up, &ctrl);
+		e->link_virtual("Control._on_middle_button_up", &xhui::Control::on_middle_button_up, &ctrl);
+		e->link_virtual("Control._on_right_button_up", &xhui::Control::on_right_button_up, &ctrl);
+		e->link_virtual("Control._on_left_double_click", &xhui::Control::on_left_double_click, &ctrl);
+		e->link_virtual("Control._on_key_down", &xhui::Control::on_key_down, &ctrl);
+		e->link_virtual("Control._on_key_up", &xhui::Control::on_key_up, &ctrl);
+		e->link_virtual("Control._on_key_char", &xhui::Control::on_key_char, &ctrl);
 
 		e->link_virtual("Control.set_option", &xhui::Control::set_option, &ctrl);
 		e->link_virtual("Control.get_children", &layout::Node::_get_children, &ctrl);

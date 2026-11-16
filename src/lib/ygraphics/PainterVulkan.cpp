@@ -135,7 +135,7 @@ void Painter::draw_image(const vec2& p, const ::Image* image) {
 	t->write(*image);
 
 	auto dset = aux->get_descriptor_set(t);
-	fill_rect(this, {p.x, p.x + image->width, p.y, p.x + image->height}, _color, 0, 0, dset, true);
+	fill_rect(this, {p.x, p.x + image->width, p.y, p.y + image->height}, _color, 0, 0, dset, true);
 }
 
 
