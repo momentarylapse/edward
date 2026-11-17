@@ -98,8 +98,8 @@ class extern MultiView
 
 	func extern mut set_allow_select(s: bool)
 	func extern mut set_allow_action(a: bool)
-	func extern mut set_f_hover(f: (MultiViewWindow&,vec2)->Hover?)  # FIXME kaba syntax for callables!!!!!!
-	func extern mut set_f_select(f: (MultiViewWindow&,Rect)->Selection)
+	func extern mut set_f_hover(f: (MultiViewWindow,vec2)->Hover?)
+	func extern mut set_f_select(f: (MultiViewWindow,Rect)->Selection)
 	func extern mut set_f_make_selection_consistent(f: Selection&->void)
 	func extern mut set_f_get_selection_box(f: Selection->Box?)
 

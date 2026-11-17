@@ -231,30 +231,22 @@ void link_world(kaba::ExternalLinkData* ext) {
 
 class MultiViewWrapper: public MultiView {
 public:
-	struct WinVec2 {
-		MultiViewWindow* win;
-		vec2 m;
-	};
-	struct WinRect {
-		MultiViewWindow* win;
-		rect r;
-	};
-	//void set_f_hover(const Callable<base::optional<Hover>(MultiViewWindow*,const vec2&)>& f) {
-	void set_f_hover(Callable<base::optional<Hover>(const WinVec2& x)>* f) {
+	void set_f_hover(const Callable<base::optional<Hover>(MultiViewWindow*,const vec2&)>* f) {
+	//void set_f_hover(Callable<base::optional<Hover>(const WinVec2& x)>* f) {
 		f_hover = nullptr;
 		if (f)
 			f_hover = [f] (MultiViewWindow* win,const vec2& m) {
-				//return f(win, m);
-				return (*f)({win, m});
+				return (*f)(win, m);
+				//return (*f)({win, m});
 			};
 	}
-	//void set_f_select(const Callable<Selection(MultiViewWindow*,const rect&)>& f) {
-	void set_f_select(Callable<Selection(const WinRect&)>* f) {
+	void set_f_select(const Callable<Selection(MultiViewWindow*,const rect&)>* f) {
+	//void set_f_select(Callable<Selection(const WinRect&)>* f) {
 		f_select = nullptr;
 		if (f)
 			f_select = [f] (MultiViewWindow* win,const rect& r) {
-				//return f(win, r);
-				return (*f)({win, r});
+				return (*f)(win, r);
+				//return (*f)({win, r});
 			};
 	}
 	void set_f_make_selection_consistent(Callable<void(Selection&)>* f) {
