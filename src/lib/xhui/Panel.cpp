@@ -394,32 +394,25 @@ xfer<Control> create_raw_control(const string& type, const string& title, const 
 	return new Label(id, title);
 }
 
-xfer<Control> create_control(const string &type, const string &_title, const string &id) {
-	string title = _title;
+xfer<Control> create_control(const string& type, const string& title_with_options, const string& id) {
+	string title = title_with_options;
 	string options;
-	if (title.head(1) == "!") {
-		int p0 = title.find("\\");
+	if (title_with_options.head(1) == "!") {
+		int p0 = title_with_options.find("\\");
 		if (p0 > 0) {
-			title = title.sub(p0 + 1);
-			options = title.sub(1, p0);
+			title = title_with_options.sub(p0 + 1);
+			options = title_with_options.sub(1, p0);
 		} else {
-			options = title.sub(1);
+			options = title_with_options.sub(1);
 		}
 	}
-	auto c = create_raw_control(type, _title, id);
+	auto c = create_raw_control(type, title, id);
 	for (const auto& [k,v]: parse_options(options))
 		c->set_option(k, v);
 	return c;
 }
 
-void Panel::add_control(const string &type, const string &_title, int x, int y, const string &id) {
-	//printf("HuiPanelAddControl %s  %s  %d  %d  %s\n", type.c_str(), _title.c_str(), x, y, id.c_str());
-	string title = _title;
-	if (title.head(1) == "!") {
-		int p0 = title.find("\\");
-		if (p0 > 0)
-			title = title.sub(p0 + 1);
-	}
+void Panel::add_control(const string &type, const string &title, int x, int y, const string &id) {
 	auto c = create_control(type, title, id);
 	add_child(c, x, y);
 }
@@ -427,12 +420,10 @@ void Panel::add_control(const string &type, const string &_title, int x, int y, 
 void Panel::_add_control(const string &ns, const Resource &cmd, const string &parent_id) {
 	//msg_write(format("%d:  %d / %d",j,(cmd->type & 1023),(cmd->type >> 10)).c_str(),4);
 	set_target(parent_id);
-	add_control(cmd.type, get_language_r(ns, cmd),
-				cmd.x, cmd.y,
-				cmd.id);
-
+	auto c = create_raw_control(cmd.type, get_language_res(ns, cmd), cmd.id);
+	add_child(c, cmd.x, cmd.y);
 	for (const auto &o: cmd.options)
-		set_options(cmd.id, str(o));
+		c->set_option(o.key, o.value);
 
 	enable(cmd.id, cmd.enabled());
 	/*if (cmd.has("hidden"))
@@ -563,7 +554,10 @@ void Panel::from_resource(const Resource& res) {
 
 
 	// controls
-	if (res_is_window) {
+	if (res_is_window or res.type == "Panel") {
+		for (const auto &o: res.options)
+			set_options(id, str(o));
+
 		if (res.children.num > 0)
 			_add_control(id, res.children[0], "");
 	} else {

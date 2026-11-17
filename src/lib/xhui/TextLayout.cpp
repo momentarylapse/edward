@@ -42,11 +42,11 @@ color parse_color(const string& v) {
 	if (v == "black")
 		return Black;
 	if (v == "red")
-		return color(1, 0.7f, 0.1f, 0.1f);;
+		return color::from_rgba(0.7f, 0.1f, 0.1f);
 	if (v == "green")
-		return color(1, 0.1f, 0.7f, 0.1f);
+		return color::from_rgba(0.1f, 0.7f, 0.1f);
 	if (v == "blue")
-		return color(1, 0.1f, 0.1f, 0.8f);
+		return color::from_rgba(0.1f, 0.1f, 0.8f);
 	if (v == "yellow")
 		return Yellow;
 	return color::parse(v);
@@ -70,10 +70,10 @@ TextFormat apply_tag(const TextFormat& parent, const TagInfo& tag, float font_si
 				f.col = parse_color(v);
 			} if (k == "alpha") {
 				if (v.tail(1) == "%")
-					f.alpha = (float)v.replace("%", "")._int() / 100.0f;
+					f.alpha = v.replace("%", "")._float() / 100.0f;
 			} if (k == "size") {
 				if (v.tail(1) == "%")
-					f.font_size = font_size * (float)v.replace("%", "")._int() / 100.0f;
+					f.font_size = font_size * v.replace("%", "")._float() / 100.0f;
 				else if (v == "small")
 					f.font_size = font_size * 0.7f;
 				else if (v == "big")

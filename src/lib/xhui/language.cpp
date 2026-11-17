@@ -55,7 +55,16 @@ string get_language(const string &ns, const string &id) {
 	return "";
 }
 
-string get_language_r(const string &ns, const Resource &cmd) {
+string get_language_res(const string &ns, const Resource &cmd) {
+	if (!_using_language_ or (cmd.id.num == 0))
+		return cmd.title;
+
+	FOR_LANG_RET(ns, cmd.id, c.text);
+
+	return cmd.title;
+}
+
+string get_language_res_opt(const string &ns, const Resource &cmd) {
 	string pre;
 	if (cmd.options.num > 0)
 		pre = "!" + cmd._options_str() + "\\";

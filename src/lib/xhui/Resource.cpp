@@ -155,7 +155,7 @@ Dialog *create_resource_dialog(const string &id, Window *root) {
 	// dialog
 	int width = res->value("width", "300")._int();
 	int height = res->value("height", "250")._int();
-	Dialog* dlg = new Dialog(get_language_r(res->id, *res), width, height, root);//, allow_parent);
+	Dialog* dlg = new Dialog(get_language_res_opt(res->id, *res), width, height, root);//, allow_parent);
 
 #if 0
 	// menu?
@@ -233,9 +233,9 @@ xfer<Menu> create_resource_menu(const string& ns, const Resource* r) {
 		if (rr.type == "Separator")
 			continue;
 		if (rr.type == "Menu")
-			m->add_item_menu(rr.id, get_language_r(ns, rr), create_resource_menu(ns, &rr));
+			m->add_item_menu(rr.id, get_language_res_opt(ns, rr), create_resource_menu(ns, &rr));
 		else
-			m->add_item(rr.id, get_language_r(ns, rr));
+			m->add_item(rr.id, get_language_res_opt(ns, rr));
 		m->items.back().enabled = rr.enabled();
 	}
 	return m;
