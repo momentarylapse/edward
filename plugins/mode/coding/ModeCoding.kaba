@@ -2,7 +2,7 @@ use edward.*
 use codeeditor
 use os
 use obs
-use xhui
+use hui
 
 
 class CodeData extends Data
@@ -56,7 +56,7 @@ class ModeCoding extends Mode
 	func mut on_editor_request_open_file(l: codeeditor.Location)
 		session.universal_edit(DataType.SCRIPT, l.filename, false)
 		_requested_offset = l.offset
-		xhui.run_later(0.1, func()
+		hui.run_later(0.1, func()
 			var m = session.cur_doc.cur_mode as ModeCoding&
 			m.editor.set_cursor_pos(_requested_offset)
 		end)

@@ -1,5 +1,5 @@
 package plugins/edward
 package plugins/codeeditor forward
-package plugins/xhui forward
+package plugins/hui@y forward
 package plugins/yengine forward
 

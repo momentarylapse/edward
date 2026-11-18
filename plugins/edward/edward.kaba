@@ -4,7 +4,7 @@ use obs
 use async.*
 use yrenderer
 use yengine
-use xhui
+use hui
 use out .common.*
 use out .multiview.*
 use out .world.*
@@ -65,12 +65,12 @@ class extern Mode as obs.Node
 	func virtual extern is_undoable() -> bool
 	func virtual extern is_redoable() -> bool
 
-	var dialog: shared[xhui.Panel]
-#	xhui::Panel* overlay_panel = nullptr;
-	func extern set_overlay_panel(p: shared[xhui.Panel])
+	var dialog: shared[hui.Panel]
+#	hui::Panel* overlay_panel = nullptr;
+	func extern set_overlay_panel(p: shared[hui.Panel])
 
-#	xhui::Panel* side_panel = nullptr;
-	func extern set_side_panel(p: shared[xhui.Panel])
+#	hui::Panel* side_panel = nullptr;
+	func extern set_side_panel(p: shared[hui.Panel])
 
 
 class extern SubMode extends Mode
@@ -100,13 +100,13 @@ class extern SubMode extends Mode
 
 
 class FloatDialog
-	func extern static ask(parent: xhui.Panel, question: string, f: f32) -> future[f32]
+	func extern static ask(parent: hui.Panel, question: string, f: f32) -> future[f32]
 
 struct IntPair
 	var a, b: i32
 
 class IntPairDialog
-	func extern static ask(parent: xhui.Panel, question: string, a: i32, b: i32) -> future[IntPair]
+	func extern static ask(parent: hui.Panel, question: string, a: i32, b: i32) -> future[IntPair]
 
 
 class extern ResourceManager #extends yengine.ResourceManager
@@ -146,7 +146,7 @@ class extern Session
 	var drawing_helper: DrawingHelper&
 	var line_helper: yrenderer.LineHelper&
 	var storage: Storage&
-	var win: xhui.Window&
+	var win: hui.Window&
 	var cur_doc: DocumentSession&
 
 	func extern mut load_project(dir: os.Path)
@@ -165,7 +165,7 @@ class extern DocumentSession
 	var session: Session&
 	var cur_mode: Mode&
 	func extern mut set_mode(mode: Mode&)
-	func extern mut set_document_panel(panel: shared[xhui.Panel])
+	func extern mut set_document_panel(panel: shared[hui.Panel])
 	func extern mut event(id: string, f: void->void)
 
 

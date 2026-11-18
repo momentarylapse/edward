@@ -19,6 +19,7 @@ class Dialog;
 
 class Panel : public Control {
 public:
+	Panel();
 	explicit Panel(const string &id);
 
 	void _draw(Painter* p) override;

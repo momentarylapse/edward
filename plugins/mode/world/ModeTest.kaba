@@ -1,5 +1,5 @@
 use image.Painter
-use xhui
+use hui
 use edward.*
 
 class ModeTest extends SubMode
@@ -14,5 +14,5 @@ class ModeTest extends SubMode
 		draw_info(p, "this is a custom mode written in kaba!")
 
 	func override on_key_down(k: i32)
-		if k == xhui.KEY_ESCAPE
+		if k == hui.KEY_ESCAPE
 			request_mode_end()

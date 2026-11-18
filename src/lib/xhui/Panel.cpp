@@ -33,6 +33,7 @@
 
 namespace xhui {
 
+Panel::Panel() : Panel("") {}
 
 Panel::Panel(const string &_id) : Control(_id, ControlType::Panel) {
 	ignore_hover = true;

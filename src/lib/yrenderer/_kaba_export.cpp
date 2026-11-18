@@ -581,7 +581,8 @@ void _export_package_yrenderer_internal(kaba::IExporter* ext) {
 #ifdef HAS_LIB_GLFW
 	ext->link_func("api_init_glfw", &api_init_glfw);
 #endif
-	ext->link_func("api_init_xhui", &api_init_xhui);
+	ext->link_func("api_init_hui", &api_init_xhui);
+	ext->link_func("api_init_xhui", &api_init_xhui); // legacy
 }
 
 void export_package_yrenderer(kaba::IExporter* ext) {

@@ -9,11 +9,19 @@ namespace xhui {
 
 Theme Theme::_default;
 
+
+Path guess_kaba_environment_path() {
+	if (auto p = os::app::get_env("KABA_ENVIRONMENT_PATH"))
+		return p.value();
+	return os::app::home_directory | ".kaba";
+}
+
 void Theme::load_default() {
 	Configuration c;
+	os::app::get_env("KABA_ENVIRONMENT_PATH");
 	if (!c.load(os::app::directory_dynamic | "default.theme"))
 		if (!c.load(os::app::directory_static | "default.theme"))
-			if (!c.load(os::app::home_directory | ".kaba/packages/xhui/default.theme")) // kaba package workaround...
+			if (!c.load(guess_kaba_environment_path() | "packages/hui@y/default.theme")) // kaba package workaround...
 				msg_error("failed to load default.theme");
 
 	_default.font_size = c.get_float("font.size", 12);

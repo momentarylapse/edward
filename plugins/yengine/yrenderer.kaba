@@ -103,7 +103,7 @@ class extern Context as @noauto
 
 
 func extern api_init_glfw(window: void*) -> xfer[Context] # p: GLFWwindow*
-func extern api_init_xhui(p: void*) -> xfer[Context] # p: xhui.Painter*
+func extern api_init_hui(p: void*) -> xfer[Context] # p: hui.Painter*
 
 
 struct extern RenderParams

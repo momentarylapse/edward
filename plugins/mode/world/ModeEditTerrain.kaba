@@ -1,4 +1,4 @@
-use xhui
+use hui
 use obs
 use image
 use yengine
@@ -7,7 +7,7 @@ use edward.*
 use .ModeWorld.*
 
 
-class EditTerrainPanel extends xhui.Panel as obs.Node
+class EditTerrainPanel extends hui.Panel as obs.Node
 	var mode_terrain: ModeEditTerrain&
 	var user_editing = false
 
@@ -15,7 +15,7 @@ class EditTerrainPanel extends xhui.Panel as obs.Node
 		super.__init__("edit-terrain-panel")
 		mode_terrain := mode
 		from_source("
-Dialog edit-terrain-panel ''
+Panel edit-terrain-panel ''
 	Grid ? '' margin=7
 		Label ? 'Terrain' big center
 		---|
@@ -194,7 +194,7 @@ class ModeEditTerrain extends SubMode
 
 
 	func override on_key_down(key: i32)
-		if key == xhui.KEY_ESCAPE
+		if key == hui.KEY_ESCAPE
 			request_mode_end()
 
 
@@ -228,7 +228,7 @@ class ModeEditTerrain extends SubMode
 
 
 	func mut do_brush_step(out t: yengine.Terrain, p: vec3)
-		let depth = if session.win.is_key_pressed(xhui.KEY_SHIFT)
+		let depth = if session.win.is_key_pressed(hui.KEY_SHIFT)
 			- brush_radius / 4
 		else
 			brush_radius / 4

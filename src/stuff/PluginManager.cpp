@@ -63,12 +63,10 @@ void PluginManager::execute(const Path& filename) {
 //hui::Window *GlobalMainWin = ed;
 
 void PluginManager::init_edward() {
-	msg_error("INIT EDWARD");
 	session->kaba_ctx->register_package_init("codeeditor", directory.absolute().canonical() | "codeeditor", [] (kaba::IExporter* e) {
-		msg_error("INIT CODEEDITOR");
 		_export_package_syntaxhighlight_internal(e);
 	});
-	session->kaba_ctx->register_package_init("xhui", directory.absolute().canonical() | "xhui", &export_package_xhui);
+	session->kaba_ctx->register_package_init("hui", directory.absolute().canonical() | "hui@y", &export_package_xhui);
 	session->kaba_ctx->register_package_init("yengine", directory.absolute().canonical() | "yengine", &::PluginManager::export_kaba_package_yengine);
 
 	link_plugins();

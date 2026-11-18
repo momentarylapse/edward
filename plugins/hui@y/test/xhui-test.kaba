@@ -1,5 +1,4 @@
-use xhui as hui
-#use hui
+use hui
 
 
 func xdraw(p: hui.Painter)
@@ -12,7 +11,7 @@ func xdraw(p: hui.Painter)
 func main()
 	var w = new shared hui.Window("test", 800, 600)
 	w.from_source("
-Dialog win 'bla'
+Window win 'bla'
 	Grid ? ''
 		Button b 'Test' noexpandy
 		---|
@@ -23,4 +22,3 @@ Dialog win 'bla'
 	w.event("b", func() print("hi"))
 	w.event_x("area", "hui:draw", xdraw)
 	hui.fly_and_wait(w)
-	
