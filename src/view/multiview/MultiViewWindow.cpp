@@ -136,7 +136,7 @@ float MultiViewWindow::pixel_to_size(float s) const {
 #define GRID_CONST	5.0f
 
 float MultiViewWindow::get_grid_d() const {
-	return pow(10.0f, ceil(log10(GRID_CONST / zoom())));
+	return powf(10.0f, ceilf(log10f(GRID_CONST / zoom())));
 }
 
 int grid_level(int i) {
@@ -157,7 +157,7 @@ float grid_density(int level, float d_err) {
 		return 1;
 	if (level == 1)
 		d_err += 1;
-	return min((float)pow(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
+	return min(powf(10.0f, d_err-1.0f) * LOW_MAX, MID_MAX);
 }
 
 
@@ -215,8 +215,8 @@ void MultiViewWindow::prepare(const yrenderer::RenderParams& params) {
 
 void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, float DERR, const vec3 &dir_1, const vec3 &dir_2, float alpha) {
 
-	int ix0 = int(ceil(r.x1 / D));
-	int ix1 = int(floor(r.x2 / D));
+	int ix0 = int(ceilf(r.x1 / D));
+	int ix1 = int(floorf(r.x2 / D));
 	for (int i=ix0; i<=ix1; i++) {
 		int level = grid_level(i);
 		float dens = grid_density(level, DERR);
@@ -229,8 +229,8 @@ void add_grid(const rect &r, Array<vec3> p[4], Array<color> col[4], float D, flo
 	}
 
 
-	int iy0 = int(ceil(r.y1 / D));
-	int iy1 = int(floor(r.y2 / D));
+	int iy0 = int(ceilf(r.y1 / D));
+	int iy1 = int(floorf(r.y2 / D));
 	for (int i=iy0; i<=iy1; i++) {
 		int level = grid_level(i);
 		float dens = grid_density(level, DERR);
@@ -277,7 +277,7 @@ void draw_grid_3d(const color &bg, MultiViewWindow *w, int plane, float alpha) {
 	//msg_write("grid " + f2s(alpha, 3));
 	//return exp10(ceil(log10(GRID_CONST / zoom())));
 	float D = w->get_grid_d();
-	float DERR = log10(D) - log10(GRID_CONST / w->zoom());
+	float DERR = log10f(D) - log10f(GRID_CONST / w->zoom());
 
 	Array<vec3> p[4];
 	Array<color> col[4];

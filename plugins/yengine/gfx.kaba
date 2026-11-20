@@ -90,6 +90,7 @@ class extern Buffer
 class extern VertexBuffer
 	func extern __init__(format: string = "3f,3f,2f")
 	func extern mut update(data: @DynamicArray)
+	func extern mut update_index(data: i32[])
 	func extern mut create_quad(d: Rect, s = Rect.ID)
 
 class extern DynamicVertexBuffer extends VertexBuffer

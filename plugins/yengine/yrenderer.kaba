@@ -64,9 +64,9 @@ class extern Material
 struct extern CameraParams
 	var pos: vec3
 	var ang: Quaternion
-
 	var fov: f32
 	var min_depth, max_depth: f32
+	var offset: vec2
 	func extern projection_matrix(aspect_ratio: f32) -> mat4
 	func extern view_matrix() -> mat4
 
@@ -131,8 +131,10 @@ class extern LineHelper
 	func extern mut begin_draw(params: RenderParams, rvd: RenderViewData)
 	func extern mut set_color(c: Color)
 	func extern mut set_z_test(enabled: bool)
+	func extern mut set_blending(enabled: bool)
 	func extern mut set_line_width(w: f32)
 	func extern mut draw_lines(points: vec3[], contiguous=true)
+	func extern mut draw_lines_colored(points: vec3[], colors: Color[], contiguous=true)
 	func extern mut draw_circle(center: vec3, axis: vec3, radius: f32)
 
 func extern apply_shader_data(params: RenderParams, s: Shader*, shader_data: Any)

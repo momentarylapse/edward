@@ -13,8 +13,8 @@ public:
 
 	shared_array<Control> children;
 
-	void add_child(shared<Control> c);
-	void add_child(shared<Control> c, int, int) override { add_child(c); }
+	void add_child(shared<Control> c, int n);
+	void add_child(shared<Control> c, int x, int y) override { add_child(c, x+y); }
 	void remove_child(Control* c) override;
 
 	vec2 get_content_min_size() const override;

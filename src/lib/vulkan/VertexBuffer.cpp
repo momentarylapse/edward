@@ -37,7 +37,7 @@ int format_size(VkFormat f);
 Array<VkVertexInputAttributeDescription> parse_attr_descr(const string &format) {
 	Array<VkVertexInputAttributeDescription> attribute_descriptions;
 
-	auto xx = format.replace("|i", "").explode(",");
+	auto xx = format.explode("|i")[0].explode(",");
 	int offset = 0;
 	int index = 0;
 	for (auto &f: xx) {
@@ -55,7 +55,7 @@ Array<VkVertexInputAttributeDescription> parse_attr_descr(const string &format) 
 VkVertexInputBindingDescription parse_binding_descr(const string &format) {
 	VkVertexInputBindingDescription b;
 	int offset = 0;
-	for (auto &f: format.replace("|i", "").explode(","))
+	for (auto &f: format.explode("|i")[0].explode(","))
 		offset += format_size(_parse_vb_component_(f));
 	b.binding = 0;
 	b.stride = offset;

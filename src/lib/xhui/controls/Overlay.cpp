@@ -1,9 +1,6 @@
 #include "Overlay.h"
-
-#include <lib/base/algo.h>
-
 #include "../Panel.h"
-#include "../../os/msg.h"
+#include <lib/base/algo.h>
 
 namespace xhui {
 
@@ -17,8 +14,11 @@ Overlay::Overlay(const string &_id) : Control(_id) {
 	size_mode_y = SizeMode::ForwardChild;
 }
 
-void Overlay::add_child(shared<Control> c) {
-	children.add(c);
+void Overlay::add_child(shared<Control> c, int n) {
+	if (n < 0 or n >= children.num)
+		children.add(c);
+	else
+		children.insert(c, n);
 	if (owner)
 		c->_register(owner);
 }

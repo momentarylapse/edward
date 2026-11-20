@@ -1,5 +1,5 @@
 version 0.13
-requires xhui
+requires hui@y
 requires obs
 build xmake sharedlib modulecodeeditor
 
